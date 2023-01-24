@@ -38,7 +38,12 @@ export default CategorySlice.reducer
 
 export const initialCost:CostType = {
     clientId:'',
-    distanceCostPerKM:15,
+    distanceCostPerKM:{
+        "1 BHK":30,
+        "2 BHK":35,
+        "3 BHK":40,
+        "4 BHK & more":50,
+    },
     labourCost:{
         "1 BHK":{
             cost:500,

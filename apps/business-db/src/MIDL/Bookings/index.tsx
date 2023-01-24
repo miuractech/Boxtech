@@ -41,7 +41,6 @@ export const Booking = () => {
       <Title order={2} className="text-gray-500">
         Booking
       </Title>
-   
       <Actions />
       <OrdersTable orderData={orderData} />
     </div>

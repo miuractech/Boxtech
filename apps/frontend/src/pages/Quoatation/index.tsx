@@ -18,7 +18,7 @@ import {
 import Lottie from 'lottie-react';
 import truck from '../../assets/json/truck-loading.json';
 import { setOrderDetails } from '../../store/orderSlice';
-import { Center, LoadingOverlay } from '@mantine/core';
+import { Center } from '@mantine/core';
 
 export default function Quoatation({ readOnly }: { readOnly: boolean }) {
   const { orderId } = useParams();
@@ -33,33 +33,35 @@ export default function Quoatation({ readOnly }: { readOnly: boolean }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await getDoc(doc(db, 'clients', orderDetails.clientId));
-        if (res.exists()) {
-          const data = res.data() as generalInfo;
-          setClientData(data);
-          const costResponse = await getDoc(
-            doc(db, 'Cost', orderDetails.clientId)
-          );
-          if (costResponse.exists()) {
-            const data = costResponse.data() as CostType;
-            setClientCostData(data);
-            setCalculatePrice(true);
+    if(orderDetails){
+      (async () => {
+        try {
+          const res = await getDoc(doc(db, 'clients', orderDetails.clientId));
+          if (res.exists()) {
+            const data = res.data() as generalInfo;
+            setClientData(data);
+            const costResponse = await getDoc(
+              doc(db, 'Cost', orderDetails.clientId)
+            );
+            if (costResponse.exists()) {
+              const data = costResponse.data() as CostType;
+              setClientCostData(data);
+              setCalculatePrice(true);
+            }
           }
+        } catch (error) {        
+          showNotification({
+            id: `reg-err-${Math.random()}`,
+            autoClose: 5000,
+            title: 'Error',
+            message: 'Something went wrong try again',
+            color: 'red',
+            icon: <IconX />,
+            loading: false,
+          });
         }
-      } catch (error) {        
-        showNotification({
-          id: `reg-err-${Math.random()}`,
-          autoClose: 5000,
-          title: 'Error',
-          message: 'Something went wrong try again',
-          color: 'red',
-          icon: <IconX />,
-          loading: false,
-        });
-      }
-    })();
+      })();
+    }
   }, [orderDetails, orderId]);
 
   const detsils = (data: UserDetailsType) => {
@@ -101,6 +103,8 @@ export default function Quoatation({ readOnly }: { readOnly: boolean }) {
       });
     }
   }, [orderDetails]);
+  console.log(orderDetails);
+  
 if(incomplete) return <Center className='h-screen' >
     Quotation not generated yet.
 </Center>

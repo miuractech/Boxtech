@@ -45,7 +45,6 @@ const useStorage = ({ app, updateFirestore }: useStorageProps) => {
           setProgress(prog);
         },
         (err) => {
-          console.log(err);
           
           setLoading(false);
           reject(err);

@@ -232,12 +232,14 @@ export type GooglePlacesType = {
   address1: string;
   address2: string;
   landmark: string;
+  floor:number;
+  hasLift:boolean;
 };
 
 export type masterFormType = {
   from: GooglePlacesType;
   to: GooglePlacesType;
-  config: string;
+  config: houseConfigNames | '';
   // selectedItems: categoryItemType[];
   hasLiftFacility: boolean;
   floorNumber: number;

@@ -84,6 +84,8 @@ export const GetLocation = ({
         lat: null,
         lng: null,
       },
+      floor: 0,
+      hasLift: false,
     },
     validate: yupResolver(
       yup.object({
@@ -96,6 +98,8 @@ export const GetLocation = ({
         landmark: yup.string().required(),
         placeId: yup.string().required(),
         addressLine: yup.string().required(),
+        floor: yup.number().required(),
+        hasLift: yup.boolean().required(),
       })
     ),
   });
@@ -117,7 +121,6 @@ export const GetLocation = ({
     if (orderDetails?.status && orderDetails.status === 'geoDetected') {
       const { from, to } = orderDetails;
       if (!form.values.placeId) {
-        console.log(from, to);
         if (field === 'from' && from.placeId) {
           form.setValues(from);
           setValue(from.addressLine);
@@ -140,7 +143,7 @@ export const GetLocation = ({
     <div>
       <Autocomplete
         required
-        dropdownPosition='bottom'
+        dropdownPosition="bottom"
         autoComplete="new-password"
         name={field}
         autoFocus={field === 'from'}
@@ -344,6 +347,18 @@ export const GetLocation = ({
             <TextInput
               placeholder="Landmark"
               {...form.getInputProps('landmark')}
+            />
+          </div>
+          <div>
+            <TextInput
+              placeholder="Floor number"
+              {...form.getInputProps('floor')}
+            />
+          </div>
+          <div>
+            <TextInput
+              placeholder="Does your place"
+              {...form.getInputProps('hasLift')}
             />
           </div>
           <div>

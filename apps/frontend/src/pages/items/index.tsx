@@ -18,7 +18,7 @@ export default function Items() {
     <div className=" w-full min-h-[80vh] mt-1 md:w-3/5 mx-auto">
       <CategoryBar />
       <div className="mt-5">
-        <BackandNextButton nextDisabled={selectedItems.length === 0} handelNextBtn={() => {
+        <BackandNextButton nextDisabled={selectedItems.length === 0} backDisabled handelNextBtn={() => {
           navigate(`/order/${orderId}/list`);
         }} />
       </div>

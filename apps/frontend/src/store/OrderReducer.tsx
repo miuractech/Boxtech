@@ -8,6 +8,7 @@ import {
   userInfoType,
 } from '../pages/Landing';
 import { QuotationDataType } from '../pages/Quoatation/priceCalculation';
+import { houseConfigNames } from '@boxtech/shared-constants';
 
 const order: masterFormType = localStorage.getItem('order')
   ? JSON.parse(localStorage.getItem('order') || '')
@@ -29,7 +30,9 @@ const initialState: masterFormType = {
     address1: '',
     address2: '',
     landmark: '',
-    addressLine:''
+    addressLine:'',
+    floor:0,
+    hasLift:false
   },
   to: {
     coordinates: {
@@ -40,7 +43,9 @@ const initialState: masterFormType = {
     address1: '',
     address2: '',
     landmark: '',
-    addressLine:''
+    addressLine:'',
+    floor:0,
+    hasLift:false
   },
   config: '',
   hasLiftFacility: false,
@@ -70,7 +75,7 @@ export const OrderSlice = createSlice({
     setTo: (state, payload: PayloadAction<GooglePlacesType>) => {
       state.to = payload.payload;
     },
-    setConfig: (state, payload: PayloadAction<string>) => {
+    setConfig: (state, payload: PayloadAction<houseConfigNames>) => {
       state.config = payload.payload;
     },
     setTranspotationCost: (state, action) => {

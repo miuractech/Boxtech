@@ -26,8 +26,6 @@ export const TemplateEditor = () => {
         if (templateName) {
             // const name = decodeURIComponent(templateName)
             const find = templates.find(tem => tem.name === templateName)
-            console.log(templateName);
-
             if (find?.name !== templateName) {
                 navigate("/settings/mailtemplates")
             }

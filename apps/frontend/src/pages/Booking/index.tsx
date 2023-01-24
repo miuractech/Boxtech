@@ -8,7 +8,13 @@ import { Notification } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { doc, Timestamp, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  Timestamp,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import { auth, db } from '../../configs/firebaseconfig';
 import { useNavigate, useParams } from 'react-router-dom';
 import { uuidv4 } from '@firebase/util';
@@ -27,12 +33,9 @@ export default function Booking() {
   const [error, seterror] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
   const navigate = useNavigate();
-  const { orderId } = useParams()  
+  const { orderId } = useParams();
+  const { orderDetails } = useSelector((state:RootState)=>state.orderDetails)
   const timeSlot = [
-    {
-      start: '6 AM',
-      disabled: false,
-    },
     {
       start: '11 AM',
       disabled: false,
@@ -41,64 +44,88 @@ export default function Booking() {
       start: '3 PM',
       disabled: false,
     },
-  ]
-
+    {
+      start: '6 PM',
+      disabled: false,
+    },
+  ];  
   const form = useForm({
     initialValues: {
-      date: new Date(),
-      timeSlot: '6 AM',
-    }
+      date:orderDetails.bookingInfo.date.toDate()?? new Date(),
+      timeSlot: orderDetails.bookingInfo.timeSlot??'11 AM',
+    },
   });
 
   return (
     <div>
-      <form onSubmit={form.onSubmit(async (values) => {
-        try {
-          if (!orderId) return
-          setLoading(true)
-          await updateDoc(doc(db, "Orders", orderId), {
-            status: "bookingConfirmed",
-            bookingInfo: values
-          })
-          setLoading(false)
-        } catch (error) {
-          showNotification({
-            id: `reg-err-${Math.random()}`,
-            autoClose: 5000,
-            title: "Error",
-            message: "Something went wrong try agagin",
-            color: "red",
-            icon: <IconX />,
-            loading: false,
-          });
-          setLoading(false)
-        }
-      })}>
+      <form
+        onSubmit={form.onSubmit(async (values) => {
+          try {
+            if (!orderId) return;
+            setLoading(true);
+            const batch = writeBatch(db);
+            batch.set(
+              doc(
+                collection(db, 'Booking', orderDetails.clientId, formattedDate(values.date)),
+                "bookedSlot"
+                // values.date.getDate().toString()
+              ),
+              {
+                [values.date.getDate().toString()]:{[values.timeSlot]: true},
+              }
+            );
+            batch.update(doc(db, 'Orders', orderId), {
+              status: 'bookingConfirmed',
+              bookingInfo: values,
+            });
+            await batch.commit();
+            setLoading(false);
+          } catch (error) {
+            showNotification({
+              id: `reg-err-${Math.random()}`,
+              autoClose: 5000,
+              title: 'Error',
+              message: 'Something went wrong try agagin',
+              color: 'red',
+              icon: <IconX />,
+              loading: false,
+            });
+            setLoading(false);
+          }
+        })}
+      >
         <div className="w-full min-h-[80vh] bg-[#EDF2FF] flex justify-center items-center py-5">
           <div className="w-full md:w-[800px] md:mt-10  gap-10  bg-white min-h-[400px] grid md:grid-cols-2 grid-cols-1 rounded-md md:px-4 py-5 mx-4  ">
             <div className="col-span-1 gird-col-1 mx-auto   ">
               <div className="">
-                <Title order={4} align='center'> Book your date and select slot </Title>
+                <Title order={4} align="center">
+                  {' '}
+                  Book your date and select slot{' '}
+                </Title>
                 <div className="shadow-md inline-block p-1 mt-4">
                   <DatePicker
                     // value={date}
                     // onChange={setDate}
-                    {...form.getInputProps("date")}
+                    {...form.getInputProps('date')}
                     minDate={dayjs(Timestamp.now().toDate()).toDate()}
-                    maxDate={dayjs(Timestamp.now().toDate()).add(90, 'day').toDate()}
-                    className='p-5'
+                    maxDate={dayjs(Timestamp.now().toDate())
+                      .add(90, 'day')
+                      .toDate()}
+                    className="p-5"
                   />
                 </div>
               </div>
             </div>
             <div className="grid items-center">
               <div className="space-y-5">
-                <Title order={3} align='center'>Booking</Title>
-                <div className='grid grid-cols-2 justify-center'>
-                  <Text className='justify-self-end pr-1 font-medium'>
+                <Title order={3} align="center">
+                  Booking
+                </Title>
+                <div className="grid grid-cols-2 justify-center">
+                  <Text className="justify-self-end pr-1 font-medium">
                     Available Slots on
                   </Text>
-                  <Text className='font-medium'>{date?.toDateString()}</Text>
+                  <Text className="font-medium">{date?.toDateString()}</Text>
                 </div>
                 <div className="w-32 m-auto">
                   <SegmentedControl
@@ -107,12 +134,12 @@ export default function Booking() {
                     transitionDuration={500}
                     transitionTimingFunction="linear"
                     color="primary"
-                    {...form.getInputProps("timeSlot")}
+                    {...form.getInputProps('timeSlot')}
                     // value={value}
                     // onChange={setValue}
                     radius="lg"
-                    size='md'
-                    classNames={{ root: "flex gap-3" }}
+                    size="md"
+                    classNames={{ root: 'flex gap-3' }}
                     data={timeSlot.map((item) => ({
                       label: item.start,
                       value: item.start,
@@ -128,17 +155,17 @@ export default function Booking() {
                   color="#228BE6"
                   onClick={async () => {
                     try {
-                      if (!orderId) return
-                      await updateDoc(doc(db, "Orders", orderId), {
-                        status: "itemsSelected",
-                      })
+                      if (!orderId) return;
+                      await updateDoc(doc(db, 'Orders', orderId), {
+                        status: 'itemsSelected',
+                      });
                     } catch (error) {
                       showNotification({
                         id: `reg-err-${Math.random()}`,
                         autoClose: 5000,
-                        title: "Error",
-                        message: "Something went wrong try agagin",
-                        color: "red",
+                        title: 'Error',
+                        message: 'Something went wrong try agagin',
+                        color: 'red',
                         icon: <IconX />,
                         loading: false,
                       });
@@ -147,11 +174,7 @@ export default function Booking() {
                 >
                   Back
                 </Button>
-                <Button
-                  loading={loading}
-                  loaderPosition="right"
-                  type='submit'
-                >
+                <Button loading={loading} loaderPosition="right" type="submit">
                   Confirm
                 </Button>
               </div>
@@ -193,116 +216,122 @@ export const loadScript = (src: string) => {
   });
 };
 
-  // const dateTimeIn24Format = (selectedTime: string) => {
-  //   if (!date) return;
-  //   let time = Number(selectedTime.slice(0, -2));
+export const formattedDate = (date: Date): string => {
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const monthString = month < 10 ? `0${month}` : `${month}`;
+  return `${monthString}${year}`;
+};
 
-  //   if (selectedTime[selectedTime.length - 2] === 'P') {
-  //     time += 12;
-  //     time %= 24;
-  //   }
-  //   const eventDateTime = new Date(date).setHours(time);
+// const dateTimeIn24Format = (selectedTime: string) => {
+//   if (!date) return;
+//   let time = Number(selectedTime.slice(0, -2));
 
-  //   return new Date(eventDateTime);
-  // };
+//   if (selectedTime[selectedTime.length - 2] === 'P') {
+//     time += 12;
+//     time %= 24;
+//   }
+//   const eventDateTime = new Date(date).setHours(time);
 
-  // function convertTZ(date: string, tzString: string) {
-  //   return new Date(
-  //     (typeof date === 'string' ? new Date(date) : date).toLocaleString(
-  //       'en-US',
-  //       { timeZone: tzString }
-  //     )
-  //   );
-  // }
+//   return new Date(eventDateTime);
+// };
 
-  // const handelBookSlot = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const startDateTime = dateTimeIn24Format(value);
-  //     console.log(startDateTime);
+// function convertTZ(date: string, tzString: string) {
+//   return new Date(
+//     (typeof date === 'string' ? new Date(date) : date).toLocaleString(
+//       'en-US',
+//       { timeZone: tzString }
+//     )
+//   );
+// }
 
-  //     await axios.post(
-  //       'https://asia-south1-miurac-pam.cloudfunctions.net/createEvent',
-  //       {
-  //         startDateTime: startDateTime,
-  //         endDateTime: startDateTime,
-  //       }
-  //     );
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setLoading(false);
-  //     seterror(true);
-  //     setTimeout(() => {
-  //       seterror(false);
-  //     }, 5000);
-  //     console.log(error);
-  //   }
-  // };
+// const handelBookSlot = async () => {
+//   try {
+//     setLoading(true);
+//     const startDateTime = dateTimeIn24Format(value);
+//     console.log(startDateTime);
 
+//     await axios.post(
+//       'https://asia-south1-miurac-pam.cloudfunctions.net/createEvent',
+//       {
+//         startDateTime: startDateTime,
+//         endDateTime: startDateTime,
+//       }
+//     );
+//     setLoading(false);
+//   } catch (error) {
+//     setLoading(false);
+//     seterror(true);
+//     setTimeout(() => {
+//       seterror(false);
+//     }, 5000);
+//     console.log(error);
+//   }
+// };
 
-  // const handelConfirm = async () => {
-  //   try {
-  //     handelBookSlot();
-  //   } catch (error) {
-  //     setLoading(false);
-  //     seterror(true);
-  //   }
-  // };
+// const handelConfirm = async () => {
+//   try {
+//     handelBookSlot();
+//   } catch (error) {
+//     setLoading(false);
+//     seterror(true);
+//   }
+// };
 
-  // const getUpCommingEvents = async () => {
-  //   try {
-  //     if (!date) return;
-  //     const res = await axios.get(
-  //       'https://asia-south1-miurac-pam.cloudfunctions.net/getUpCommingEvents'
-  //     );
-  //     const data = res.data;
-  //       console.log('data',data);
+// const getUpCommingEvents = async () => {
+//   try {
+//     if (!date) return;
+//     const res = await axios.get(
+//       'https://asia-south1-miurac-pam.cloudfunctions.net/getUpCommingEvents'
+//     );
+//     const data = res.data;
+//       console.log('data',data);
 
-  //     setUpcommingSlots(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+//     setUpcommingSlots(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-  // useEffect(() => {
-  //   getUpCommingEvents();
-  // }, []);
+// useEffect(() => {
+//   getUpCommingEvents();
+// }, []);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       if (!date) return;
-  //       const timeSlotBooked = [false, false, false];
-  //       upcommingSlots?.events?.forEach((event: any) => {
-  //         if (new Date(event.start.dateTime).getDate() === date.getDate()) {
-  //           const timeString = convertTZ(
-  //             event.start.dateTime,
-  //             event.start.timeZone
-  //           )
-  //             .toLocaleString()
-  //             .split(',')[1];
+// useEffect(() => {
+//   (async () => {
+//     try {
+//       if (!date) return;
+//       const timeSlotBooked = [false, false, false];
+//       upcommingSlots?.events?.forEach((event: any) => {
+//         if (new Date(event.start.dateTime).getDate() === date.getDate()) {
+//           const timeString = convertTZ(
+//             event.start.dateTime,
+//             event.start.timeZone
+//           )
+//             .toLocaleString()
+//             .split(',')[1];
 
-  //           const timeVal =
-  //             timeString.split(' ')[1].split(':')[0] +
-  //             ' ' +
-  //             timeString.split(' ')[2];
-  //           const newTimeSlot = timeSlot.map((time, i) => {
-  //             if (timeVal === time.start) {
-  //               timeSlotBooked[i] = true;
-  //             }
-  //             return time;
-  //           });
-  //           setTimeSlot(newTimeSlot);
-  //         }
-  //       });
-  //       setTimeSlot(
-  //         timeSlot.map((item, i) => {
-  //           item.disabled = timeSlotBooked[i];
-  //           return item;
-  //         })
-  //       );
-  //     } catch (error) {
-  //       console.log('error', error);
-  //     }
-  //   })();
-  // }, [date]);
+//           const timeVal =
+//             timeString.split(' ')[1].split(':')[0] +
+//             ' ' +
+//             timeString.split(' ')[2];
+//           const newTimeSlot = timeSlot.map((time, i) => {
+//             if (timeVal === time.start) {
+//               timeSlotBooked[i] = true;
+//             }
+//             return time;
+//           });
+//           setTimeSlot(newTimeSlot);
+//         }
+//       });
+//       setTimeSlot(
+//         timeSlot.map((item, i) => {
+//           item.disabled = timeSlotBooked[i];
+//           return item;
+//         })
+//       );
+//     } catch (error) {
+//       console.log('error', error);
+//     }
+//   })();
+// }, [date]);

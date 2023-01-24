@@ -38,9 +38,10 @@ export interface CostType {
       name: string;
     };
   };
-  distanceCostPerKM: number;
+  distanceCostPerKM: homeType;
   packingCostPerCubeM: number;
 }
+export type homeType = {[name in (typeof HouseTypes)[number]]:number}
 
 export type legalType = {
   legalName: string;

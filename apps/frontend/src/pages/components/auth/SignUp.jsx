@@ -20,10 +20,7 @@ const SignUp = (props) => {
 
   const handleSignup = () => {
     createUserWithEmailAndPassword(auth, emailValue, passwordValue)
-      .then((data) => {
-        console.log(data.user.email);
-      });
-    signInWithEmailAndPassword(auth, emailValue, passwordValue);
+    // signInWithEmailAndPassword(auth, emailValue, passwordValue);
     navigate('/');
   };
 

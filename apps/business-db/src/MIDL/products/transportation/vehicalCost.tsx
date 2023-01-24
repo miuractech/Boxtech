@@ -16,16 +16,16 @@ import { Modal } from '@mantine/core';
 import { useState } from 'react';
 import { useForm } from '@mantine/form';
 import { doc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
-import { defaultErrorMessage, costRef } from 'apps/business-db/src/constants';
+import { defaultErrorMessage, costRef } from '../../../constants';
 import { showNotification } from '@mantine/notifications';
-import { environment } from 'apps/business-db/src/environments/environment.prod';
+import { environment } from '../../../environments/environment.prod';
 import { Title } from '@mantine/core';
 import { Select } from '@mantine/core';
 import { Text } from '@mantine/core';
 import { TextInput } from '@mantine/core';
-import { AddButton } from 'apps/business-db/src/utils/AddButton';
+import { AddButton } from '../../../utils/AddButton';
 import { useEffect } from 'react';
-import { setCost } from 'apps/business-db/src/store/categorySlice';
+import { setCost } from '../../../store/categorySlice';
 
 const initialValues = {
   name: '',

@@ -39,7 +39,7 @@ export default function LiftFacilityPage() {
           if (!orderId) return
           setLoading(true)
           await updateDoc(doc(db, "Orders", orderId), {
-            queryDetails: form.values,
+            queryDetails: {...values,coverAgeAmount:values.coverAge?values.coverAgeAmount:0},
             status: "queryComplete",
           })
         } catch (error) {

@@ -1,5 +1,5 @@
 import { categories } from '@boxtech/shared-constants';
-import { ActionIcon, Button } from '@mantine/core';
+import { ActionIcon, Button, LoadingOverlay } from '@mantine/core';
 import { Text } from '@mantine/core';
 import { TextInput } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
@@ -22,7 +22,7 @@ import { RootState } from '../../store';
 let data: categoryItemType[] = [];
 export default function CategoryBar() {
   const sectionRef = useRef<any>();
-  const [categoryList, setCategoryList] = useState<categoryItemType[]>([]);
+  const [categoryList, setCategoryList] = useState<categoryItemType[] | undefined>(undefined);
   const [activeCat, setActiveCat] = useState(categories[0].name);
   const [searchItem, setSearchItem] = useState('');
   const { orderDetails } = useSelector(
@@ -60,7 +60,7 @@ export default function CategoryBar() {
       setCategoryList(data.filter((item) => item['Name']?.match(regex)));
     }
   }, [searchItem]);
-
+  if(categoryList === undefined) return <LoadingOverlay visible />
   return (
     <div>
       <div className="flex justify-items-center items-center">

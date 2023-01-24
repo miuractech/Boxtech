@@ -10,7 +10,6 @@ export const UserDetails = () => {
     (state: RootState) => state.orderDetails
   );
   const quotation = orderDetails.quotation as QuotationDataType;
-  console.log(new Date(quotation.to.movementDate.seconds));
   
   return (
     <div className="space-y-5">

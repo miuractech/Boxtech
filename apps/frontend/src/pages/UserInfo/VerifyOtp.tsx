@@ -19,6 +19,7 @@ type Props = {
     success: (user: User) => void,
     failure: (error: FirebaseError) => void
   ) => void;
+  sendOtp: (phone: string, success: () => void, failure: () => void) => Promise<void>;
   id: string | null;
   data:{
     name: string;
@@ -27,7 +28,7 @@ type Props = {
 }
 };
 
-export default function VerifyOtp({ verifyOtp, id, data }: Props) {
+export default function VerifyOtp({ verifyOtp, id, data, sendOtp }: Props) {
   const matches = useMediaQuery('(min-width: 768px)');
   const { orderId } = useParams();
   const [loading, setLoading] = useState(false);
@@ -53,11 +54,11 @@ export default function VerifyOtp({ verifyOtp, id, data }: Props) {
         userId: user.uid,
       })
       await updateProfile(user, { displayName: data.name });
-        await signOut(auth);
       await updateDoc(doc(db, 'Orders', orderId), {
         status: 'userVerified',
         userId: user.uid,
       });
+      await signOut(auth);
       setLoading(false);
     } catch (error) {
       showNotification({
@@ -73,7 +74,6 @@ export default function VerifyOtp({ verifyOtp, id, data }: Props) {
   };
 
   const failure = (error: FirebaseError) => {
-    console.log(error);
     setOTPerror(error);
     setLoading(false);
   };
@@ -93,7 +93,6 @@ export default function VerifyOtp({ verifyOtp, id, data }: Props) {
             setLoading(true);
             verifyOtp(values.otp, success, failure);
           } catch (error) {
-            console.log(error);
             showNotification({
               id: `reg-err-${Math.random()}`,
               autoClose: 5000,
@@ -132,7 +131,19 @@ export default function VerifyOtp({ verifyOtp, id, data }: Props) {
           </Text>
         )}
         <div className="text-right">
-          <Button size="xs" variant="white">
+          <Button size="xs" onClick={()=>sendOtp(`+91${data.phoneNumber}`,()=>{
+          return
+          },()=>{
+            showNotification({
+              id: `reg-err-${Math.random()}`,
+              autoClose: 5000,
+              title: 'Error',
+              message: 'Something went wrong try again',
+              color: 'red',
+              icon: <IconX />,
+              loading: false,
+            });
+          })} variant="white">
             Resend OTP?
           </Button>
         </div>

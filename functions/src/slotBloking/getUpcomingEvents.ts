@@ -96,7 +96,7 @@ export const createEvent = functions
                     },
                     function(err: any, event: any) {
                       if (err) {
-                        console.log(err + "dhjksvbhjksdv");
+                        console.log(err );
                       }
 
                       res.json(

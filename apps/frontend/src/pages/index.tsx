@@ -1,5 +1,5 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import React, { useEffect } from 'react';
+import React, { lazy, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../configs/firebaseconfig';
 import { showNotification } from '@mantine/notifications';
@@ -7,15 +7,14 @@ import { IconX } from '@tabler/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { OrderType, setOrderDetails } from '../store/orderSlice';
-import Landing from './Landing';
-import Items from './items';
-import LiftFacilityPage from './LiftFacilityPage';
-import UserInfo from './UserInfo';
-import Booking from './Booking';
 import Lottie from 'lottie-react';
 import truck from '../assets/json/truck-loading.json';
-import Quoatation from './Quoatation';
-import SuccessPage from './SuccessPage';
+const Items = lazy(() => import('./items'));
+const LiftFacilityPage = lazy(() => import('./LiftFacilityPage'));
+const UserInfo = lazy(() => import('./UserInfo'));
+const Booking = lazy(() => import('./Booking'));
+const Quoatation = lazy(() => import('./Quoatation'));
+const SuccessPage = lazy(() => import('./SuccessPage'));
 
 export const Index = () => {
   const { orderId } = useParams();
@@ -45,7 +44,6 @@ export const Index = () => {
 
     return () => unsub();
   }, []);
-  console.log(orderDetails);
 
   if (orderDetails) {
     switch (orderDetails.status) {

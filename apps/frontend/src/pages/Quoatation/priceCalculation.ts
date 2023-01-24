@@ -1,8 +1,27 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CostType, KYCType, generalInfo } from '@boxtech/shared-constants';
 import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { db } from '../../configs/firebaseconfig';
-import { GooglePlacesType } from '../Landing';
+import { db, functions } from '../../configs/firebaseconfig';
+import { GooglePlacesType, masterFormType } from '../Landing';
+import { httpsCallable } from 'firebase/functions';
+interface DistanceResponse {
+  data:{
+    distance: string;
+    data:any
+  }
+}
+const calculateDistance = async (placeId1:string,placeId2:string) => {
+  try {
+    // Create a callable function reference for the getDistance function
+    const getDistance = httpsCallable(functions, 'getDistance');
+    // Call the getDistance function with the place IDs as arguments
+    const result = await getDistance({ placeId1, placeId2 }) as DistanceResponse;    
+    return result.data.distance.replace(",","")
+  } catch (error) {
+    console.error(error);
+    return ""
+  }
+};
 
 export const priceCalculation = async (
   orderDetails: OrderDetailsType,
@@ -23,18 +42,16 @@ export const priceCalculation = async (
         const l = Number(item.Length);
         const h = Number(item.Height);
         const cc = l * b * h * item.quantity;
+        console.log(cc,b,l,h,item);
+        
         return (totalCC = totalCC + cc);
       });
-      console.log({
-        tes: UserDetails.exists(),
-        orderDetails,
-        UserDetails: UserDetails.data(),
-        kycDetails: KycDetails.data(),
-      });
-      if (UserDetails.exists()) {
+      if (UserDetails.exists() && orderDetails.directions.from.placeId && orderDetails.directions.to.placeId && orderDetails.directions.config) {
         const userDetails = UserDetails.data() as UserDetailsType;
         const kycDetails = KycDetails.data() as KYCType;
         detsils(userDetails);
+        const calculatedDistance = await calculateDistance(orderDetails.directions.from.placeId,orderDetails.directions.to.placeId)
+        const distance = parseFloat(calculatedDistance)??0
         const quotationData = {
           header: {
             logo: clientData.logo,
@@ -61,7 +78,7 @@ export const priceCalculation = async (
           },
           selectedItems: orderDetails.selectedItems,
           labourCharges: {
-            lift: orderDetails.queryDetails.lift,
+            lift: orderDetails.directions.from.hasLift || orderDetails.directions.to.hasLift,
             config: orderDetails.directions.config,
             //@ts-ignore
             manPower:
@@ -108,9 +125,9 @@ export const priceCalculation = async (
               clientCostData.vehicalCost[orderDetails.directions.config].cost,
           },
           costPerKM: {
-            distance: 100,
-            perKM: clientCostData.distanceCostPerKM,
-            amount: clientCostData.distanceCostPerKM * 100,
+            distance:distance,
+            perKM: clientCostData.distanceCostPerKM[orderDetails.directions.config],
+            amount: clientCostData.distanceCostPerKM[orderDetails.directions.config] * distance ,
           },
           statisticalCharges: {
             amount: 220,
@@ -123,59 +140,15 @@ export const priceCalculation = async (
           surCharge: {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            totalAmount:
-              (orderDetails.queryDetails.lift
-                ? //@ts-ignore
-                  clientCostData.labourCost[orderDetails.directions.config].cost
-                : //@ts-ignore
-                  clientCostData.labourCost[orderDetails.directions.config]
-                    .cost +
-                  //@ts-ignore
-                  (clientCostData.labourCost[orderDetails.directions.config]
-                    .cost /
-                    //@ts-ignore
-                    clientCostData.labourCost[orderDetails.directions.config]
-                      .labourCount) *
-                    2) +
-              //@ts-ignore
-              clientCostData.packingCostPerCubeM * totalCC +
-              //@ts-ignore
-              clientCostData.vehicalCost[orderDetails.directions.config].cost +
-              clientCostData.distanceCostPerKM * 100 +
-              (orderDetails.queryDetails.coverAge
-                ? orderDetails.queryDetails.coverAgeAmount * 0.03
-                : 0),
+            totalAmount:0,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            amount:
-              ((orderDetails.queryDetails.lift
-                ? //@ts-ignore
-                  clientCostData.labourCost[orderDetails.directions.config].cost
-                : //@ts-ignore
-                  clientCostData.labourCost[orderDetails.directions.config]
-                    .cost +
-                  //@ts-ignore
-                  (clientCostData.labourCost[orderDetails.directions.config]
-                    .cost /
-                    //@ts-ignore
-                    clientCostData.labourCost[orderDetails.directions.config]
-                      .labourCount) *
-                    2) +
-                //@ts-ignore
-                clientCostData.packingCostPerCubeM * totalCC +
-                //@ts-ignore
-                clientCostData.vehicalCost[orderDetails.directions.config]
-                  .cost +
-                clientCostData.distanceCostPerKM * 100 +
-                (orderDetails.queryDetails.coverAge
-                  ? orderDetails.queryDetails.coverAgeAmount * 0.03
-                  : 0)) *
-              0.1,
+            amount:0
           },
           subTotal: {
             //@ts-ignore
             amount:
-              (orderDetails.queryDetails.lift
+              (orderDetails.directions.from.hasLift || orderDetails.directions.to.hasLift
                 ? //@ts-ignore
                   clientCostData.labourCost[orderDetails.directions.config].cost
                 : //@ts-ignore
@@ -192,14 +165,14 @@ export const priceCalculation = async (
               clientCostData.packingCostPerCubeM * totalCC +
               //@ts-ignore
               clientCostData.vehicalCost[orderDetails.directions.config].cost +
-              clientCostData.distanceCostPerKM * 100 +
+              clientCostData.distanceCostPerKM[orderDetails.directions.config] * distance +
               (orderDetails.queryDetails.coverAge
                 ? orderDetails.queryDetails.coverAgeAmount * 0.03
                 : 0),
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             GST: (
-              ((orderDetails.queryDetails.lift
+              ((orderDetails.directions.from.hasLift || orderDetails.directions.to.hasLift
                 ? //@ts-ignore
                   clientCostData.labourCost[orderDetails.directions.config].cost
                 : //@ts-ignore
@@ -218,7 +191,7 @@ export const priceCalculation = async (
                 //@ts-ignore
                 clientCostData.vehicalCost[orderDetails.directions.config]
                   .cost +
-                clientCostData.distanceCostPerKM * 100 +
+                clientCostData.distanceCostPerKM[orderDetails.directions.config] * distance +
                 (orderDetails.queryDetails.coverAge
                   ? orderDetails.queryDetails.coverAgeAmount * 0.03
                   : 0)) *
@@ -226,9 +199,8 @@ export const priceCalculation = async (
             ).toFixed(2),
           },
           grandTotal: {
-            //@ts-ignore
             amount:
-              (orderDetails.queryDetails.lift
+              (orderDetails.directions.from.hasLift || orderDetails.directions.to.hasLift
                 ? //@ts-ignore
                   clientCostData.labourCost[orderDetails.directions.config].cost
                 : //@ts-ignore
@@ -245,7 +217,7 @@ export const priceCalculation = async (
               clientCostData.packingCostPerCubeM * totalCC +
               //@ts-ignore
               clientCostData.vehicalCost[orderDetails.directions.config].cost +
-              clientCostData.distanceCostPerKM * 100 +
+              clientCostData.distanceCostPerKM[orderDetails.directions.config] * distance +
               (orderDetails.queryDetails.coverAge
                 ? orderDetails.queryDetails.coverAgeAmount * 0.03
                 : 0) +
@@ -267,7 +239,7 @@ export const priceCalculation = async (
                 //@ts-ignore
                 clientCostData.vehicalCost[orderDetails.directions.config]
                   .cost +
-                clientCostData.distanceCostPerKM * 100 +
+                clientCostData.distanceCostPerKM[orderDetails.directions.config] * distance +
                 (orderDetails.queryDetails.coverAge
                   ? orderDetails.queryDetails.coverAgeAmount * 0.03
                   : 0)) *
@@ -296,9 +268,9 @@ export interface BookingInfo {
 }
 
 export interface QueryDetail {
-  lift: boolean;
+  // lift: boolean;
   coverAgeAmount: number;
-  floorNumber: number;
+  // floorNumber: number;
   coverAge: boolean;
 }
 
@@ -369,7 +341,7 @@ export interface OrderDetailsType {
   bookingInfo: BookingInfo;
   queryDetails: QueryDetail;
   selectedItems: SelectedItem[];
-  directions: Direction;
+  directions: masterFormType;
   userId: string;
   status: string;
   createdAt: CreatedAt;

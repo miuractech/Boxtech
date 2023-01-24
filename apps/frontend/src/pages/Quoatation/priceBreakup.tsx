@@ -1,5 +1,10 @@
 /* eslint-disable no-lone-blocks */
-import { clientInfoType, CostType, generalInfo, orderType } from '@boxtech/shared-constants';
+import {
+  clientInfoType,
+  CostType,
+  generalInfo,
+  orderType,
+} from '@boxtech/shared-constants';
 import { Checkbox, Divider, Text, Button } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconX } from '@tabler/icons';
@@ -20,13 +25,20 @@ import {
   QuotationDataType,
   UserDetailsType,
 } from './priceCalculation';
-import { doc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  deleteField,
+  doc,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import spacetime from 'spacetime';
+import { formattedDate } from '../Booking';
 
 export const PriceBreakup = ({
   userDetails,
   clientData,
-  readOnly
+  readOnly,
 }: {
   userDetails: UserDetailsType | null;
   clientData: generalInfo | null;
@@ -62,15 +74,15 @@ export const PriceBreakup = ({
       <Divider />
       <FOVcompo />
       <Divider />
-      <Surcharge />
-      <Divider />
+      {/* <Surcharge /> */}
+      {/* <Divider /> */}
       <SubTotal />
       <Divider size="sm" color="black" />
       <GrandTotal />
       <Divider size="sm" color="black" />
-      {readOnly ?
-      <div className='h-24' />
-      :
+      {readOnly ? (
+        <div className="h-24" />
+      ) : (
         <div>
           <div className="mt-5">
             <Text className="font-semibold text-center">
@@ -93,12 +105,38 @@ export const PriceBreakup = ({
           <div className="my-5">
             <BackandNextButton
               backButton={async () => {
+                console.log(orderDetails.bookingInfo.date.toDate());
+
                 try {
                   if (!orderId) return;
-                  await updateDoc(doc(db, 'Orders', orderId), {
+                  const batch = writeBatch(db);
+                  batch.set(
+                    doc(
+                      collection(
+                        db,
+                        'Booking',
+                        orderDetails.clientId,
+                        formattedDate(orderDetails.bookingInfo.date.toDate())
+                      ),
+                      'bookedSlot'
+                    ),
+                    {
+                      [orderDetails.bookingInfo.date
+                        .toDate()
+                        .getDate()
+                        .toString()]: {
+                        [orderDetails.bookingInfo.timeSlot]: true,
+                      },
+                    }
+                  );
+                  batch.update(doc(db, 'Orders', orderId), {
+                    quotation: deleteField(),
                     status: 'userVerified',
                   });
+                  await batch.commit();
                 } catch (error) {
+                  console.log(error);
+
                   showNotification({
                     id: `reg-err-${Math.random()}`,
                     autoClose: 5000,
@@ -123,7 +161,7 @@ export const PriceBreakup = ({
                     orderId: orderId,
                     name: userDetails.name,
                     storeName: clientData.brandName,
-                    clientPhone:clientData.whatsapp,
+                    clientPhone: clientData.whatsapp,
                     date: spacetime(orderDetails.createdAt.seconds).format(
                       'nice'
                     ),
@@ -132,8 +170,8 @@ export const PriceBreakup = ({
                     quotationLink: `https://boxtech.miurac.com/order/${orderId}/quotation`,
                     phone: '+91' + userDetails.phoneNumber,
                   };
-                  
-                  const response = await sendTemp(data);
+
+                  await sendTemp(data);
                 } catch (error: any) {
                   showNotification({
                     id: `reg-err-${Math.random()}`,
@@ -149,7 +187,7 @@ export const PriceBreakup = ({
             />
           </div>
         </div>
-      }
+      )}
     </div>
   );
 };
@@ -203,8 +241,8 @@ const LabourCharges = () => {
           </div>
         </div>
         <div className="p-1">
-          <Text className="text-sm font-medium">
-            ₹{quotation.labourCharges.amount}
+          <Text className="text-sm font-medium ">
+            ₹{quotation.labourCharges.amount.toFixed(2)}
           </Text>
         </div>
       </div>
@@ -248,8 +286,10 @@ const PackingCharges = () => {
       <div className="">
         <Text className="text-sm font-medium">
           ₹
-          {quotation.packingCharges.totalCubeM *
-            quotation.packingCharges.packingCostPerCubeM}
+          {(
+            quotation.packingCharges.totalCubeM *
+            quotation.packingCharges.packingCostPerCubeM
+          ).toFixed(2)}
         </Text>
       </div>
     </div>
@@ -286,7 +326,7 @@ const TransportationCharges = () => {
       </div>
       <div className="">
         <Text className="text-sm font-medium">
-          ₹{quotation.TransportationCost.amount}
+          ₹{quotation.TransportationCost.amount.toFixed(2)}
         </Text>
       </div>
     </div>
@@ -314,7 +354,7 @@ const CostPerKm = () => {
       </div>
       <div className="">
         <Text className="text-sm font-medium">
-          ₹{quotation.costPerKM.amount}
+          ₹{quotation.costPerKM.amount.toFixed(2)}
         </Text>
       </div>
     </div>
@@ -333,7 +373,7 @@ const StatisticalCharges = () => {
       </div>
       <div className="">
         <Text className="font-medium">
-          ₹{quotation.statisticalCharges.amount}
+          ₹{quotation.statisticalCharges.amount.toFixed(2)}
         </Text>
       </div>
     </div>
@@ -354,7 +394,7 @@ const FOVcompo = () => {
         </Text>
       </div>
       <div className="">
-        <Text className="font-medium">₹{quotation.fov.amount}</Text>
+        <Text className="font-medium">₹{quotation.fov.amount.toFixed(2)}</Text>
       </div>
     </div>
   );
@@ -385,7 +425,6 @@ const SubTotal = () => {
     (state: RootState) => state.orderDetails
   );
   const quotation = orderDetails.quotation as QuotationDataType;
-
   return (
     <div className="grid grid-cols-5 text-sm my-1">
       <div className="py-1 col-span-4 space-y-2">
@@ -393,7 +432,7 @@ const SubTotal = () => {
         <Text className="w-3/4">Tax( GST ): 18%</Text>
       </div>
       <div className="space-y-2">
-        <Text>₹{quotation.subTotal.amount}</Text>
+        <Text>₹{quotation.subTotal.amount.toFixed(2)}</Text>
         <Text>₹{quotation.subTotal.GST}</Text>
       </div>
     </div>
@@ -412,7 +451,7 @@ const GrandTotal = () => {
       </div>
       <div className="">
         <Text className="text-base font-semibold">
-          ₹{quotation.grandTotal.amount}
+          ₹{quotation.grandTotal.amount.toFixed(2)}
         </Text>
       </div>
     </div>

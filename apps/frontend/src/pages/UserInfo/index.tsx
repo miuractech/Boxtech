@@ -37,7 +37,7 @@ export default function UserInfo() {
       case 'phone':
         return <FormUserInfo sendOtp={sendOtp} form={form} setId={setId} />;
       case 'otp':
-        return <VerifyOtp verifyOtp={verifyOtp} data={form.values} id={id} />;
+        return <VerifyOtp verifyOtp={verifyOtp} sendOtp={sendOtp}  data={form.values} id={id} />;
       default:
         return <>unknown error</>;
     }

@@ -18,7 +18,6 @@ const SecondCnt = () => {
         }
     }, [inView])
 
-    console.log(first);
     return (
         <div id="cont" className='md:h-[70vh] w-full flex flex-col-reverse md:flex-row h-auto'>
             <div className='w-full md:w-1/2' >
