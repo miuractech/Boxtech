@@ -1,0 +1,84 @@
+{
+  "name": "business-db",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/business-db/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/business-db",
+        "index": "apps/business-db/src/index.html",
+        "baseHref": "/",
+        "main": "apps/business-db/src/main.tsx",
+        "polyfills": "apps/business-db/src/polyfills.ts",
+        "tsConfig": "apps/business-db/tsconfig.app.json",
+        "assets": [
+          "apps/business-db/src/favicon.ico",
+          "apps/business-db/src/assets"
+        ],
+        "styles": ["apps/business-db/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/business-db/src/environments/environment.ts",
+              "with": "apps/business-db/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "business-db:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "business-db:build:development"
+        },
+        "production": {
+          "buildTarget": "business-db:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/business-db/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/business-db"],
+      "options": {
+        "jestConfig": "apps/business-db/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
