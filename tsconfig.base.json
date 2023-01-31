@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@boxtech/miurac-image": ["libs/miurac-image/src/index.ts"],
+      "@boxtech/shared-constants": ["libs/shared-constants/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

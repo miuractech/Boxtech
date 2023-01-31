@@ -1,1 +1,12 @@
+@import url(https://fonts.googleapis.com/css?family=Manrope:200,300,regular,500,600,700,800);
+@tailwind components;
+/* @tailwind base; */
+@tailwind utilities;
 /* You can add global styles to this file, and also import other style files */
+*{
+    font-family: 'Manrope';
+}
+body{
+    padding: 0;
+    margin: 0;
+}
