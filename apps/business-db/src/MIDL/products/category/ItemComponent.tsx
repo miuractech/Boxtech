@@ -4,13 +4,14 @@ import { IconCheck, IconX, IconEdit } from '@tabler/icons';
 import { defaultErrorMessage } from '../../../constants';
 import { environment } from '../../../environments/environment.prod';
 import { doc, updateDoc } from 'firebase/firestore';
-import { CatergoryType, setCategory } from '../../../store/categorySlice';
+import { setCategory } from '../../../store/categorySlice';
 import { db } from '../../../configs/firebaseconfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconGridDots } from '@tabler/icons';
 import React from 'react';
+import { CatergoryType } from '@boxtech/shared-constants';
 export const ItemComponent = ({
   cat,
   edit,

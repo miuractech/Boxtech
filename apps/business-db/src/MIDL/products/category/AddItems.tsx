@@ -20,9 +20,10 @@ import { RootState } from '../../../store';
 import { v4 as uuidv4 } from 'uuid';
 import {
   addCategory,
-  CatergoryType,
+  // CatergoryType,
   setCategory,
 } from '../../../store/categorySlice';
+import { CatergoryType } from '@boxtech/shared-constants';
 
 export const AddItems = ({
   setModal,
@@ -93,6 +94,7 @@ export const AddItems = ({
             const docRef = doc(db, 'Categories', editDetails.id);
             await updateDoc(docRef, {
               ...values,
+              clientId: user?.uid,
               updatedAt: serverTimestamp(),
             });
             const copy = [...category];

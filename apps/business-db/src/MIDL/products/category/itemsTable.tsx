@@ -7,7 +7,6 @@ import {
   LoadingOverlay,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { CatergoryType } from '../../../store/categorySlice';
 import { AddButton } from '../../../utils/AddButton';
 import React, { useState, useEffect } from 'react';
 import {
@@ -29,6 +28,7 @@ import { doc, writeBatch } from 'firebase/firestore';
 import { db } from '../../../configs/firebaseconfig';
 import { AddItems } from './AddItems';
 import { ItemComponent } from './ItemComponent';
+import { CatergoryType } from '@boxtech/shared-constants';
 type Props = {
   section: string;
   isReodrded: boolean;

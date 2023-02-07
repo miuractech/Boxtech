@@ -22,8 +22,9 @@ import { clientInfoType, setClient } from '../store/clientSlice';
 import { environment } from '../environments/environment';
 import {MiuracImage} from "@boxtech/miurac-image"
 import { app,  db } from '../configs/firebaseconfig';
-import { CostType, initialCost } from '../store/categorySlice';
+import { initialCost } from '../store/categorySlice';
 import { useNavigate } from 'react-router-dom';
+import { CostType } from '@boxtech/shared-constants';
 const schema = yup.object().shape({
   corporateName: yup
     .string()

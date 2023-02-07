@@ -1,4 +1,4 @@
-import { HouseTypes } from '@boxtech/shared-constants'
+import { CatergoryType, CostType, HouseTypes } from '@boxtech/shared-constants'
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface categoryState {
@@ -31,43 +31,10 @@ export const CategorySlice = createSlice({
 export const { setCategory, addCategory, setCost } = CategorySlice.actions
 export default CategorySlice.reducer
 
-export interface CreatedAt {
-    seconds: number;
-    nanoseconds: number;
-}
 
-export interface CatergoryType {
-    Length: string;
-    enabled: boolean;
-    Price: string;
-    index: number;
-    Category: string;
-    createdAt: CreatedAt;
-    id: string;
-    Breadth: string;
-    createdBy: string;
-    Height: string;
-    Name: string;
-}
 
-export interface CostType {
-	clientId: string;
-    labourCost: {
-        [ name  in typeof HouseTypes[number] ] : {
-            labourCount:number,
-            cost:number
-        } 
-    },
-    vehicalCost: {
-        [ name  in typeof HouseTypes[number] ] : {
-            volumeinFtcube:number,
-            cost:number,
-            name:string
-        } 
-    },
-    distanceCostPerKM:number,
-    packingCostPerCubeM:number
-}
+
+
 
 export const initialCost:CostType = {
     clientId:'',

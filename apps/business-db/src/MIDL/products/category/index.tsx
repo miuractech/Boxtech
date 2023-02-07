@@ -1,3 +1,4 @@
+import { categories } from '@boxtech/shared-constants';
 import { SegmentedControl, Select } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import React, { useState } from 'react';
@@ -21,10 +22,10 @@ export default function Category() {
               setActiveTab(v)
             }}
             data={categories.map((i) => ({
-              name: i,
-              id: i,
-              label: i,
-              value: i,
+              name: i.name,
+              id: i.name,
+              label: <span className='flex items-center justify-center' >{i.icon}{i.name}</span>,
+              value: i.name,
             }))}
           />
         ) : (
@@ -35,7 +36,7 @@ export default function Category() {
                 setActiveTab(e);
               }
             }}
-            data={categories.map((i) => ({ value: i, label: i }))}
+            data={categories.map((i) => ({ value: i.name, label: i.name }))}
           />
         )}
         <div>
@@ -50,11 +51,3 @@ export default function Category() {
   );
 }
 
-const categories = [
-  'Furniture',
-  'Large Appliances',
-  'Small Appliances',
-  'Kitchen Items',
-  'IT Equipment',
-  'Misc',
-];

@@ -5,6 +5,13 @@ import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
 import useNetworkStatus from '../hooks/useNetworkStatus';
 import Landing from '../pages/Landing';
+import { Route, Routes } from 'react-router-dom';
+import Items from '../pages/items';
+import List from '../pages/items/list';
+import LiftFacilityPage from '../pages/LiftFacilityPage';
+import Quoatation from '../pages/Quoatation';
+import UserInfo from '../pages/UserInfo';
+import Booking from '../pages/Booking';
 
 export function App() {
   const { isLoaded } = useJsApiLoader({
@@ -21,8 +28,15 @@ export function App() {
     );
 
   return (
-    <div>
-     <Landing />
+    <div  >
+      <Routes>
+        <Route path="/:clientId" element={<Landing />} />
+        <Route path="/:clientId/items" element={<Items />} />
+        <Route path="/:clientId/list" element={<List />} />
+        <Route path="/:clientId/liftQuery" element={<LiftFacilityPage />} />
+        <Route path="/:clientId/userInfo" element={<UserInfo />} />
+        <Route path="/:clientId/bookings" element={<Booking />} />
+      </Routes>
     </div>
   );
 }
