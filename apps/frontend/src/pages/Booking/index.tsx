@@ -8,7 +8,7 @@ import { Notification } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
 import { useNavigate } from 'react-router-dom';
 // const timeSlot = [
@@ -113,7 +113,8 @@ export default function Booking() {
           endDateTime: startDateTime,
         }
       );
-      displayRazorpay(order.costDetails.grandTotal * 100);
+      // displayRazorpay(order.costDetails.grandTotal * 100);
+      navigate('/payment');
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -160,20 +161,21 @@ export default function Booking() {
         'https://asia-south1-miurac-pam.cloudfunctions.net/getUpCommingEvents'
       );
       const data = res.data;
-
+        console.log('data',data);
+        
       setUpcommingSlots(data);
     } catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
-    (async () => {
-      try {
-        await loadScript('https://checkout.razorpay.com/v1/checkout.js');
-      } catch (error) {
-        console.log('error', error);
-      }
-    })();
+    // (async () => {
+    //   try {
+    //     await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+    //   } catch (error) {
+    //     console.log('error', error);
+    //   }
+    // })();
     getUpCommingEvents();
   }, []);
 
@@ -221,7 +223,7 @@ export default function Booking() {
       }
     })();
   }, [date]);
-
+  const now = Timestamp.now().toDate()
   return (
     <div>
       <div className="w-full min-h-[80vh] bg-[#EDF2FF] flex justify-center items-center mt-5">
@@ -232,9 +234,11 @@ export default function Booking() {
               <div className="shadow-md inline-block p-1 mt-4">
                 <Calendar
                   value={date}
-                  minDate={dayjs(new Date()).toDate()}
+                  minDate={dayjs(now).toDate()}
+                  maxDate={dayjs(now).add(90,'day').toDate()}
                   onChange={setDate}
                   size="md"
+                  allowLevelChange={false}
                 />
               </div>
             </div>
@@ -262,9 +266,10 @@ export default function Booking() {
                   fullWidth
                   transitionDuration={500}
                   transitionTimingFunction="linear"
-                  color="blue"
+                  color="primary"
                   value={value}
-                  className="flex gap-7 bg-white"
+                  styles={{control:{borderWidth:0}}}
+                  className="flex gap-7 bg-white "
                   onChange={setValue}
                   data={timeSlot.map((item) => ({
                     label: item.start,

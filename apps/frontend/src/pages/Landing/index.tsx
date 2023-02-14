@@ -64,7 +64,7 @@ export default function Landing() {
                 className="mt-10"
                 fullWidth
                 onClick={() => {
-                  navigate(pathname + 'items');
+                  navigate(pathname + '/items');
                 }}
               >
                 Submit

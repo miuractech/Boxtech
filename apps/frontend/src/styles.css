@@ -38,3 +38,8 @@ body{
 html,body{
   background-color: #E5E5E5;
 }
+
+.mantine-1heapph:not(:first-of-type) {
+  border-style: none;
+  border-width: 0px;
+}
