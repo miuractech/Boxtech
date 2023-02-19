@@ -44,7 +44,7 @@ export default function usePhoneAuth(
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { clientId } = useParams();
-  const { name, phone, email } = useSelector(
+  const userInfo = useSelector(
     (state: RootState) => state.order.userInfo
   );
   const { user } = useSelector(
@@ -81,7 +81,7 @@ export default function usePhoneAuth(
   const sendOtp = async (phone: string) => {
     try {
       dispatch(setUserLoading());
-      console.log('otp func', phone);
+      console.log('otp func', phone, userInfo);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       const appVerifier = window.recaptchaVerifier;
@@ -113,7 +113,7 @@ export default function usePhoneAuth(
         const user = result.user;
         dispatch(setUser(user));
         const id = user.uid;
-        const userInfo = { name, email, phone };
+        const { name, email, phone } = userInfo;
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         localStorage.setItem('user', JSON.stringify(user));
         // await setDoc(doc(db, id, 'users'), {

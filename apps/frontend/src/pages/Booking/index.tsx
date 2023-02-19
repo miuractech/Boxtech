@@ -8,9 +8,10 @@ import { Notification } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { uuidv4 } from '@firebase/util';
 // const timeSlot = [
 //   { start: '6Am', end: '8Am' },
 //   { start: '11Am', end: '1Pm' },
@@ -26,7 +27,7 @@ export default function Booking() {
   const [value, setValue] = useState('11 AM');
   const navigate = useNavigate();
   const [upcommingSlots, setUpcommingSlots] = useState<any>();
-
+  const { clientId } = useParams()
   const { order } = useSelector((state: RootState) => state);
   const { name, phoneNumber, email, user } = useSelector(
     (state: RootState) => state.User
@@ -114,7 +115,7 @@ export default function Booking() {
         }
       );
       // displayRazorpay(order.costDetails.grandTotal * 100);
-      navigate('/payment');
+      // navigate(`/${clientId}/quotation`);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -128,7 +129,22 @@ export default function Booking() {
 
   const saveOrderInfo = async () => {
     if (!user) return;
-    await addDoc(collection(db, 'Orders'), {
+    console.log({
+      userid: user.uid,
+      status: 'Created',
+      timeStamp: serverTimestamp(),
+      from, to,
+      costDetails,
+      transportationCost,
+      config,
+      hasLiftFacility,
+      selectedItems,
+      ...userInfo,
+      floorNumber,
+      insurance
+    });
+    const id = uuidv4()
+    await setDoc(doc(db, 'Orders', id), {
       userid: user.uid,
       status: 'Created',
       timeStamp: serverTimestamp(),
@@ -142,6 +158,7 @@ export default function Booking() {
       floorNumber,
       insurance
     });
+    navigate(`/${clientId}/quotation/${id}`)
   };
 
   const handelConfirm = async () => {

@@ -14,10 +14,19 @@ export default function LiftFacilityPage() {
   const { hasLiftFacility, floorNumber, insurance } = useSelector(
     (state: RootState) => state.order
   );
+  const { user } = useSelector(
+    (state: RootState) => state.User
+  );
   const navigate = useNavigate();
   const params = useParams();
   const handelNextBtn = () => {
-    if (floorNumber) navigate(`/${params['clientId']}/userInfo`);
+    if (floorNumber) {
+      if (user) {
+        navigate(`/${params['clientId']}/bookings`)
+      } else {
+        navigate(`/${params['clientId']}/userInfo`)
+      }
+    };
   };
   const dispatch = useDispatch();
 

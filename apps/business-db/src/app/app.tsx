@@ -16,6 +16,8 @@ import Dashboard from '../dashboard';
 export function App() {
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state: RootState) => state.user);
+  console.log(user?.uid);
+
   useEffect(() => {
     const Unsubscribe = onAuthStateChanged(auth, async (cred) => {
       if (cred) {

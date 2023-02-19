@@ -9,9 +9,10 @@ import { Route, Routes } from 'react-router-dom';
 import Items from '../pages/items';
 import List from '../pages/items/list';
 import LiftFacilityPage from '../pages/LiftFacilityPage';
-import Quoatation from '../pages/Quoatation';
 import UserInfo from '../pages/UserInfo';
 import Booking from '../pages/Booking';
+import Quoatation from '../pages/Quoatation';
+import { useEffect } from 'react';
 
 export function App() {
   const { isLoaded } = useJsApiLoader({
@@ -19,6 +20,18 @@ export function App() {
     googleMapsApiKey: GoogleMapApiKey,
     libraries: ['places'],
   });
+
+  useEffect(() => {
+    const unloadCallback = (event: { preventDefault: () => void; returnValue: string; }) => {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    };
+
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, []);
+
 
   if (!isLoaded)
     return (
@@ -36,6 +49,7 @@ export function App() {
         <Route path="/:clientId/liftQuery" element={<LiftFacilityPage />} />
         <Route path="/:clientId/userInfo" element={<UserInfo />} />
         <Route path="/:clientId/bookings" element={<Booking />} />
+        <Route path="/:clientId/quotation/:id" element={<Quoatation />} />
       </Routes>
     </div>
   );

@@ -50,8 +50,8 @@ export default function FormUserInfo(props: propsType) {
     ),
   });
   return (
-    <form onSubmit={form.onSubmit(data=>{
-      setUserInfo(data)
+    <form onSubmit={form.onSubmit(data => {
+      dispatch(setUserInfo(data))
       sendOtp('+91'+data.phone)
       // console.log(data);
 
