@@ -12,6 +12,7 @@ import { Logout } from '../MIDL/Logout';
 import Products from '../MIDL/products';
 import { setClient } from '../store/clientSlice';
 import CompanyDetails from './companyDetails';
+import { Booking } from '../MIDL/Bookings';
 
 // type Props = {}
 
@@ -46,7 +47,8 @@ export default function Dashboard() {
   }, []);
   return <div>
     <NavBar >
-    <Routes>
+      <Routes>
+        <Route path='/' element={<Booking />} />
     <Route path="/products" element={<Products />} />
     <Route path="/settings" element={<CompanyDetails />} />
     <Route path="/Logout" element={<Logout />} />

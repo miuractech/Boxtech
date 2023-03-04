@@ -69,6 +69,8 @@ export default function Admin({}: Props) {
                   try {
                     await signInWithPopup(auth, provider);
                   } catch (error: any) {
+                    console.log(error);
+
                     showNotification({
                       id: `reg-err-${Math.random()}`,
                       autoClose: 5000,
