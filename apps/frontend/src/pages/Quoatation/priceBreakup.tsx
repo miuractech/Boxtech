@@ -1,15 +1,24 @@
 /* eslint-disable no-lone-blocks */
 import { clientInfoType, CostType, orderType } from '@boxtech/shared-constants'
 import { Checkbox, Divider, Text } from '@mantine/core'
+import { signOut } from 'firebase/auth'
 import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
+import usePhoneAuth from '../../component/auth'
 import BackandNextButton from '../../component/BackandNextButton'
+import { app, auth } from '../../configs/firebaseconfig'
+import { displayRazorpay, loadScript } from '../../hooks/razorpay'
+import { RootState } from '../../store'
 
 export const PriceBreakup = ({ clientData, data, clientCostData }: {
     data: orderType,
     clientData: clientInfoType,
     clientCostData: CostType
 }) => {
-
+    const navigate = useNavigate()
+    const { clientId, id } = useParams()
+    const dispatch = useDispatch()
     const [subTotal, setSubTotal] = useState({
         labourCharges: 0,
         packingCharges: 0,
@@ -19,7 +28,16 @@ export const PriceBreakup = ({ clientData, data, clientCostData }: {
         FOVcompo: 0,
         Surcharge: 0
     })
-
+const [termsCond, setTermsCond] = useState(false)
+    const handler = async (data: any) => {
+        console.log(data);
+        if (data.razorpay_payment_id) {
+            navigate(`/${clientId}/quotation/${id}/${data.razorpay_payment_id}/success`)
+            signOut(auth)
+        } else {
+            navigate("/failuer")
+        }
+    }
     return (
         <div>
             <LabourCharges data={data} clientCostData={clientCostData} setSubTotal={setSubTotal} />
@@ -32,9 +50,9 @@ export const PriceBreakup = ({ clientData, data, clientCostData }: {
             <Divider />
             <StatisticalCharges setSubTotal={setSubTotal} />
             <Divider />
-            <FOVcompo setSubTotal={setSubTotal} />
+            <FOVcompo setSubTotal={setSubTotal} subTotal={subTotal} />
             <Divider />
-            <Surcharge setSubTotal={setSubTotal} />
+            <Surcharge setSubTotal={setSubTotal} subTotal={subTotal} />
             <Divider />
             <SubTotal subTotal={subTotal} />
             <Divider size="sm" color="black" />
@@ -42,13 +60,29 @@ export const PriceBreakup = ({ clientData, data, clientCostData }: {
             <Divider size="sm" color="black" />
             <div className='mt-5'>
                 <Text className='font-semibold text-center'>Trems & Conditions</Text>
-                <Text className='text-sm'><Checkbox className='w-fit' /> *GSTIN details should be shared in advance, no changes will be made to final Invoice once generated from the system.
+                <Text className='text-sm flex gap-3'><Checkbox className='w-fit' onChange={(e) => setTermsCond(e.target.checked)} /> *GSTIN details should be shared in advance, no changes will be made to final Invoice once generated from the system.
                     * Quotation provided will be valid, if approved within Fifteen (15) days of submission and the move occurs within Thirty (30) days.
                     * Written confirmation of this quotation is required along with the payment of Gross Freight and GST(if applicable) prior to the commencement of packing, Settlement of balance payment will be prior to the dispatch of consignment from origin.
                     * Transit Time: (Excluding the pickup & delivery day)</Text>
             </div>
             <div className='my-5'>
-                <BackandNextButton handelNextBtn={() => console.log("djksg")} />
+                <BackandNextButton
+                    nextDisabled={!termsCond}
+                    handelNextBtn={() => {
+                    const sub = Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)
+                        const total = ((sub * 0.18) + sub) * 100
+                        console.log(total);
+                    const value = {
+                        amount: total,
+                        currency: "INR",
+                        image: clientData.logo,
+                        businessName: clientData.brandName,
+                        userName: data.name,
+                        userEmail: data.email,
+                        userPhone:data.phone
+                    }
+                    displayRazorpay(value ,handler)
+                } } />
             </div>
         </div>
     )
@@ -68,10 +102,23 @@ const LabourCharges = ({ clientCostData, data, setSubTotal }: {
         Surcharge: number;
     }>>
 }) => {
+    const {config} = useSelector((state:RootState)=>state.order)
     useEffect(() => {
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
         {/* @ts-ignore */ }
         setSubTotal(prev => ({ ...prev, labourCharges: data.hasLiftFacility ? clientCostData.labourCost[data.config].labourCount * clientCostData.labourCost[data.config].cost : (clientCostData.labourCost[data.config].labourCount + 2) * clientCostData.labourCost[data.config].cost }))
+    }, [])
+    console.log(config);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                await loadScript("https://checkout.razorpay.com/v1/checkout.js")
+            } catch (error) {
+                console.log('error', error);
+
+            }
+        })()
     }, [])
 
     return (
@@ -273,7 +320,7 @@ const StatisticalCharges = ({ setSubTotal }: {
     )
 }
 
-const FOVcompo = ({ setSubTotal }: {
+const FOVcompo = ({ setSubTotal,subTotal }: {
     setSubTotal: React.Dispatch<React.SetStateAction<{
         labourCharges: number;
         packingCharges: number;
@@ -282,28 +329,38 @@ const FOVcompo = ({ setSubTotal }: {
         StatisticalCharges: number;
         FOVcompo: number;
         Surcharge: number;
-    }>>
+    }>>,
+    subTotal: {
+        labourCharges: number;
+        packingCharges: number;
+        TransportationCharges: number;
+        CostPerKm: number;
+        StatisticalCharges: number;
+        FOVcompo: number;
+        Surcharge: number;
+    }
+
 }) => {
 
     useEffect(() => {
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
         {/* @ts-ignore */ }
-        setSubTotal(prev => ({ ...prev, FOVcompo: 220 }))
+        setSubTotal(prev => ({ ...prev, FOVcompo: Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)*0.03) }))
     }, [])
 
     return (
         <div className='p-1 grid grid-cols-5 text-sm'>
             <div className='py-1 col-span-4'>
-                <Text className='text-[10px] w-3/4'>Freight on value (F.O.V) 3.00% of the total goods values of Rs 1,50,000</Text>
+                <Text className='text-[10px] w-3/4'>Freight on value (F.O.V) 3.00% of the total goods values of Rs {Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)}</Text>
             </div>
             <div className='pt-3'>
-                <Text>₹4500.00</Text>
+                <Text>₹{(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.03).toFixed(2)}</Text>
             </div>
         </div >
     )
 }
 
-const Surcharge = ({ setSubTotal }: {
+const Surcharge = ({ setSubTotal,subTotal }: {
     setSubTotal: React.Dispatch<React.SetStateAction<{
         labourCharges: number;
         packingCharges: number;
@@ -312,13 +369,22 @@ const Surcharge = ({ setSubTotal }: {
         StatisticalCharges: number;
         FOVcompo: number;
         Surcharge: number;
-    }>>
+    }>>,
+    subTotal: {
+        labourCharges: number;
+        packingCharges: number;
+        TransportationCharges: number;
+        CostPerKm: number;
+        StatisticalCharges: number;
+        FOVcompo: number;
+        Surcharge: number;
+    }
 }) => {
 
     useEffect(() => {
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
         {/* @ts-ignore */ }
-        setSubTotal(prev => ({ ...prev, Surcharge: 220 }))
+        setSubTotal(prev => ({ ...prev, Surcharge: Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.10) }))
     }, [])
 
     return (
@@ -327,7 +393,7 @@ const Surcharge = ({ setSubTotal }: {
                 <Text className='text-[10px] w-3/4'>Surcharge @ 10.00 % of the above total (Not applicable for Defense Personnel)</Text>
             </div>
             <div className='pt-3'>
-                <Text>₹5272.00</Text>
+                <Text>₹{Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.10)}</Text>
             </div>
         </div >
     )
@@ -357,18 +423,19 @@ const SubTotal = ({ subTotal }: {
         });
 
     }, [subTotal])
+console.log(total, subTotal);
 
     function percentage(percent: number, total: number) {
         return ((percent / 100) * total)
     }
 
     return (
-        <div className='grid grid-cols-5 text-sm'>
-            <div className='py-1 col-span-4'>
+        <div className='grid grid-cols-5 text-sm my-1'>
+            <div className='py-1 col-span-4 space-y-2'>
                 <Text className='w-3/4'>Sub Total</Text>
                 <Text className='w-3/4'>Tax( GST ): 18%</Text>
             </div>
-            <div className=''>
+            <div className='space-y-2'>
                 <Text>₹{total.total}</Text>
                 <Text>₹{(Math.round(total.tax * 100) / 100).toFixed(2)}</Text>
             </div>

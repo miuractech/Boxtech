@@ -53,8 +53,6 @@ export default function FormUserInfo(props: propsType) {
     <form onSubmit={form.onSubmit(data => {
       dispatch(setUserInfo(data))
       sendOtp('+91'+data.phone)
-      // console.log(data);
-
     })} className="flex items-center h-full">
       <div className="w-72 gap-y-4 grid">
         <Title align="center" order={3} color="#222629" weight={700}>

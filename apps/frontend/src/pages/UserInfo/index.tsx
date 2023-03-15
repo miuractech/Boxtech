@@ -21,6 +21,7 @@ export default function UserInfo() {
         return <>unknown error</>;
     }
   };
+console.log(step);
 
   return (
     <div className="w-full min-h-[80vh] bg-[#EDF2FF] flex justify-center items-center">

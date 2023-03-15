@@ -81,27 +81,27 @@ export default function Booking() {
       )
     );
   }
-  const displayRazorpay = async (amount: number) => {
-    const options = {
-      key: 'rzp_test_iZ0M7mcNocV9mG',
-      amount: amount,
-      name: 'PAM',
-      description: 'Tutoring / Coaching Service',
-      handler: function (response: any) {
-        console.log(response);
-        navigate('/payment');
-      },
-      prefill: {
-        name: user?.displayName,
-        email: user?.email,
-        contact: user?.phoneNumber,
-      },
-    };
-    const _window: any = window;
-    const paymentObject = await _window.Razorpay(options);
-    const data = await paymentObject.open();
-    console.log(data);
-  };
+  // const displayRazorpay = async (amount: number) => {
+  //   const options = {
+  //     key: 'rzp_test_iZ0M7mcNocV9mG',
+  //     amount: amount,
+  //     name: 'PAM',
+  //     description: 'Tutoring / Coaching Service',
+  //     handler: function (response: any) {
+  //       console.log(response);
+  //       navigate('/payment');
+  //     },
+  //     prefill: {
+  //       name: user?.displayName,
+  //       email: user?.email,
+  //       contact: user?.phoneNumber,
+  //     },
+  //   };
+  //   const _window: any = window;
+  //   const paymentObject = await _window.Razorpay(options);
+  //   const data = await paymentObject.open();
+  //   console.log(data);
+  // };
 
   const handelBookSlot = async () => {
     try {
@@ -240,6 +240,8 @@ export default function Booking() {
       }
     })();
   }, [date]);
+
+  
   const now = Timestamp.now().toDate()
   return (
     <div>

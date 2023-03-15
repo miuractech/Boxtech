@@ -1,8 +1,10 @@
 import { NumberInput, Radio, Text, Checkbox } from '@mantine/core';
+import { signOut } from 'firebase/auth';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import BackandNextButton from '../component/BackandNextButton';
+import { auth } from '../configs/firebaseconfig';
 import { RootState } from '../store';
 import {
   setFloorNumber,

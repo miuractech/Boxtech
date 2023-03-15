@@ -51,9 +51,9 @@ export default function usePhoneAuth(
     (state: RootState) => state.User
   );
   const order = useSelector((state: RootState) => state.order);
-  useEffect(() => {
-    localStorage.setItem('user', JSON.stringify(user));
-  }, [user]);
+  // useEffect(() => {
+  //   localStorage.setItem('user', JSON.stringify(user));
+  // }, [user]);
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
@@ -114,8 +114,8 @@ export default function usePhoneAuth(
         dispatch(setUser(user));
         const id = user.uid;
         const { name, email, phone } = userInfo;
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        localStorage.setItem('user', JSON.stringify(user));
+        // localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        // localStorage.setItem('user', JSON.stringify(user));
         // await setDoc(doc(db, id, 'users'), {
 
         // });
@@ -125,9 +125,6 @@ export default function usePhoneAuth(
           phone,
           createdAt: serverTimestamp(),
         });
-        console.log(user);
-        console.log(order);
-
         navigate(`/${clientId}/bookings`);
       })
       .catch((error: FirebaseError) => {
@@ -139,7 +136,6 @@ export default function usePhoneAuth(
     signOut(auth)
       .then(() => {
         dispatch(setUser(null));
-        // logEvent(analytics,'user-logged-out')
       })
       .catch((error) => {
         dispatch(setUserError(error));
