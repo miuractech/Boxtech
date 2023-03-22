@@ -10,7 +10,7 @@
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
-        "outputPath": "dist/apps/business-db",
+        "outputPath": "dist/apps/business-db/build",
         "index": "apps/business-db/src/index.html",
         "baseHref": "/",
         "main": "apps/business-db/src/main.tsx",
