@@ -1,8 +1,11 @@
 import { orderType } from '@boxtech/shared-constants'
 import { Text } from '@mantine/core'
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
 
 export const UserDetails = ({ data }: { data: orderType }) => {
+    const { userInfo } = useSelector((state: RootState) => state.order)
     return (
         <div className='space-y-5'>
             <div className='bg-[#EDF2FF] p-3 rounded-lg text-sm overflow-hidden'>
@@ -10,15 +13,15 @@ export const UserDetails = ({ data }: { data: orderType }) => {
                 <div className='grid md:grid-cols-2'>
                     <span className='grid grid-cols-2 md:flex gap-3'>
                         <Text className='font-semibold'>Mr./ Mrs./ Miss :</Text>
-                        <Text>{data.name}</Text>
+                        <Text>{userInfo.name}</Text>
                     </span>
                     <span className='grid grid-cols-2 md:flex gap-3'>
                         <Text className='font-semibold'>Email :</Text>
-                        <Text>{data.email}</Text>
+                        <Text>{userInfo.email}</Text>
                     </span>
                     <span className='grid grid-cols-2 md:flex gap-3'>
                         <Text className='font-semibold'>Phone :</Text>
-                        <Text>{data.phone}</Text>
+                        <Text>{userInfo.phone}</Text>
                     </span>
                     <span className='grid grid-cols-2 md:flex gap-3'>
                         <Text className='font-semibold'>Movement Date :</Text>

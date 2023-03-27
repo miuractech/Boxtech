@@ -107,15 +107,13 @@ export default function Booking() {
     try {
       setLoading(true);
       const startDateTime = dateTimeIn24Format(value);
-      const url = await axios.post(
+      const response = await axios.post(
         'https://asia-south1-miurac-pam.cloudfunctions.net/createEvent',
         {
           startDateTime: startDateTime,
           endDateTime: startDateTime,
         }
       );
-      // displayRazorpay(order.costDetails.grandTotal * 100);
-      // navigate(`/${clientId}/quotation`);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -186,13 +184,6 @@ export default function Booking() {
     }
   };
   useEffect(() => {
-    // (async () => {
-    //   try {
-    //     await loadScript('https://checkout.razorpay.com/v1/checkout.js');
-    //   } catch (error) {
-    //     console.log('error', error);
-    //   }
-    // })();
     getUpCommingEvents();
   }, []);
 
@@ -200,9 +191,7 @@ export default function Booking() {
     (async () => {
       try {
         if (!date) return;
-
         const timeSlotBooked = [false, false, false];
-
         upcommingSlots?.events?.forEach((event: any) => {
           if (new Date(event.start.dateTime).getDate() === date.getDate()) {
             const timeString = convertTZ(

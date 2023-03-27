@@ -4,7 +4,7 @@ import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
 import useNetworkStatus from '../hooks/useNetworkStatus';
-import Landing from '../pages/Landing';
+import Landing, { userInfoType } from '../pages/Landing';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import Items from '../pages/items';
 import List from '../pages/items/list';
@@ -17,8 +17,19 @@ import { setUser, UserSlice } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '../configs/firebaseconfig';
+import { auth, db } from '../configs/firebaseconfig';
 import { SuccessPage } from '../pages/SuccessPage';
+import { doc, getDoc } from 'firebase/firestore';
+import { setUserInfo } from '../store/OrderReducer';
+import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
+import HomePage from '../pages/components/homepage/HomePage';
+import TermsCondition from '../pages/components/terms-n-conditions/TermsCondition';
+import PrivacyPolicy from '../pages/components/privacy-policy/PrivacyPolicy';
+import MyAccount from '../pages/components/myaccount/MyAccount';
+import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
+import Checkout from '../pages/components/checkout/Checkout';
+import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
+import { Navbar } from '../pages/components/navbar/Navbar';
 
 export function App() {
   const { isLoaded } = useJsApiLoader({
@@ -30,10 +41,18 @@ export function App() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { clientId } = useParams()
+
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
         dispatch(setUser(user))
+        const userDoc = await getDoc(doc(db, "Users", user.uid))
+        if (userDoc.exists()) {
+          const data = userDoc.data() as userInfoType
+          dispatch(setUserInfo(data))
+          console.log(data, user);
+
+        }
       } else {
         if (clientId) {
           navigate(`/${clientId}`)
@@ -42,8 +61,7 @@ export function App() {
     });
     return () => unsub()
   }, [])
-  
-  console.log(user);
+
   
   useEffect(() => {
     const unloadCallback = (event: { preventDefault: () => void; returnValue: string; }) => {
@@ -51,7 +69,6 @@ export function App() {
       event.returnValue = "";
       return "";
     };
-
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, []);
@@ -67,6 +84,14 @@ export function App() {
   return (
     <div  >
       <Routes>
+        <Route path="/" element={<> <Navbar /><HomePage /></>} />
+        <Route path="/pricing-plans" element={<PricingPlans />} />
+        <Route path="/terms-conditions" element={<TermsCondition />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/account" element={<MyAccount />} />
+        <Route path="/subscriptions" element={<MySubscriptions />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout-premium" element={<CheckoutPremium />} />
         <Route path="/:clientId" element={<Landing />} />
         <Route path="/:clientId/items" element={<Items />} />
         <Route path="/:clientId/list" element={<List />} />

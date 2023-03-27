@@ -13,14 +13,12 @@ import { IconCurrentLocation, IconLocation, IconX } from '@tabler/icons';
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
-  getDetails,
 } from 'use-places-autocomplete';
 import { GoogleMap } from '@react-google-maps/api';
 import { Tooltip } from '@mantine/core';
 import { useForm, yupResolver } from '@mantine/form';
 import { forwardRef, useRef, useState } from 'react';
 import MarkerIcon from '../../assets/img/marker.svg';
-// import { masterFormType } from '.';
 import * as yup from 'yup';
 import { GooglePlacesType } from '.';
 import { showNotification } from '@mantine/notifications';
@@ -81,7 +79,7 @@ export const GetLocation = ({
     ready,
     value,
     setValue,
-    suggestions: { status, data },
+    suggestions: { data },
     clearSuggestions,
   } = usePlacesAutocomplete({
     requestOptions: { componentRestrictions: { country: 'IN' } },
@@ -99,6 +97,7 @@ export const GetLocation = ({
   // console.log(data.length > 0 && getLL());
 
   if (!ready) return <Loader />;
+  console.log(form.values);
 
   return (
     <div>
@@ -144,6 +143,7 @@ export const GetLocation = ({
             form.setFieldValue('coordinates', { lat, lng });
             setOpen(true);
           } catch (err: any) {
+
             showNotification({
               id: `reg-err-${Math.random()}`,
               autoClose: 5000,
@@ -184,10 +184,12 @@ export const GetLocation = ({
                             const lat = pos.coords.latitude;
                             const lng = pos.coords.longitude;
                             const newLocationResults = await getGeocode({
-                              location: { lat, lng },
+                              location: { lat, lng }, 
                             });
                             setValue(newLocationResults[0].formatted_address);
-                            form.setFieldValue('data', newLocationResults[0]);
+                            const data = { ...newLocationResults[0] } as any
+                            delete data['geometry']
+                            form.setFieldValue('data', data);
                             form.setFieldValue('coordinates', { lat, lng });
                             setOpen(true);
                           },
@@ -226,6 +228,9 @@ export const GetLocation = ({
       >
         <form
           onSubmit={form.onSubmit((data) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            delete data['geometry']
             if (field === 'from') dispatch(setFrom(data));
             else dispatch(setTo(data));
             setOpen(false);

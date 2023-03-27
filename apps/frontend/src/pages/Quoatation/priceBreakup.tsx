@@ -176,14 +176,19 @@ const PackingCharges = ({ clientCostData, data, setSubTotal }: {
 }) => {
 
     const [volumeOfItems, setVolumeOfItems] = useState(0)
+    console.log(volumeOfItems);
 
     useEffect(() => {
-        data.selectedItems.forEach(item => {
-            const eachItemVolume = Number(item.Length) * Number(item.Breadth) * Number(item.Height)
+        for (let i = 0; i < data.selectedItems.length; i++) {
+            const eachItemVolume = Number(data.selectedItems[i].Length) * Number(data.selectedItems[i].Breadth) * Number(data.selectedItems[i].Height)
             setVolumeOfItems(prev => prev + eachItemVolume)
-        })
-        setSubTotal(prev => ({ ...prev, packingCharges: volumeOfItems * clientCostData.packingCostPerCubeM }))
+        }
     }, [])
+
+    useEffect(() => {
+        setSubTotal(prev => ({ ...prev, packingCharges: volumeOfItems * clientCostData.packingCostPerCubeM }))
+    }, [volumeOfItems])
+
 
     return (
         <div className='p-1 grid grid-cols-5 text-sm'>
@@ -393,7 +398,7 @@ const Surcharge = ({ setSubTotal,subTotal }: {
                 <Text className='text-[10px] w-3/4'>Surcharge @ 10.00 % of the above total (Not applicable for Defense Personnel)</Text>
             </div>
             <div className='pt-3'>
-                <Text>₹{Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.10)}</Text>
+                <Text>₹{Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.10).toFixed(2)}</Text>
             </div>
         </div >
     )
