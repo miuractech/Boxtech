@@ -19,6 +19,7 @@ import { RootState } from '../store';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../configs/firebaseconfig';
 import { SuccessPage } from '../pages/SuccessPage';
+import PrivacyPolicy from './privacyPolicy';
 
 export function App() {
   const { isLoaded } = useJsApiLoader({
@@ -43,10 +44,11 @@ export function App() {
     return () => unsub()
   }, [])
   
-  console.log(user);
+  // signOut(auth);
   
   useEffect(() => {
-    const unloadCallback = (event: { preventDefault: () => void; returnValue: string; }) => {
+    const unloadCallback = async (event: { preventDefault: () => void; returnValue: string; }) => {
+      await signOut(auth)
       event.preventDefault();
       event.returnValue = "";
       return "";
@@ -67,6 +69,9 @@ export function App() {
   return (
     <div  >
       <Routes>
+        <Route path="privacy" element={<PrivacyPolicy path='privacy' />} />
+        <Route path="tac" element={<PrivacyPolicy path='tac' />} />
+        <Route path="refund" element={<PrivacyPolicy path='refund' />} />
         <Route path="/:clientId" element={<Landing />} />
         <Route path="/:clientId/items" element={<Items />} />
         <Route path="/:clientId/list" element={<List />} />
@@ -80,4 +85,4 @@ export function App() {
   );
 }
 
-export default App;
+export default App; 

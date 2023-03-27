@@ -6,8 +6,8 @@ import { RootState } from '../store';
 import {useEffect} from "react"
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../configs/firebaseconfig';
-import { showNotification } from '@mantine/notifications';
-import { IconX } from '@tabler/icons';
+// import { showNotification } from '@mantine/notifications';
+// import { IconX } from '@tabler/icons';
 import { setUser } from '../store/authSlice';
 import { LoadingOverlay } from '@mantine/core';
 import Dashboard from '../dashboard';

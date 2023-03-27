@@ -143,8 +143,7 @@ export default function Booking() {
       floorNumber,
       insurance
     });
-    const id = uuidv4()
-    await setDoc(doc(db, 'Orders', id), {
+    const res = await addDoc(collection(db, 'Orders'), {
       userid: user.uid,
       status: 'Created',
       timeStamp: serverTimestamp(),
@@ -156,9 +155,10 @@ export default function Booking() {
       selectedItems,
       ...userInfo,
       floorNumber,
-      insurance
+      insurance,
+      clientId
     });
-    navigate(`/${clientId}/quotation/${id}`)
+    navigate(`/${clientId}/quotation/${res.id}`)
   };
 
   const handelConfirm = async () => {

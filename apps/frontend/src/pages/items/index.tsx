@@ -7,9 +7,10 @@ import { RootState } from '../../store';
 import CategoryBar from './CategoryBar';
 
 export default function Items() {
-    const { selectedItems } = useSelector((state:RootState)=>state.order)
+    const { selectedItems, from, to } = useSelector((state:RootState)=>state.order)
     const navigate = useNavigate();
     const params = useParams()
+    console.log(from, to);
     
   return <Container fluid className="max-w-screen-2xl py-6 lg:p-6">
   <Text color={'#222629'} weight={'bolder'} className="text-2xl text-center ">

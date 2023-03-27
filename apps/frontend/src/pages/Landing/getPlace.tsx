@@ -25,9 +25,11 @@ import * as yup from 'yup';
 import { GooglePlacesType } from '.';
 import { showNotification } from '@mantine/notifications';
 import { environment } from '../../environments/environment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setFrom, setTo } from '../../store/OrderReducer';
 import LocationError from './locationError';
+import { RootState } from '../../store';
+import { useEffect } from 'react';
 
 interface ItemProps extends SelectItemProps {
   data: {
@@ -58,7 +60,8 @@ export const GetLocation = ({
       address1: '',
       address2: '',
       landmark: '',
-      data: null,
+      placeId: null,
+      addressLine: '',
       coordinates: {
         lat: null,
         lng: null,
@@ -73,7 +76,8 @@ export const GetLocation = ({
         address1: yup.string().required(),
         address2: yup.string().required(),
         landmark: yup.string().required(),
-        data: yup.object().required(),
+        placeId: yup.string().required(),
+        addressLine: yup.string().required(),
       })
     ),
   });
@@ -88,8 +92,27 @@ export const GetLocation = ({
     debounce: 400,
   });
   const dispatch = useDispatch();
+  const { from, to } = useSelector((state: RootState) => state.order);
+  useEffect(() => {
+    if (!form.values.placeId) {
+      console.log(from, to);
+      if (field === 'from' && from.placeId) {
+        form.setValues(from);
+        setValue(from.addressLine);
+      }
+      if (field === 'to' && to.placeId) {
+        form.setValues(to);
+        setValue(to.addressLine);
+      }
+    }
+  }, [field, from, to]);
+
+  useEffect(() => {
+    form.setFieldValue('addressLine', value);
+  }, [value]);
+
   // const getLL = async () => {
-  //   console.log(data);
+    console.log(form.errors);
 
   //   const t = await getGeocode({ address: data[0].description });
   //   console.log(t[0].geometry.location.lat(), t[0].geometry.location.lng());
@@ -134,7 +157,8 @@ export const GetLocation = ({
         onItemSubmit={async (e) => {
           try {
             setLoading(true);
-            form.setFieldValue('data', e['data']);
+
+            form.setFieldValue('data', e['data'].place_id);
             setValue(e['data'].structured_formatting.secondary_text, false);
             clearSuggestions();
             const results = await getGeocode({
@@ -187,7 +211,10 @@ export const GetLocation = ({
                               location: { lat, lng },
                             });
                             setValue(newLocationResults[0].formatted_address);
-                            form.setFieldValue('data', newLocationResults[0]);
+                            form.setFieldValue(
+                              'placeId',
+                              newLocationResults[0].place_id
+                            );
                             form.setFieldValue('coordinates', { lat, lng });
                             setOpen(true);
                           },
@@ -252,17 +279,17 @@ export const GetLocation = ({
                     location: { lat, lng },
                   });
                   setValue(newLocationResults[0].formatted_address);
-                  form.setFieldValue('data', newLocationResults[0]);
+                  form.setFieldValue('placeId', newLocationResults[0].place_id);
                   form.setFieldValue('coordinates', { lat, lng });
                 }}
               >
-                {form.values.data && (
+                {form.values.placeId && (
                   <span
                     style={{ left: 'calc(50% - 4px', top: 'calc(50% - 4px' }}
                     className="absolute z-10 animate-ping h-2 w-2 rounded-full bg-green-800 opacity-75"
                   />
                 )}
-                {form.values.data && (
+                {form.values.addressLine && (
                   <img
                     src={MarkerIcon}
                     alt="map-marker"

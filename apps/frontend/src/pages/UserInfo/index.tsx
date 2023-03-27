@@ -1,3 +1,4 @@
+import { Loader } from '@mantine/core';
 import { useSelector } from 'react-redux';
 import userInfoImg from '../../assets/img/auth.jpg';
 import usePhoneAuth from '../../component/auth';
@@ -21,7 +22,6 @@ export default function UserInfo() {
         return <>unknown error</>;
     }
   };
-console.log(step);
 
   return (
     <div className="w-full min-h-[80vh] bg-[#EDF2FF] flex justify-center items-center">
@@ -32,13 +32,9 @@ console.log(step);
         <div className=" p-3">
           {loading ? (
             <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+              className='w-72 h-full flex items-center'
             >
-              loading
+              <Loader className='mx-auto' />
             </div>
           ) : (
             currentComponent()
