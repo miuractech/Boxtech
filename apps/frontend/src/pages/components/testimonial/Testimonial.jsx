@@ -24,16 +24,16 @@ const Testimonial = () => {
   ];
 
   return (
-    <div className="h-[90vh] w-full sm:h-auto">
+    <div className="md:h-[90vh] w-full h-auto pb-20">
       <div className="p-[5%]">
         <h1 className="text-[30px]">
           What Our <span style={{ color: "#ffbe23" }}>Clients</span> Say?
         </h1>
       </div>
-      <div className="flex justify-evenly items-center sm:flex-wrap ">
+      <div className="flex justify-evenly items-center flex-wrap ">
         {
           details.map(
-            (item) => <div id="test-card" className="w-[240px] h-[320px] sm:my-[12px]">
+            (item) => <div id="test-card" className="w-[240px] h-[320px] my-[12px]">
               <div>
                 {/** boxes */}
                 <div>
@@ -43,7 +43,7 @@ const Testimonial = () => {
                 </div>
               </div>
               <div className="h-[200px] " id="words">
-                <p className="p-[15px] text-[12px] tracking-[1px] text-justify leading-[22px]  sm:text-[12px] sm:text-justify">
+                <p className="p-[15px] text-[12px] tracking-[1px] text-justify leading-[22px]">
                   {item['words']}
                 </p>
               </div>

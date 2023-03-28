@@ -14,14 +14,14 @@ const CreativeCnt = () => {
   }
 
   return (
-    <div className="grid grid-cols-2 w-[full] h-[90vh] sm:h-auto sm:flex sm:flex-col">
+    <div className="md:grid md:grid-cols-2 w-[full] md:h-[90vh] h-auto flex flex-col">
       <div>
         <img className="w-full h-full" src={creative} alt="phot" />
       </div>
       <div className="flex flex-col justify-center items-center">
         <div id="desc-card">
-          <h1 className="w-[100%] text-[32px] sm:text-[25px] sm:p-[5%]">Built for <span style={{ 'color': '#ffbe23' }}>Businesses</span>, by <span style={{ 'color': '#ffbe23' }}>Creatives.</span></h1>
-          <div className="w-[60%] my-[18px] sm:w-[100%] sm:p-[5%] sm:my-[0]" >
+          <h1 className="w-full md:text-[32px] text-[25px] p-8">Built for <span style={{ 'color': '#ffbe23' }}>Businesses</span>, by <span style={{ 'color': '#ffbe23' }}>Creatives.</span></h1>
+          <div className="md:w-[60%] md:my-[18px] w-full px-8  my-[0]" >
             <p className="text-justify">
               Manage your Staff, Bookings, Customers, Pricing, Payments, Analytics,
               Support, Enquiries all in one integrated dashboard. Let software
@@ -29,7 +29,7 @@ const CreativeCnt = () => {
             </p>
           </div>
         </div>
-        <div className="flex my-[8px] justify-start items-center w-[100%] flex-wrap mx-auto sm:h-[200px] sm:p-[10px]">
+        <div className="flex my-[8px] justify-start items-center w-[100%] flex-wrap mx-auto h-[200px] p-8">
           {
             adv.names.map((item) =>
               <div className="flex text-left mt-[10px] px-[10px] justify-start items-center">

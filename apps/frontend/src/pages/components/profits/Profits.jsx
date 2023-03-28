@@ -10,15 +10,15 @@ const Profits = () => {
                         Get Ready to Maximize Your Profits With Our
                         Software.
                     </p>
-                    <a href="/">
+                    <a href="https://admin.boxtech.miurac.com">
                         <button className='bg-[#edbd0f] p-[10px] my-[20px] sm:my-[12px] text-white rounded-[5px] tracking-[1px] flex mx-auto'>
                             Start for Free
                         </button>
                     </a>
                 </div>
             </div>
-            <div className="w-full">
-                <img src={profit} alt='p' className="w-full h-[500px] sm:h-[30vh]" />
+            <div className="w-full bg-[#FFBF23] border-b border-t-0 border-x-0 border-b-black border-solid p-0 m-0">
+                <img src={profit} alt='boxtech' className="w-full " />
             </div>
         </div>
     )

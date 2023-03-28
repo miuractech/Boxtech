@@ -13,12 +13,12 @@ const HomePage = () => {
     <div>
         <StartCnt />
         <SecondCnt />
-        <Services />
-        <CreativeCnt />
-        <Testimonial />
-        <Pricing />
-        <Profits />
-        <Footer />
+      <Services />
+      <CreativeCnt />
+      <Testimonial />
+      <Pricing />
+      <Profits />
+      <Footer />
     </div>
   )
 }

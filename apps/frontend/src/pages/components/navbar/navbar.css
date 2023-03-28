@@ -69,10 +69,12 @@
     .hamburger {
       display: block;
     }
-  
+    .brand-name{
+      margin-left: 0px;
+    }
     .navigation-menu ul {
       flex-direction: column;
-      position: absolute;
+      /* position: absolute; */
       top: 60px;
       left: 0;
       width: 100%;

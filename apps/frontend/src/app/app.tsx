@@ -1,11 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
+import React from "react"
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
 import useNetworkStatus from '../hooks/useNetworkStatus';
 import Landing, { userInfoType } from '../pages/Landing';
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import { Route, Routes, useNavigate, useParams, Outlet } from 'react-router-dom';
 import Items from '../pages/items';
 import List from '../pages/items/list';
 import LiftFacilityPage from '../pages/LiftFacilityPage';
@@ -62,7 +63,45 @@ export function App() {
     return () => unsub()
   }, [])
 
-  
+
+
+  if (!isLoaded)
+    return (
+      <div style={{ width: 400, position: 'relative' }}>
+        <LoadingOverlay visible={!isLoaded} />
+      </div>
+    );
+
+
+  return (
+    <div  >
+      <Routes>
+        <Route path="/" element={<><Navbar /><HomePage /></>} />
+        {/* <Route path="/pricing-plans" element={<PricingPlans />} /> */}
+        <Route path="/terms-conditions" element={<TermsCondition />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        {/* <Route path="/account" element={<MyAccount />} /> */}
+        {/* <Route path="/subscriptions" element={<MySubscriptions />} /> */}
+        {/* <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
+        <Route path="/:clientId" element={<BoxTechWrapper />} >
+          <Route index element={<Landing />} />
+          <Route path="items" element={<Items />} />
+          <Route path="list" element={<List />} />
+          <Route path="liftQuery" element={<LiftFacilityPage />} />
+          <Route path="userInfo" element={<UserInfo />} />
+          <Route path="bookings" element={<Booking />} />
+          <Route path="quotation/:id" element={<Quoatation />} />
+          <Route path="quotation/:id/:razorpayID/success" element={<SuccessPage />} />
+        </Route>
+      </Routes>
+    </div>
+  );
+}
+
+export default App;
+
+const BoxTechWrapper = () => {
   useEffect(() => {
     const unloadCallback = (event: { preventDefault: () => void; returnValue: string; }) => {
       event.preventDefault();
@@ -72,37 +111,5 @@ export function App() {
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, []);
-
-  if (!isLoaded)
-    return (
-      <div style={{ width: 400, position: 'relative' }}>
-        <LoadingOverlay visible={!isLoaded} />
-      </div>
-    );
-  
-
-  return (
-    <div  >
-      <Routes>
-        <Route path="/" element={<> <Navbar /><HomePage /></>} />
-        <Route path="/pricing-plans" element={<PricingPlans />} />
-        <Route path="/terms-conditions" element={<TermsCondition />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/account" element={<MyAccount />} />
-        <Route path="/subscriptions" element={<MySubscriptions />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/checkout-premium" element={<CheckoutPremium />} />
-        <Route path="/:clientId" element={<Landing />} />
-        <Route path="/:clientId/items" element={<Items />} />
-        <Route path="/:clientId/list" element={<List />} />
-        <Route path="/:clientId/liftQuery" element={<LiftFacilityPage />} />
-        <Route path="/:clientId/userInfo" element={<UserInfo />} />
-        <Route path="/:clientId/bookings" element={<Booking />} />
-        <Route path="/:clientId/quotation/:id" element={<Quoatation />} />
-        <Route path="/:clientId/quotation/:id/:razorpayID/success" element={<SuccessPage />} />
-      </Routes>
-    </div>
-  );
+  return <Outlet />
 }
-
-export default App;

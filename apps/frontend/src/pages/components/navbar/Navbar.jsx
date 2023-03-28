@@ -7,7 +7,7 @@ import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import logo from "../../../assets/img/logo.png"
-
+import { Drawer } from "@mantine/core";
 export const Navbar = () => {
 
 
@@ -53,10 +53,10 @@ export const Navbar = () => {
 
 
   return (
-    <div className='pl-[60px] pr-[60px] sm:pl-0 sm:pr-0'>
+    <div className='pl-8 sm:pl-0 sm:pr-0'>
       <nav className="navigation" >
         <Link to="/" className="brand-name" >
-          <img src={logo} alt="logo" className="h-[40px] w-[140px] ml-[25px] sm:ml-[0px]" />
+          <img src={logo} alt="logo" className="h-[40px] w-[140px] md:ml-[25px] sm:ml-[0px]" />
         </Link>
         <button
           className="hamburger"
@@ -71,20 +71,52 @@ export const Navbar = () => {
             viewBox="0 0 20 20"
             fill="white"
           >
-            <path
+            {!isNavExpanded ? <path
               fillRule="evenodd"
               d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
               clipRule="evenodd"
             />
+              : <>
+
+                <line x1="2" y1="20"
+                  x2="18" y2="4"
+                  stroke="white"
+                  stroke-width="2" />
+                <line x1="2" y1="4"
+                  x2="18" y2="20"
+                  stroke="white"
+                  stroke-width="2" />
+              </>
+            }
           </svg>
         </button>
-        {showOverlay &&
+        {/* {showOverlay &&
           <OverlayCnt onClickFunction={closeOverlay} />
-        }
+        } */}
+
+        <Drawer position='top' opened={isNavExpanded} classNames={{ drawer: 'h-auto' }} onClose={() => setIsNavExpanded(false)} withCloseButton={false} >
+          <ul className='items-center justify-center list-none gap-y-4 flex flex-col py-16'>
+
+            <li className=''>
+              <Link to="/" className='text-[16px] sm:text-[16px] text-black no-underline'>Home</Link>
+            </li>
+            <li>
+              {/* <Link to="/checkout"> */}
+              <button
+                onClick={() => {
+                  window.location.href = "https://admin.boxtech.miurac.com/"
+                }}
+                className='bg-[#edbd0f] color-white p-2 rounded-[5px] text-[16px] text-white w-[130px]'>
+                Get Started
+              </button>
+              {/* </Link> */}
+            </li>
+          </ul>
+        </Drawer>
 
         <div
           className={
-            isNavExpanded ? "navigation-menu expanded" : "navigation-menu"
+            "navigation-menu"
           }
         >
           <ul className='mr-[25px] sm:mr-[0] items-center justify-center'>

@@ -13,23 +13,23 @@ const Footer = () => {
 
 
     return (
-        <div id="footer">
+        <div id="">
             <div className="h-auto bg-[#FFBF23] w-full">
                 <div className="p-[15px]">
                     <a href="/">
-                        <img src={logo} alt="logo" className="w-[160px] h-[50px] ml-[50px] sm:ml-[10px]" />
+                        <img src={logo} alt="logo" className="w-[160px] h-[50px] md:ml-[50px] ml-[10px]" />
                     </a>
                 </div>
-                <div className="flex justify-around items-start p-[25px] sm:flex-col">
+                <div className="flex justify-around items-start p-[25px] md:flex-row flex-col">
                     {/* Contact */}
                     <div>
                         <div className="h-[80px]">
                             <h4 className="font-bold text-[18px] py-[14px]">Contact</h4>
                         </div>
-                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center items-center">
+                        <div className="md:grid md:grid-cols-2 flex flex-wrap justify-center items-center">
                             {
                                 contact.map(
-                                    (item) => <div className="w-[150px] h-[130px] md:p-0 md:[h-70px] sm:p-0 sm:h-[80px] sm:w-full p-[6px] text-[14px] tracking-[1px]">
+                                    (item) => <div className="w-[150px] h-[130px] md:[h-70px] p-0 sm:h-[80px] sm:w-full  text-[14px] tracking-[1px]">
                                         <h5 className=''>{item['name']}</h5>
                                         <u><a href={item.link} target="_blank" rel="noopener noreferrer">
                                             <p className='break-words'>{item['det']}</p>

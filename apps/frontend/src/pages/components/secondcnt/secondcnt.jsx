@@ -5,9 +5,9 @@ import comp from "../../../assets/img/mob.jpg"
 const SecondCnt = () => {
 
     return (
-        <div id="cont" className='h-[80vh] w-full flex sm:flex-col sm:h-auto'>
-            <div>
-                <div className="px-[20%] py-[20%] sm:p-[12%]">
+        <div id="cont" className='md:h-[70vh] w-full flex flex-col-reverse md:flex-row h-auto'>
+            <div className='w-full md:w-1/2' >
+                <div className=" p-[12%]">
                     <h1 className="text-[28px]">
                         With the Right Software, Scale your Business Rapidly
                     </h1>
@@ -16,8 +16,8 @@ const SecondCnt = () => {
                     </p>
                 </div>
             </div>
-            <div className='w-full p-[5%]'>
-                <img src={comp} className="mx-auto w-80% h-full" alt="computer and mobile screen" />
+            <div className='w-full md:w-1/2'>
+                <img src={comp} className="mx-auto block md:max-w-lg w-full mt-16 md:mt-8" alt="computer and mobile screen" />
             </div>
         </div>
     )
