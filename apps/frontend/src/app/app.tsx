@@ -1,9 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.css';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
-import useNetworkStatus from '../hooks/useNetworkStatus';
 import Landing from '../pages/Landing';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import Items from '../pages/items';
@@ -13,14 +11,14 @@ import UserInfo from '../pages/UserInfo';
 import Booking from '../pages/Booking';
 import Quoatation from '../pages/Quoatation';
 import { useEffect } from 'react';
-import { setUser, UserSlice } from '../store/authSlice';
+import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../configs/firebaseconfig';
 import { SuccessPage } from '../pages/SuccessPage';
 import PrivacyPolicy from './privacyPolicy';
-
+import React from 'react';
 export function App() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
