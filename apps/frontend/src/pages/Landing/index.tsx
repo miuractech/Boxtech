@@ -79,6 +79,7 @@ export default function Landing() {
 }
 
 export type GooglePlacesType = {
+  [x: string]: any;
   coordinates: {
     lat: null | number;
     lng: null | number;

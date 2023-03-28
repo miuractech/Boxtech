@@ -1,9 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import styles from './app.module.css';
+import React from "react"
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
-import Landing from '../pages/Landing';
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import useNetworkStatus from '../hooks/useNetworkStatus';
+import Landing, { userInfoType } from '../pages/Landing';
+import { Route, Routes, useNavigate, useParams, Outlet } from 'react-router-dom';
 import Items from '../pages/items';
 import List from '../pages/items/list';
 import LiftFacilityPage from '../pages/LiftFacilityPage';
@@ -15,10 +18,20 @@ import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '../configs/firebaseconfig';
+import { auth, db } from '../configs/firebaseconfig';
 import { SuccessPage } from '../pages/SuccessPage';
-import PrivacyPolicy from './privacyPolicy';
-import React from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { setUserInfo } from '../store/OrderReducer';
+import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
+import HomePage from '../pages/components/homepage/HomePage';
+import TermsCondition from '../pages/components/terms-n-conditions/TermsCondition';
+import PrivacyPolicy from '../pages/components/privacy-policy/PrivacyPolicy';
+import MyAccount from '../pages/components/myaccount/MyAccount';
+import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
+import Checkout from '../pages/components/checkout/Checkout';
+import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
+import { Navbar } from '../pages/components/navbar/Navbar';
+
 export function App() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -29,10 +42,18 @@ export function App() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { clientId } = useParams()
+
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
         dispatch(setUser(user))
+        const userDoc = await getDoc(doc(db, "Users", user.uid))
+        if (userDoc.exists()) {
+          const data = userDoc.data() as userInfoType
+          dispatch(setUserInfo(data))
+          console.log(data, user);
+
+        }
       } else {
         if (clientId) {
           navigate(`/${clientId}`)
@@ -41,20 +62,8 @@ export function App() {
     });
     return () => unsub()
   }, [])
-  
-  // signOut(auth);
-  
-  useEffect(() => {
-    const unloadCallback = async (event: { preventDefault: () => void; returnValue: string; }) => {
-      await signOut(auth)
-      event.preventDefault();
-      event.returnValue = "";
-      return "";
-    };
 
-    window.addEventListener("beforeunload", unloadCallback);
-    return () => window.removeEventListener("beforeunload", unloadCallback);
-  }, []);
+
 
   if (!isLoaded)
     return (
@@ -62,25 +71,45 @@ export function App() {
         <LoadingOverlay visible={!isLoaded} />
       </div>
     );
-  
+
 
   return (
     <div  >
       <Routes>
-        <Route path="privacy" element={<PrivacyPolicy path='privacy' />} />
-        <Route path="tac" element={<PrivacyPolicy path='tac' />} />
-        <Route path="refund" element={<PrivacyPolicy path='refund' />} />
-        <Route path="/:clientId" element={<Landing />} />
-        <Route path="/:clientId/items" element={<Items />} />
-        <Route path="/:clientId/list" element={<List />} />
-        <Route path="/:clientId/liftQuery" element={<LiftFacilityPage />} />
-        <Route path="/:clientId/userInfo" element={<UserInfo />} />
-        <Route path="/:clientId/bookings" element={<Booking />} />
-        <Route path="/:clientId/quotation/:id" element={<Quoatation />} />
-        <Route path="/:clientId/quotation/:id/:razorpayID/success" element={<SuccessPage />} />
+        <Route path="/" element={<><Navbar /><HomePage /></>} />
+        {/* <Route path="/pricing-plans" element={<PricingPlans />} /> */}
+        <Route path="/terms-conditions" element={<TermsCondition />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        {/* <Route path="/account" element={<MyAccount />} /> */}
+        {/* <Route path="/subscriptions" element={<MySubscriptions />} /> */}
+        {/* <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
+        <Route path="/:clientId" element={<BoxTechWrapper />} >
+          <Route index element={<Landing />} />
+          <Route path="items" element={<Items />} />
+          <Route path="list" element={<List />} />
+          <Route path="liftQuery" element={<LiftFacilityPage />} />
+          <Route path="userInfo" element={<UserInfo />} />
+          <Route path="bookings" element={<Booking />} />
+          <Route path="quotation/:id" element={<Quoatation />} />
+          <Route path="quotation/:id/:razorpayID/success" element={<SuccessPage />} />
+        </Route>
       </Routes>
     </div>
   );
 }
 
-export default App; 
+export default App;
+
+const BoxTechWrapper = () => {
+  useEffect(() => {
+    const unloadCallback = (event: { preventDefault: () => void; returnValue: string; }) => {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    };
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, []);
+  return <Outlet />
+}

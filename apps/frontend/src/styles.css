@@ -3,9 +3,15 @@
 /* @tailwind base; */
 @tailwind utilities;
 /* You can add global styles to this file, and also import other style files */
-*{
-    font-family: 'Manrope';
+
+* {
+  font-family: 'Manrope', sans-serif;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
 body{
     margin:0px;
     padding: 0em;
@@ -42,4 +48,9 @@ html,body{
 .mantine-1heapph:not(:first-of-type) {
   border-style: none;
   border-width: 0px;
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
 }
