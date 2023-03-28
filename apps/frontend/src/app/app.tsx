@@ -31,6 +31,7 @@ import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
 import Checkout from '../pages/components/checkout/Checkout';
 import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
 import { Navbar } from '../pages/components/navbar/Navbar';
+import { Helmet } from 'react-helmet';
 
 export function App() {
   const { isLoaded } = useJsApiLoader({
@@ -75,6 +76,17 @@ export function App() {
 
   return (
     <div  >
+      <Helmet>
+        <title>Boxtech</title>
+        <meta
+          name='discription'
+          content='Get help for all of your packing and moving related works'
+        />
+        <meta
+          name='keywords'
+          content='packing, moving, shifting'
+        />
+      </Helmet>
       <Routes>
         <Route path="/" element={<><Navbar /><HomePage /></>} />
         {/* <Route path="/pricing-plans" element={<PricingPlans />} /> */}
