@@ -64,7 +64,8 @@ export default function Landing() {
                 className="mt-10"
                 fullWidth
                 onClick={() => {
-                  navigate(pathname + '/items');
+                  console.log(pathname.replace("/",''));
+                  navigate('/'+pathname.replace("/",'') + '/items');
                 }}
               >
                 Submit
@@ -83,10 +84,8 @@ export type GooglePlacesType = {
     lat: null | number;
     lng: null | number;
   };
-  data:
-    | null
-    | google.maps.places.AutocompletePrediction
-    | google.maps.GeocoderResult;
+  placeId: null | string;
+  addressLine:string;
   address1: string;
   address2: string;
   landmark: string;
@@ -109,7 +108,7 @@ export type userInfoType = {
   name: string;
   phone: string;
   email: string;
-}
+};
 export interface categoryItemType extends CatergoryType {
   quantity: number;
   total: number;

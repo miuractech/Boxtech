@@ -41,7 +41,8 @@ export default function Quoatation() {
     if (data && clientData && clientCostData) {
         return (
             <div className='bg-[#EDF2FF]'>
-                <div className='bg-white  py-5 px-3 rounded-lg space-y-5 max-w-5xl m-auto'>
+                <div className='bg-white pb-5 pt-8 px-3 rounded-lg space-y-5 max-w-5xl m-auto'>
+                    
                     <ClientDetails clientData={clientData} />
                     <UserDetails data={data} />
                     <QuoatTable data={data} clientData={clientData} />

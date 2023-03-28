@@ -14,7 +14,7 @@ import UserInfo from '../pages/UserInfo';
 import Booking from '../pages/Booking';
 import Quoatation from '../pages/Quoatation';
 import { useEffect } from 'react';
-import { setUser, UserSlice } from '../store/authSlice';
+import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged, signOut } from 'firebase/auth';

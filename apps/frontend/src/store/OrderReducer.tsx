@@ -25,20 +25,22 @@ const initialState: masterFormType = {
       lat: null,
       lng: null,
     },
-    data: null,
+    placeId: null,
     address1: '',
     address2: '',
     landmark: '',
+    addressLine:''
   },
   to: {
     coordinates: {
       lat: null,
       lng: null,
     },
-    data: null,
+    placeId: null,
     address1: '',
     address2: '',
     landmark: '',
+    addressLine:''
   },
   config: '',
   selectedItems: [],

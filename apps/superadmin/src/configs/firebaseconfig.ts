@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
@@ -19,5 +19,6 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const functions = getFunctions(app, "asia-south1")
-export const provider = new GoogleAuthProvider();
+const functions = getFunctions(app, "asia-south1")
+if (!environment.production) connectFunctionsEmulator(functions,"localhost",5001)
+export {functions}

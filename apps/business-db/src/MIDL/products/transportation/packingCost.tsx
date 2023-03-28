@@ -77,7 +77,7 @@ export default function PackingCost() {
       )
     }
     onChange={(e) => {
-      if (e.target.value) setValue(parseInt(e.target.value));
+      if (e.target.value) setValue(parseFloat(e.target.value));
     }}
     placeholder="0"
     type="number"

@@ -1,13 +1,18 @@
 /* eslint-disable no-lone-blocks */
 import { clientInfoType, CostType, orderType } from '@boxtech/shared-constants'
 import { Checkbox, Divider, Text } from '@mantine/core'
+import { showNotification } from '@mantine/notifications'
+import { IconX } from '@tabler/icons'
 import { signOut } from 'firebase/auth'
+import { httpsCallable } from 'firebase/functions'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
+import { callbackify } from 'util'
 import usePhoneAuth from '../../component/auth'
 import BackandNextButton from '../../component/BackandNextButton'
-import { app, auth } from '../../configs/firebaseconfig'
+import { app, auth, functions } from '../../configs/firebaseconfig'
+import { environment } from '../../environments/environment'
 import { displayRazorpay, loadScript } from '../../hooks/razorpay'
 import { RootState } from '../../store'
 
@@ -29,15 +34,15 @@ export const PriceBreakup = ({ clientData, data, clientCostData }: {
         Surcharge: 0
     })
 const [termsCond, setTermsCond] = useState(false)
-    const handler = async (data: any) => {
-        console.log(data);
-        if (data.razorpay_payment_id) {
-            navigate(`/${clientId}/quotation/${id}/${data.razorpay_payment_id}/success`)
-            signOut(auth)
-        } else {
-            navigate("/failuer")
-        }
-    }
+    // const handler = async (data: any) => {
+    //     console.log(data);
+    //     if (data.razorpay_payment_id) {
+    //         navigate(`/${clientId}/quotation/${id}/${data.razorpay_payment_id}/success`)
+    //         signOut(auth)
+    //     } else {
+    //         navigate("/failuer")
+    //     }
+    // }
     return (
         <div>
             <LabourCharges data={data} clientCostData={clientCostData} setSubTotal={setSubTotal} />
@@ -50,38 +55,45 @@ const [termsCond, setTermsCond] = useState(false)
             <Divider />
             <StatisticalCharges setSubTotal={setSubTotal} />
             <Divider />
+            <SubTotal subTotal={subTotal} />
+            <Divider />
             <FOVcompo setSubTotal={setSubTotal} subTotal={subTotal} />
             <Divider />
             <Surcharge setSubTotal={setSubTotal} subTotal={subTotal} />
-            <Divider />
-            <SubTotal subTotal={subTotal} />
             <Divider size="sm" color="black" />
             <GrandTotal subTotal={subTotal} />
             <Divider size="sm" color="black" />
             <div className='mt-5'>
                 <Text className='font-semibold text-center'>Trems & Conditions</Text>
-                <Text className='text-sm flex gap-3'><Checkbox className='w-fit' onChange={(e) => setTermsCond(e.target.checked)} /> *GSTIN details should be shared in advance, no changes will be made to final Invoice once generated from the system.
+                <Text className='text-sm flex gap-3'>
+                <Checkbox className='w-fit' styles={{body:{alignItems:"flex-start"}}} onChange={(e) => setTermsCond(e.target.checked)} label={`
+                 *GSTIN details should be shared in advance, no changes will be made to final Invoice once generated from the system.
                     * Quotation provided will be valid, if approved within Fifteen (15) days of submission and the move occurs within Thirty (30) days.
                     * Written confirmation of this quotation is required along with the payment of Gross Freight and GST(if applicable) prior to the commencement of packing, Settlement of balance payment will be prior to the dispatch of consignment from origin.
-                    * Transit Time: (Excluding the pickup & delivery day)</Text>
+                    * Transit Time: (Excluding the pickup & delivery day)
+                `} />
+                </Text>
             </div>
             <div className='my-5'>
                 <BackandNextButton
                     nextDisabled={!termsCond}
-                    handelNextBtn={() => {
-                    const sub = Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)
-                        const total = ((sub * 0.18) + sub) * 100
-                        console.log(total);
-                    const value = {
-                        amount: total,
-                        currency: "INR",
-                        image: clientData.logo,
-                        businessName: clientData.brandName,
-                        userName: data.name,
-                        userEmail: data.email,
-                        userPhone:data.phone
-                    }
-                    displayRazorpay(value ,handler)
+                    handelNextBtn={async() => {
+                        try {
+                            const getDocument = httpsCallable(functions, 'getPaymentLink');                            
+                            const response = await getDocument({ id });
+                            console.log(response.data);
+                          } catch (error:any) {
+                            console.log(error);
+                            showNotification({
+                              id: `reg-err-${Math.random()}`,
+                              autoClose: 5000,
+                              title: 'Not Authorised!',
+                              message: environment.production ? "Something went wrong" : error.message+'666',
+                              color: 'red',
+                              icon: <IconX />,
+                              loading: false,
+                            });
+                          }
                 } } />
             </div>
         </div>
@@ -108,7 +120,6 @@ const LabourCharges = ({ clientCostData, data, setSubTotal }: {
         {/* @ts-ignore */ }
         setSubTotal(prev => ({ ...prev, labourCharges: data.hasLiftFacility ? clientCostData.labourCost[data.config].labourCount * clientCostData.labourCost[data.config].cost : (clientCostData.labourCost[data.config].labourCount + 2) * clientCostData.labourCost[data.config].cost }))
     }, [])
-    console.log(config);
 
     useEffect(() => {
         (async () => {
@@ -428,7 +439,6 @@ const SubTotal = ({ subTotal }: {
         });
 
     }, [subTotal])
-console.log(total, subTotal);
 
     function percentage(percent: number, total: number) {
         return ((percent / 100) * total)

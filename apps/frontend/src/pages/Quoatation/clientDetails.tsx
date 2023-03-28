@@ -4,7 +4,7 @@ import React from 'react'
 
 export const ClientDetails = ({ clientData }: { clientData: clientInfoType }) => {
     return (
-        <div className='border-[1px] border-solid border-[#c7cbcd] p-3'>
+        <div className='border-[1px] border-solid border-[#c7cbcd] p-3 rounded-lg'>
             <div className='grid md:grid-cols-3'>
                 <div className='text-center md:order-2'>
                     <img src={clientData.logo} alt="logo" className='h-16' />
