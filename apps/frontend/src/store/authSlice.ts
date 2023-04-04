@@ -30,7 +30,7 @@ const initialState: UserDetailState = {
   error: null,
   user: user,
   step: "phone",
-  phoneNumber: userInfo?.phoneNumber,
+  phoneNumber: null,
   name: userInfo?.name,
   fullName:userInfo?.name|| "",
   email: "",

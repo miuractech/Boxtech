@@ -10,9 +10,10 @@ import Testimonial from '../testimonial/Testimonial';
 
 const HomePage = () => {
   return (
-    <div>
-        <StartCnt />
-        <SecondCnt />
+    <div className='max-w-[1600px] m-auto'>
+      <div className='h-28' />
+      <StartCnt />
+      <SecondCnt />
       <Services />
       <CreativeCnt />
       <Testimonial />

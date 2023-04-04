@@ -1,49 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './startcnt.css';
 import { Link } from 'react-router-dom';
 import { IconArrowsMaximize, IconLink, IconLockOpen } from '@tabler/icons';
 import mainimage from "../../../assets/img/mainimg.jpg"
+import { Button, Text, Title, Transition } from '@mantine/core';
+import security from "../../../assets/img/security.png"
+import flexiable from "../../../assets/img/flexibility.png"
+import autopayment from "../../../assets/img/fintech.png"
 
 const StartCnt = () => {
+    const [first, setfirst] = useState(false)
+
+    useEffect(() => {
+        setfirst(true)
+    }, [])
+
 
     const adv = {
         names: [
-            { icon: <IconLockOpen style={{ 'color': 'white' }} />, name: 'Speed & Security' },
-            { icon: <IconArrowsMaximize style={{ 'color': 'white' }} />, name: 'Flexibility and Scalability' },
-            { icon: <IconLink style={{ 'color': 'white' }} />, name: 'Automated Payments' }
+            { icon: security, name: 'Speed and Security' },
+            { icon: flexiable, name: 'Flexibility and Scalability' },
+            { icon: autopayment, name: 'Automated Payments' }
         ]
     }
 
     return (
-        <div id="seperate-container" className="min-h-[800px] w-[100%] sm:h-auto">
+        <div id="seperate-container" className="min-h-[630px] w-[100%] sm:h-auto">
             <div>
-                <div className="my-[10%] mx-8 md:mx-[10%] md:my-[15%]">
-                    <h1 className="font-bold text-[38px] tracking-[1px] sm:text-[28px]">Best Packing & Moving software for your business!</h1>
-                    <p className="text-justify sm:py-[12px] tracking-[1px] p-[10px] sm:p-0">We provide an effective and powerful way to manage your operations like pickup scheduling, quotation generation, pricing, customer review, payment, etc.</p>
-                    {/* <Link to='/pricing-plans'> */}
-                    <button
-                        onClick={() => {
-                            window.location.href = "https://admin.boxtech.miurac.com/"
-                        }}
-                        className="bg-[#edbd0f] rounded-[5px] p-[10px] my-[20px] text-white w-full sm:w-56">
-                        Start for free
-                    </button>
-                    {/* </Link> */}
-                    <div className="flex my-[8px] justify-start md:justify-center items-center flex-wrap md:h-[200px] w-auto">
+                <div className="my-[10%] mx-8 md:mx-[10%] md:my-[15%] space-y-10">
+                    <Transition mounted={first} transition="slide-right" duration={1000} timingFunction="ease">
+                        {(styles) => (<div style={styles}>
+                            <div className='space-y-5'>
+                                <Title order={1}>Best Packing & Moving software for your business!</Title>
+                                <Text color='gray'>We provide an effective and powerful way to manage your operations like pickup scheduling, quotation generation, pricing, customer review, payment, etc.</Text>
+                                <Button
+                                    className='transform transition duration-500 hover:scale-110'
+                                    size='lg'
+                                    onClick={() => {
+                                        window.location.href = "https://admin.boxtech.miurac.com/"
+                                    }}>
+                                    Start for free
+                                </Button>
+                            </div>
+                        </div>)}
+                    </Transition>
+                    <Transition mounted={first} transition="slide-up" duration={1000} timingFunction="ease">
+                        {(styles) => (<div style={styles}>
+                            <div className="grid md:grid-cols-3 gap-5 md:gap-0">
                         {
                             adv.names.map((item) =>
-                                <div className="flex text-left md:mx-[15px] mr-4 my-[15px] w-[235px] justify-start items-center">
-                                    <div className='p-[4px] bg-black'>{item.icon}</div>
-                                    <h2 className="text-[14px] tracking-[1px] ml-[8px]">{item.name}</h2>
+                                <div className="flex gap-3">
+                                    <img className='h-10 self-center' src={item.icon} alt='' />
+                                    <Text className='self-center text-gray-500 font-semibold md:w-1/2' size="xs">{item.name}</Text>
                                 </div>
                             )
                         }
                     </div>
+                        </div>)}
+                    </Transition>
                 </div>
-
             </div>
             <div>
-                <img className='w-3/4 block mx-auto' src={mainimage} alt="Alt img" />
+                <Transition mounted={first} transition="slide-up" duration={500} timingFunction="ease">
+                    {(styles) => (<div style={styles}>
+                        <img className='block m-auto w-full lg:w-3/5' src={mainimage} alt="Alt img" />
+                    </div>)}
+                </Transition>
             </div>
         </div>
     )
