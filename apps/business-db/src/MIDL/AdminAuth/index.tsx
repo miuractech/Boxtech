@@ -28,13 +28,13 @@ export default function Admin({}: Props) {
     <React.Suspense
       fallback={<LoadingOverlay visible={true} overlayBlur={2} />}
     >
-      <Container className="mx-auto" p={0} fluid>
-        <Grid p={0}>
-          <Grid.Col xs={12} md={8} p={0}>
-            <div className="h-screen bg-gray-500 p-10">
-              <div className=" text-xl my-5">benefits</div>
-              <div className="flex gap-3">
-              <Skeleton height={450}  />
+      <Container className="mx-auto w-screen p-0 overflow-hidden" fluid>
+        <Grid >
+          <Grid.Col xs={12} md={8} >
+            <div className="h-screen bg-gray-500 ">
+              <div className=" text-xl my-5 text-white">Plans</div>
+              <div className="flex gap-3 px-4">
+              <PlansComponent   />
               <Skeleton height={450}  />
               </div>
             </div>
@@ -93,4 +93,13 @@ export default function Admin({}: Props) {
       </Container>
     </React.Suspense>
   );
+}
+
+
+const PlansComponent = () =>{
+  return(
+<div className="p-4">
+  test
+</div>
+  )
 }

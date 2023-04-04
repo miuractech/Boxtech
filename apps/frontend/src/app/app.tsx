@@ -1,12 +1,18 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import styles from './app.module.css';
-import React from "react"
+import React from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
 import useNetworkStatus from '../hooks/useNetworkStatus';
 import Landing, { userInfoType } from '../pages/Landing';
-import { Route, Routes, useNavigate, useParams, Outlet } from 'react-router-dom';
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  Outlet,
+} from 'react-router-dom';
 import Items from '../pages/items';
 import List from '../pages/items/list';
 import LiftFacilityPage from '../pages/LiftFacilityPage';
@@ -39,32 +45,29 @@ export function App() {
     googleMapsApiKey: GoogleMapApiKey,
     libraries: ['places'],
   });
-  const { user } = useSelector((state: RootState) => state.User)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const { clientId } = useParams()
+  const { user } = useSelector((state: RootState) => state.User);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { clientId } = useParams();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        dispatch(setUser(user))
-        const userDoc = await getDoc(doc(db, "Users", user.uid))
+        dispatch(setUser(user));
+        const userDoc = await getDoc(doc(db, 'Users', user.uid));
         if (userDoc.exists()) {
-          const data = userDoc.data() as userInfoType
-          dispatch(setUserInfo(data))
+          const data = userDoc.data() as userInfoType;
+          dispatch(setUserInfo(data));
           console.log(data, user);
-
         }
       } else {
         if (clientId) {
-          navigate(`/${clientId}`)
+          navigate(`/${clientId}`);
         }
       }
     });
-    return () => unsub()
-  }, [])
-
-
+    return () => unsub();
+  }, []);
 
   if (!isLoaded)
     return (
@@ -73,22 +76,26 @@ export function App() {
       </div>
     );
 
-
   return (
-    <div  >
+    <div>
       <Helmet>
         <title>Boxtech</title>
         <meta
-          name='discription'
-          content='Get help for all of your packing and moving related works'
+          name="discription"
+          content="Get help for all of your packing and moving related works"
         />
-        <meta
-          name='keywords'
-          content='packing, moving, shifting'
-        />
+        <meta name="keywords" content="packing, moving, shifting" />
       </Helmet>
       <Routes>
-        <Route path="/" element={<><Navbar /><HomePage /></>} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <HomePage />
+            </>
+          }
+        />
         {/* <Route path="/pricing-plans" element={<PricingPlans />} /> */}
         <Route path="/terms-conditions" element={<TermsCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -96,15 +103,20 @@ export function App() {
         {/* <Route path="/subscriptions" element={<MySubscriptions />} /> */}
         {/* <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
-        <Route path="/:clientId" element={<BoxTechWrapper />} >
+        <Route path="/:clientId" element={<BoxTechWrapper />}>
           <Route index element={<Landing />} />
-          <Route path="items" element={<Items />} />
+        </Route>
+        <Route path="/quote/:quoteid">
+          <Route index element={<Items />} />
           <Route path="list" element={<List />} />
           <Route path="liftQuery" element={<LiftFacilityPage />} />
           <Route path="userInfo" element={<UserInfo />} />
           <Route path="bookings" element={<Booking />} />
           <Route path="quotation/:id" element={<Quoatation />} />
-          <Route path="quotation/:id/:razorpayID/success" element={<SuccessPage />} />
+          <Route
+            path="quotation/:id/:razorpayID/success"
+            element={<SuccessPage />}
+          />
         </Route>
       </Routes>
     </div>
@@ -115,13 +127,16 @@ export default App;
 
 const BoxTechWrapper = () => {
   useEffect(() => {
-    const unloadCallback = (event: { preventDefault: () => void; returnValue: string; }) => {
+    const unloadCallback = (event: {
+      preventDefault: () => void;
+      returnValue: string;
+    }) => {
       event.preventDefault();
-      event.returnValue = "";
-      return "";
+      event.returnValue = '';
+      return '';
     };
-    window.addEventListener("beforeunload", unloadCallback);
-    return () => window.removeEventListener("beforeunload", unloadCallback);
+    window.addEventListener('beforeunload', unloadCallback);
+    return () => window.removeEventListener('beforeunload', unloadCallback);
   }, []);
-  return <Outlet />
-}
+  return <Outlet />;
+};

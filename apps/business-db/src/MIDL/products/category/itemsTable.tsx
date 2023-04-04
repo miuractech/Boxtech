@@ -212,7 +212,8 @@ export default function ItemsTable({
       </div>
       <Modal
         opened={modal}
-        transition="slide-down"
+        transitionProps={{transition:'slide-down'}}
+        // transition=""
         onClose={() => {
           setModal(false);
           setEditDetails(null);

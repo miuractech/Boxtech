@@ -13,6 +13,7 @@ import Products from '../MIDL/products';
 import { setClient } from '../store/clientSlice';
 import CompanyDetails from './companyDetails';
 import { Booking } from '../MIDL/Bookings';
+import { Container } from '@mantine/core';
 
 // type Props = {}
 
@@ -45,7 +46,7 @@ export default function Dashboard() {
       getClient();
     }
   }, []);
-  return <div>
+  return <Container fluid >
     <NavBar >
       <Routes>
         <Route path='/' element={<Booking />} />
@@ -54,5 +55,5 @@ export default function Dashboard() {
     <Route path="/Logout" element={<Logout />} />
     </Routes>
     </NavBar>
-  </div>;
+  </Container>;
 }

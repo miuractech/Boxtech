@@ -3,13 +3,13 @@ import React from 'react'
 const PrivacyPolicy = () => {
   return (
     <div>
-        <div className='h-[400px] p-[10%] sm:pl-[20px] sm:p-0 sm:py-[40%] bg-[#ffd7ef] text-[35px]'>
-                <h1>Privacy Policy</h1>
+        <div className='py-4 pl-12 bg-[#ffd7ef] text-[35px]'>
+                <h1 className='m-0' >Privacy Policy</h1>
         </div>
         <div style={{'borderBottomRightRadius':'80%'}} className='bg-[#ffd7ef] h-[100px]'>
                  
         </div>
-        <div className='w-[40%] ml-[10%] mr-[40%] mt-[40px] sm:w-[90%] sm:mx-auto my-[18px]'>
+        <div className='md:w-[70%] mx-8 mr-[40%] mt-[40px] w-[90%] md:mx-auto my-[18px]'>
             <h4 className='pt-[20px] text-[22px] font-[600]'>Privacy Policy for Packers and Movers Software</h4>
             <p className='text-[14px] tracking-[1px] leading-[25px] py-[30px] text-justify'>
             Introduction: <br/>
