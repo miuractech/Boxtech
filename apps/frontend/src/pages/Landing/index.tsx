@@ -97,7 +97,7 @@ export default function Landing() {
                     to,
                     config,
                     phone,
-                    clientId: clientId
+                    clientId
                   })
                   navigate(`/quote/${data.id}`)
                   // console.log(pathname.replace("/",''));

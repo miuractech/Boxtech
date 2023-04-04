@@ -1,10 +1,10 @@
+import * as ReactDOM from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import * as ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import { store } from './store';
 import App from './app/app';
-import { BrowserRouter } from 'react-router-dom';
 
 const inputClass =
   'border-none bg-gray-100 placeholder text-sm rounded-[10px] h-12';
