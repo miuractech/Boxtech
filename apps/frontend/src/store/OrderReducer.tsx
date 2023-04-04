@@ -7,7 +7,6 @@ import {
   masterFormType,
   userInfoType,
 } from '../pages/Landing';
-import { CatergoryType } from '@boxtech/shared-constants';
 
 const order: masterFormType = localStorage.getItem('order')
   ? JSON.parse(localStorage.getItem('order') || '')
@@ -16,7 +15,7 @@ export type costDetailsType = {
   subTotal: number;
 
   gst: number;
-  grandTotal: number; //subTotal+ gst
+  grandTotal: number;
 };
 
 const initialState: masterFormType = {
@@ -64,10 +63,6 @@ export const OrderSlice = createSlice({
   name: 'Order',
   initialState: order ? order : initialState,
   reducers: {
-    // setField:(state,payload:PayloadAction<{field:string,data:GooglePlacesType | string}>)=>{
-    //   const target = {...current(state),[payload.payload.field]:payload.payload.data}
-    //   state = target
-    // },
     setFrom: (state, payload: PayloadAction<GooglePlacesType>) => {
       state.from = payload.payload;
     },
@@ -117,16 +112,9 @@ export const OrderSlice = createSlice({
     setUserInfo:(state, action: PayloadAction<userInfoType>) => {
       state.userInfo = action.payload;
     }
-    // incrementByAmount: (state, action: PayloadAction<number>) => {
-    //   state.value += action.payload;
-    // },
-    // removeAllSelectedItems: (state, action) => {
-    //   state.selectedItems = [];
-    // },
   },
 });
 
-// Action creators are generated for each case reducer function
 export const {
   setConfig,
   setFrom,

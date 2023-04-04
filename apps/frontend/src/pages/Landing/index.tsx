@@ -4,6 +4,7 @@ import {
   Center,
   Divider,
   Select,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -17,26 +18,18 @@ import { setPhone } from '../../store/authSlice';
 import { GetLocation } from './getPlace';
 import { db } from '../../configs/firebaseconfig';
 import { useState } from 'react';
+import india from "../../assets/img/india.png"
 
 export default function Landing() {
   const dispatch = useDispatch();
   const { config } = useSelector((state: RootState) => state.order);
   const [phone, setNumber] = useState<any>(0);
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { order } = useSelector((state: RootState) => state);
-  const { phoneNumber } = useSelector((state: RootState) => state.User);
   const { clientId } = useParams()
   const {
     from,
     to,
-    costDetails,
-    transportationCost,
-    hasLiftFacility,
-    selectedItems,
-    userInfo,
-    floorNumber,
-    insurance
   } = order;
   return (
     <div
@@ -84,6 +77,7 @@ export default function Landing() {
                 onChange={(e) => {
                   setNumber(e.target.value)
                 }}
+                icon={<img src={india} alt="in" className='w-full px-2' />}
               />
               <Button
                 className="mt-10"

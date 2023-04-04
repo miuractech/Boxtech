@@ -11,7 +11,7 @@ const Testimonial = () => {
     },
     {
       words:
-        "“ We are extremely happy with the service provided by boxtech.”",
+        "“We are extremely happy with the service provided by boxtech.”",
       author: "Tomar Singh,",
       company: 'Parkmerced'
     },

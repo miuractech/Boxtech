@@ -54,7 +54,7 @@ export const Navbar = () => {
 
   return (
     <div>
-      <div className='pl-8 sm:pl-0 sm:pr-0 fixed bg-white w-full shadow-xl z-50 '>
+      <div className='pl-8 sm:pl-0 sm:pr-0 fixed bg-white w-full shadow-md z-50 '>
         <nav className="navigation" >
           <Link to="/" className="brand-name" >
             <div className='flex gap-3'>
