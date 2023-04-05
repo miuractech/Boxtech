@@ -48,6 +48,7 @@ const Footer = () => {
                         <ul>
                             <li className="py-[4px] tracking-[1px] text-[14px]"><a href="/terms-conditions"><u>Terms and Conditions</u></a></li>
                             <li className="py-[4px] tracking-[1px] text-[14px]"><a href="/privacy-policy"><u>Privacy Policy</u></a></li>
+                            <li className="py-[4px] tracking-[1px] text-[14px]"><a href="/refund"><u>Refund Policy</u></a></li>
                         </ul>
                     </div>
 

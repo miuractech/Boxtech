@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import logo from "../../../assets/img/boxtech.png"
 import { Button, Drawer, Text } from "@mantine/core";
-export const Navbar = () => {
+export default function Navbar () {
 
 
   const [isNavExpanded, setIsNavExpanded] = useState(false);

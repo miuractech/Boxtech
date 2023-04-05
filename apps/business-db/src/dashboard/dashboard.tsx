@@ -1,9 +1,9 @@
-import {  doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { showNotification } from '@mantine/notifications';
 import { environment } from '../environments/environment';
-import {  defaultErrorMessage, clientDbRef } from '../constants';
+import { defaultErrorMessage, clientDbRef } from '../constants';
 import { IconX } from '@tabler/icons';
 import { RootState } from '../store';
 import { NavBar } from '../MIDL/navbar/Topbar';
@@ -25,7 +25,7 @@ export default function Dashboard() {
   useEffect(() => {
     const getClient = async () => {
       try {
-        const clientDb = doc(clientDbRef,user?.uid);
+        const clientDb = doc(clientDbRef, user?.uid);
         const res = await getDoc(clientDb);
         const data = res.data();
         dispatch(setClient(data));
@@ -46,14 +46,16 @@ export default function Dashboard() {
       getClient();
     }
   }, []);
-  return <Container fluid >
-    <NavBar >
-      <Routes>
-        <Route path='/' element={<Booking />} />
-    <Route path="/products" element={<Products />} />
-    <Route path="/settings" element={<CompanyDetails />} />
-    <Route path="/Logout" element={<Logout />} />
-    </Routes>
-    </NavBar>
-  </Container>;
+  return (
+    <Container fluid>
+      <NavBar>
+        <Routes>
+          <Route path="/" element={<Booking />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/settings" element={<CompanyDetails />} />
+          <Route path="/Logout" element={<Logout />} />
+        </Routes>
+      </NavBar>
+    </Container>
+  );
 }

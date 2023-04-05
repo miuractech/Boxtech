@@ -5,7 +5,7 @@ import { ActionIcon, Button, CopyButton, Text, Title, Tooltip } from '@mantine/c
 import { useNavigate, useParams } from 'react-router-dom';
 import { IconCheck, IconCopy } from '@tabler/icons';
 
-export const SuccessPage = () => {
+export default () => {
   const { clientId, id, razorpayID } = useParams()
   const navigate = useNavigate()
   return (
