@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../configs/firebaseconfig';
 import { RichTextEditor } from '@mantine/rte';
 import { Button } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 type Props = {
   path: string;
 };
 
 export default function PrivacyPolicy({ path }: Props) {
   const [policy, setPolicy] = useState('');
-
+  const navigate = useNavigate()
   useEffect(() => {
     getDoc(doc(collection(db, 'meta'), path)).then((t) =>
       setPolicy(t.data()?.[path] as unknown as string)
@@ -23,6 +24,17 @@ export default function PrivacyPolicy({ path }: Props) {
   return (
     <div>
       <Button
+      variant='outline'
+      color='dark'
+        onClick={() =>
+          navigate(-1)
+        }
+      >
+        Back
+      </Button>
+      &ensp;
+      &ensp;
+      <Button
         onClick={() =>
           setDoc(
             doc(collection(db, 'meta'), path),
@@ -33,6 +45,8 @@ export default function PrivacyPolicy({ path }: Props) {
       >
         save
       </Button>
+      <br />
+      <br />
       <RichTextEditor
         sticky
         style={{ minHeight: 400 }}

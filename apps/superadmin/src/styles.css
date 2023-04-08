@@ -13,3 +13,7 @@ body{
 #root{
     background-color: #F2F2F5;
 }
+a{
+    text-decoration: none;
+    color: inherit;
+}
