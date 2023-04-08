@@ -34,8 +34,6 @@ export function MiuracImage({
   editConfig,
   setUrlFunc,
   buttonComponent,
-  minHeight,
-  minWidth,
   allowMultiple,
   count,
   cropId

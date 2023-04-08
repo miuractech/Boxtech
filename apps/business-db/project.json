@@ -55,7 +55,9 @@
         "buildTarget": "business-db:build",
         "hmr": true,
         "open": true,
-        "ssl": true
+        "ssl": true,
+        "port": 4201,
+        "host":"0.0.0.0"
       },
       "configurations": {
         "development": {

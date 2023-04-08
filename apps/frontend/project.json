@@ -51,7 +51,9 @@
       "options": {
         "buildTarget": "frontend:build",
         "hmr": true,
-        "port": 4201,
+        "open": true,
+        "ssl": true,
+        "port": 4202,
         "host":"0.0.0.0"
       },
       "configurations": {

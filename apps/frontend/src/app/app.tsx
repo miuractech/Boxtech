@@ -52,7 +52,6 @@ export function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { clientId } = useParams();
-
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
