@@ -1960,3 +1960,49 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [debug] [2023-04-09T03:24:23.539Z] shutdown requested via /__/quitquitquit
 
 [info] +  functions: Loaded functions definitions from source: getPaymentLink, getUpCommingEvents, createEvent. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: getPaymentLink, getUpCommingEvents, createEvent."}}
+[debug] [2023-04-09T04:24:30.201Z] File C:\Users\Kiran D N\Documents\Miurac\Boxtech\functions\src\slotBloking\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Kiran D N\\Documents\\Miurac\\Boxtech\\functions\\src\\slotBloking\\index.ts changed, reloading triggers"}}
+[debug] [2023-04-09T04:24:31.281Z] Validating nodejs source
+[debug] [2023-04-09T04:24:35.304Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "16"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "api": "^5.0.8",
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^4.2.1",
+    "googleapis": "^114.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^0.2.0",
+    "typescript": "^4.5.4"
+  },
+  "private": true
+}
+[debug] [2023-04-09T04:24:35.304Z] Building nodejs source
+[debug] [2023-04-09T04:24:35.306Z] Failed to find version of module node: reached end of search path C:\Users\Kiran D N\Documents\Miurac\Boxtech\functions\node_modules
+[warn] !  functions: Your requested "node" version "16" doesn't match your global version "18". Using node@18 from host. 
+[debug] [2023-04-09T04:24:35.326Z] Could not find functions.yaml. Must use http discovery
+[debug] [2023-04-09T04:24:35.341Z] Found firebase-functions binary at 'C:\Users\Kiran D N\Documents\Miurac\Boxtech\functions\node_modules\.bin\firebase-functions'
+[debug] [2023-04-09T04:24:35.734Z] Serving at port 8945
+
+[debug] [2023-04-09T04:24:37.965Z] Got response from /__/functions.yaml {"endpoints":{"getPaymentLink":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["asia-south1"],"callableTrigger":{},"entryPoint":"getPaymentLink"},"getUpCommingEvents":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["asia-south1"],"httpsTrigger":{},"entryPoint":"getUpCommingEvents"},"createEvent":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"region":["asia-south1"],"httpsTrigger":{},"entryPoint":"createEvent"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2023-04-09T04:24:37.977Z] shutdown requested via /__/quitquitquit
+
+[info] +  functions: Loaded functions definitions from source: getPaymentLink, getUpCommingEvents, createEvent. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: getPaymentLink, getUpCommingEvents, createEvent."}}

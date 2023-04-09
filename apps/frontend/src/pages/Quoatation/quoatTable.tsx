@@ -1,8 +1,12 @@
-import { clientInfoType, orderType, SelectedItem } from '@boxtech/shared-constants'
 import { Divider, Text } from '@mantine/core'
 import React from 'react'
+import { QuotationDataType, SelectedItem } from './priceCalculation'
+import { RootState } from '../../store'
+import { useSelector } from 'react-redux'
 
-export const QuoatTable = ({ clientData, data }: { data: orderType, clientData: clientInfoType }) => {
+export const QuoatTable = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
     return (
         <div className='space-y-3'>
             <Text className='font-bold text-center'>Quoatation</Text>
@@ -11,7 +15,7 @@ export const QuoatTable = ({ clientData, data }: { data: orderType, clientData: 
                 <Text className='justify-self-center'>Dimensions(ft)</Text>
                 <Text className='justify-self-center'>Qty</Text>
             </div>
-            {data.selectedItems.map(item => (
+            {quotation.selectedItems.map(item => (
                 <Items item={item} />
             ))}
         </div>

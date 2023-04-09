@@ -14,6 +14,7 @@ import UserInfo from './UserInfo'
 import Booking from './Booking'
 import Lottie from "lottie-react";
 import truck from "../assets/json/truck-loading.json"
+import Quoatation from './Quoatation'
 
 export const Index = () => {
     const { orderId } = useParams()
@@ -54,6 +55,8 @@ export const Index = () => {
                 return <UserInfo />;
             case "userVerified":
                 return <Booking />;
+            case "bookingConfirmed":
+                return <Quoatation />;
             default:
                 return <div>UNKNOWN</div>
         }
