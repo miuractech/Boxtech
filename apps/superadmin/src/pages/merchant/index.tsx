@@ -3,8 +3,9 @@ import DataTable from 'react-data-table-component';
 import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
 import { generalInfo } from "@boxtech/shared-constants"
-import { Title } from '@mantine/core';
+import { Button, Title } from '@mantine/core';
 import MerchantExpanded from './merchantExpanded';
+import { Link } from 'react-router-dom';
 export default function Merchant() {
     const [data, setData] = useState<any>([]);
     const [merchantCount, setMerchantCount] = useState<number>(0);
@@ -62,6 +63,10 @@ const columns = [
       name: 'Contact',
       selector: (row:generalInfo)=>row.officialMail,
     },
+    {
+        name: 'stats',
+        cell: (row:generalInfo)=><Link to={`/stats/${row.clientId}`}><Button> stats</Button></Link>,
+      },
   ];
   
 

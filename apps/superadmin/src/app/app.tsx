@@ -6,6 +6,7 @@ import { NavBar } from '../components/navbar/Topbar';
 import Home from '../pages/home';
 import Merchant from '../pages/merchant';
 import Settings from '../pages/settings';
+import OrdersCount from '../pages/merchant/stats';
 export function App() {
   return (
     <div>
@@ -20,6 +21,7 @@ export function App() {
         >
           <Route index element={<Home />} />
           <Route path="merchant" element={<Merchant  />} />
+          <Route path="stats/:clientId" element={<OrdersCount  />} />
         <Route
           path="settings"
         >

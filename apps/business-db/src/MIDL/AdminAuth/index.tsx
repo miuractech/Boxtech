@@ -135,7 +135,7 @@ const plans = [
   },
   {
     planName: 'Premium',
-    price: '$19.99/month',
+    price: '₹499/month',
     features: ['everything in basic', 'staff accounts', 'Full payment', 'Free website', 'Analytics', 'Proirity support'],
     validity: 'forever',
     ctaText: 'Sign up',

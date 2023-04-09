@@ -202,32 +202,6 @@ const RightColumn = ({ data }: { data: KYCType | null | undefined }) => {
                 {data.bankAccountNo}
               </h1>
             </div>
-
-            {/* 
-              <p className="text-lg mt-2 text-center">{data.brandName}</p>
-              <div className="flex mt-4 items-center">
-                <p className={fieldClassname}>Phone</p>
-                <p className={valueClassname}>{data.phone}</p>
-              </div>
-              <div className="flex mt-2 items-center">
-                <p className={fieldClassname}>Whatsapp</p>
-                <p className={valueClassname}>{data.phone}</p>
-              </div>
-              <div className="flex mt-2 items-center">
-                <p className={fieldClassname}>Email</p>
-                <p className={valueClassname}>{data.officialMail}</p>
-              </div>
-              <div className="flex mt-2 items-center">
-                <p className={fieldClassname}>Address</p>
-                <p className={valueClassname}>{data.address}</p>
-              </div>
-              <div className="flex mt-2 items-center">
-                <p className={fieldClassname}>Pincode</p>
-                <p className={valueClassname}>{data.pincode}</p>
-              </div> */}
-            {/* <div className="flex mt-2">
-                  <p className="text-lg">{data.createdTime}</p>
-                </div> */}
           </Card>
         </div>
       </div>

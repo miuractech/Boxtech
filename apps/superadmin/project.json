@@ -10,7 +10,7 @@
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
-        "outputPath": "dist/apps/superadmin",
+        "outputPath": "dist/apps/superadmin/build",
         "index": "apps/superadmin/src/index.html",
         "baseHref": "/",
         "main": "apps/superadmin/src/main.tsx",

@@ -81,7 +81,7 @@ export function NavSections({ tooglesize, setOpen }: NavSectionsType) {
             icon={<IconClipboardText size={16} color="black" />}
             color="#e0e0e0"
             tooglesize={tooglesize}
-            label={'Bookings'}
+            label={'Overview'}
             setOpen={setOpen}
           />
           <LeftLink
@@ -101,15 +101,15 @@ export function NavSections({ tooglesize, setOpen }: NavSectionsType) {
             setOpen={setOpen}
           />
           <LeftLink
-            path={'/Customers'}
+            path={'/payment'}
             icon={<IconUsers size={16} color="black" />}
             color="#e0e0e0"
             tooglesize={tooglesize}
-            label={'Customers'}
+            label={'Payments'}
             setOpen={setOpen}
           />
           <LeftLink
-            path={'/Products'}
+            path={'/products'}
             icon={<IconPackage size={16} color="black" />}
             color="#e0e0e0"
             tooglesize={tooglesize}
