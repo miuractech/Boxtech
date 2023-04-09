@@ -67,10 +67,15 @@ export default function Admin({}: Props) {
                 leftIcon={<img src={GOOGLEIMG} alt="google sign in" />}
                 onClick={async () => {
                   try {
-                    await signInWithPopup(auth, provider);
+                    const authData = await signInWithPopup(auth, provider);
+                    console.log(authData.user.photoURL, authData.operationType, authData.providerId);
+                    const credential = GoogleAuthProvider.credentialFromResult(authData);
+                    if (credential) {
+                      const token = credential.accessToken;
+                      console.log(token, credential);
+                    }
                   } catch (error: any) {
                     console.log(error);
-
                     showNotification({
                       id: `reg-err-${Math.random()}`,
                       autoClose: 5000,

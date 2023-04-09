@@ -3,19 +3,14 @@ import { DocumentData } from 'firebase/firestore';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import {
-  addOrRemoveQuntity,
-  addSelectedCategory,
-  removeSelectedCategory,
-} from '../../store/OrderReducer';
 import { categoryItemType } from '../Landing';
+import { addOrRemoveQuntity, addSelectedCategory, removeSelectedCategory } from '../../store/orderSlice';
 type categoryItemProps = {
   item: categoryItemType;
 };
 export default function CategoryItem(props: categoryItemProps) {
-  const { selectedItems } = useSelector((state: RootState) => state.order);
+  const { selectedItems } = useSelector((state: RootState) => state.orderDetails);
   const { item } = props;
-  console.log(item);
   const isChecked =
     selectedItems.filter((it) => it['id'] === item['id']).length > 0;
   const selectedItem = selectedItems.filter((it) => it['id'] === item['id'])[0];
@@ -29,7 +24,6 @@ export default function CategoryItem(props: categoryItemProps) {
       if (!item['quantity']) item['quantity'] = 1;
       item['total'] = Number(item['quantity']) * Number(item['Price']);
     }
-
     if (!isChecked) {
       dispatch(addSelectedCategory(item));
       setQuantity(1);
@@ -38,10 +32,9 @@ export default function CategoryItem(props: categoryItemProps) {
       setQuantity(0);
     }
   };
+
   const handelArrowClick = (val: number) => {
-    console.log(quantity);
     const qyt = quantity + val;
-    console.log(qyt);
     if (qyt < 0) return;
     setQuantity(qyt);
     if (qyt > 0) {
@@ -49,7 +42,6 @@ export default function CategoryItem(props: categoryItemProps) {
       it['quantity'] = qyt;
       if (!isChecked) dispatch(addSelectedCategory(item));
       else {
-        console.log(it);
         dispatch(addOrRemoveQuntity({ id: it['id'], quantity: qyt }));
       }
     } else if (qyt === 0) {

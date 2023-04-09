@@ -5,35 +5,32 @@ import { TextInput } from '@mantine/core';
 import { SegmentedControl } from '@mantine/core';
 import { Box } from '@mantine/core';
 import { Center } from '@mantine/core';
-import { IconChevronRight, IconEye, IconSearch, IconX } from '@tabler/icons';
+import { IconSearch, IconX } from '@tabler/icons';
 import {
-  collection,
-  DocumentData,
   getDocs,
   query,
   where,
 } from 'firebase/firestore';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { db } from '../../configs/firebaseconfig';
 import { categoryRef } from '../../constants';
 import { categoryItemType } from '../Landing';
 import CategoryItem from './item';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 let data: categoryItemType[] = [];
 export default function CategoryBar() {
   const [categoryList, setCategoryList] = useState<categoryItemType[]>([]);
-  // const categoryD
   const [activeCat, setActiveCat] = useState(categories[0].name);
   const [searchItem, setSearchItem] = useState('');
-  const params = useParams();
-  console.log(params);
+  const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
 
   const getCategoryList = async () => {
     try {
+      if (!orderDetails) return
       const categoryQ = query(
         categoryRef,
-        where('clientId', '==', params['clientId'])
+        where('clientId', '==', orderDetails.clientId)
       );
       const res = await getDocs(categoryQ);
       data = res.docs.map((doc) => doc.data()) as categoryItemType[];
@@ -46,6 +43,7 @@ export default function CategoryBar() {
   useEffect(() => {
     getCategoryList();
   }, []);
+
   useEffect(() => {
     setCategoryList(data.filter((item) => item['Category'] === activeCat));
   }, [activeCat]);

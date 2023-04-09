@@ -42,7 +42,6 @@ const initialState: masterFormType = {
     addressLine:''
   },
   config: '',
-  selectedItems: [],
   hasLiftFacility: false,
   floorNumber: 0,
   transportationCost: 0,
@@ -72,28 +71,6 @@ export const OrderSlice = createSlice({
     setConfig: (state, payload: PayloadAction<string>) => {
       state.config = payload.payload;
     },
-    addSelectedCategory: (state, action: PayloadAction<categoryItemType>) => {
-      state.selectedItems.push(action.payload);
-    },
-    removeSelectedCategory: (state, action: PayloadAction<string>) => {
-      state.selectedItems = state.selectedItems.filter(
-        (item) => item['id'] !== action.payload
-      );
-    },
-    addOrRemoveQuntity: (
-      state,
-      action: PayloadAction<{ id: string; quantity: number }>
-    ) => {
-      const { id, quantity } = action.payload;
-
-      state.selectedItems = state.selectedItems.map((item) => {
-        if (item['id'] === id) {
-          item['quantity'] = quantity;
-          item['total'] = Number(item['quantity']) * Number(item['Price']);
-        }
-        return item;
-      });
-    },
     setTranspotationCost: (state, action) => {
       state.transportationCost = action.payload;
     },
@@ -119,9 +96,6 @@ export const {
   setConfig,
   setFrom,
   setTo,
-  addOrRemoveQuntity,
-  addSelectedCategory,
-  removeSelectedCategory,
   setLiftFacility,
   setFloorNumber,
   setCostDetails,
