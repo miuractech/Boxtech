@@ -3,22 +3,19 @@ import deleteIcon from '../../assets/deleteIcon.svg';
 import topArrowIcon from '../../assets/Arrowtop.svg';
 import bottomArrowIcon from '../../assets/Arrowbottom.svg';
 import { DocumentData } from 'firebase/firestore';
-import {
-  addOrRemoveQuntity,
-  removeSelectedCategory,
-} from '../../store/OrderReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { IconTrash } from '@tabler/icons';
 import BackandNextButton from '../../component/BackandNextButton';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../store';
+import { addOrRemoveQuntity, removeSelectedCategory } from '../../store/orderSlice';
 type ListItemProps = {
   item: DocumentData;
 };
 
 export default function MylListItem(props: ListItemProps) {
   const { item } = props;
-  const { selectedItems } = useSelector((state: RootState) => state.order);
+  const { selectedItems } = useSelector((state: RootState) => state.orderDetails)
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();

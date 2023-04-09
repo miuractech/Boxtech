@@ -5,15 +5,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import BackandNextButton from '../../component/BackandNextButton';
 import { RootState } from '../../store';
 import MylListItem from './MylListItem';
+import { IconX } from '@tabler/icons';
+import { showNotification } from '@mantine/notifications';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../configs/firebaseconfig';
 
 export default function List() {
-  const { selectedItems } = useSelector((state: RootState) => state.order);
+  const { selectedItems } = useSelector((state: RootState) => state.orderDetails)
+  const { orderId } = useParams()
   const navigate = useNavigate()
-  const params = useParams()
-  useEffect(() => {
-    if(selectedItems.length === 0) navigate(`/${params['clientId']}/items`)
-  }, [])
-  
 
   return (
     <div className="p-4 ">
@@ -52,8 +52,25 @@ export default function List() {
       <div className="m-5">
           <BackandNextButton
             nextDisabled={selectedItems.length === 0}
-            handelNextBtn={() => {
-              navigate(`/${params['clientId']}/liftQuery`);
+          handelNextBtn={async () => {
+            try {
+              if (!orderId) return
+              await updateDoc(doc(db, "Orders", orderId), {
+                status: "itemsSelected",
+                selectedItems
+              })
+              navigate(`/${orderId}`)
+            } catch (error) {
+              showNotification({
+                id: `reg-err-${Math.random()}`,
+                autoClose: 5000,
+                title: "Error",
+                message: "Something went wrong try again",
+                color: "red",
+                icon: <IconX />,
+                loading: false,
+              });
+            }
             }}
           />
         </div>

@@ -7,8 +7,12 @@ import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import logo from "../../../assets/img/boxtech.png"
-import { Button, Drawer, Text } from "@mantine/core";
-export default function Navbar () {
+import { Menu, Button, Drawer, Text, ActionIcon } from "@mantine/core";
+import { IconDotsVertical, IconNotes } from '@tabler/icons';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../../configs/firebaseconfig';
+
+export const Navbar = () => {
 
 
   const [isNavExpanded, setIsNavExpanded] = useState(false);
@@ -22,39 +26,39 @@ export default function Navbar () {
 
 
 
-  const handleClick = () => {
-    setShowOverlay(!showOverlay);
-  }
+  // const handleClick = () => {
+  //   setShowOverlay(!showOverlay);
+  // }
 
 
 
-  const closeOverlay = () => {
-    setShowOverlay(false);
-  }
+  // const closeOverlay = () => {
+  //   setShowOverlay(false);
+  // }
 
-  const handleLogout = () => {
-    try {
-      auth.signOut();
-      navigate('/');
-      alert('Logged out successfully...!')
-      setUserDetails(null);
-    } catch (error) {
-      alert(error.message);
-    }
-  }
+  // const handleLogout = () => {
+  //   try {
+  //     auth.signOut();
+  //     navigate('/');
+  //     alert('Logged out successfully...!')
+  //     setUserDetails(null);
+  //   } catch (error) {
+  //     alert(error.message);
+  //   }
+  // }
 
 
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      setUserDetails(user);
-    })
-  });
+  // useEffect(() => {
+  //   auth.onAuthStateChanged((user) => {
+  //     setUserDetails(user);
+  //   })
+  // });
 
 
 
   return (
     <div>
-      <div className='pl-8 sm:pl-0 sm:pr-0 fixed bg-white w-full shadow-xl z-50 '>
+      <div className='pl-8 sm:pl-0 sm:pr-0 fixed bg-white w-full shadow-md z-50 '>
         <nav className="navigation" >
           <Link to="/" className="brand-name" >
             <div className='flex gap-3'>
@@ -191,7 +195,6 @@ export default function Navbar () {
                       </li>
               }    */}
               <li>
-                {/* <Link to="/checkout"> */}
                 <Button
                   onClick={() => {
                     window.location.href = "https://admin.boxtech.miurac.com/"
@@ -199,7 +202,9 @@ export default function Navbar () {
                   className=''>
                   Get Started
                 </Button>
-                {/* </Link> */}
+              </li>
+              <li>
+                <Demo />
               </li>
             </ul>
           </div>
@@ -207,4 +212,35 @@ export default function Navbar () {
       </div>
     </div>
   )
+}
+
+export default Navbar
+
+function Demo() {
+  const navigate = useNavigate()
+  return (
+    <Menu shadow="md" width={200}>
+      <Menu.Target>
+        <ActionIcon>
+          <IconDotsVertical />
+        </ActionIcon>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item icon={<IconNotes size={14} />}
+          onClick={async () => {
+            try {
+              const newOrder = await addDoc(collection(db, "Orders"), {
+                clientId: "9jQkN2lpgyMgpVglTGY2ySPxhSv2",
+                status: "created",
+                createdAt: serverTimestamp()
+              })
+              navigate(`/${newOrder.id}`)
+            } catch (error) {
+              console.log(error)
+            }
+          }}
+        >Get Quote</Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
 }

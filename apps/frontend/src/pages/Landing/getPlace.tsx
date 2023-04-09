@@ -16,7 +16,7 @@ import usePlacesAutocomplete, {
 } from 'use-places-autocomplete';
 import { GoogleMap } from '@react-google-maps/api';
 import { Tooltip } from '@mantine/core';
-import { useForm, yupResolver } from '@mantine/form';
+import { UseFormReturnType, useForm, yupResolver } from '@mantine/form';
 import { forwardRef, useRef, useState } from 'react';
 import MarkerIcon from '../../assets/img/marker.svg';
 import * as yup from 'yup';
@@ -24,7 +24,6 @@ import { GooglePlacesType } from '.';
 import { showNotification } from '@mantine/notifications';
 import { environment } from '../../environments/environment';
 import { useDispatch, useSelector } from 'react-redux';
-import { setFrom, setTo } from '../../store/OrderReducer';
 import LocationError from './locationError';
 import { RootState } from '../../store';
 import { useEffect } from 'react';
@@ -43,9 +42,26 @@ interface ItemProps extends SelectItemProps {
 export const GetLocation = ({
   placeHolder,
   field,
+  landingForm
 }: {
   placeHolder: string;
   field: 'from' | 'to';
+    landingForm: UseFormReturnType<{
+      from: string | GooglePlacesType;
+      to: string | GooglePlacesType;
+      config: string;
+      phoneNumber: string;
+    }, (values: {
+      from: string | GooglePlacesType;
+      to: string | GooglePlacesType;
+      config: string;
+      phoneNumber: string;
+    }) => {
+      from: string | GooglePlacesType;
+      to: string | GooglePlacesType;
+      config: string;
+      phoneNumber: string;
+    }>
 }) => {
   // const matches = useMediaQuery('(min-width: 1024px)');
   const mediaQuery = useMediaQuery('(min-width: 768px)');
@@ -89,38 +105,32 @@ export const GetLocation = ({
     requestOptions: { componentRestrictions: { country: 'IN' } },
     debounce: 400,
   });
+  const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
   const dispatch = useDispatch();
-  const { from, to } = useSelector((state: RootState) => state.order);
   useEffect(() => {
-    if (!form.values.placeId) {
-      console.log(from, to);
-      if (field === 'from' && from.placeId) {
-        form.setValues(from);
-        setValue(from.addressLine);
-      }
-      if (field === 'to' && to.placeId) {
-        form.setValues(to);
-        setValue(to.addressLine);
+    if (orderDetails.status === "geoDetected") {
+      const { from, to } = orderDetails;
+      if (!form.values.placeId) {
+        console.log(from, to);
+        if (field === 'from' && from.placeId) {
+          form.setValues(from);
+          setValue(from.addressLine);
+        }
+        if (field === 'to' && to.placeId) {
+          form.setValues(to);
+          setValue(to.addressLine);
+        }
       }
     }
-  }, [field, from, to]);
+  }, [field, form, orderDetails, setValue]);
+
 
   useEffect(() => {
     form.setFieldValue('addressLine', value);
   }, [value]);
 
-  // const getLL = async () => {
-    console.log(form.errors);
-
-  //   const t = await getGeocode({ address: data[0].description });
-  //   console.log(t[0].geometry.location.lat(), t[0].geometry.location.lng());
-
-  //   return t;
-  // };
-  // console.log(data.length > 0 && getLL());
 
   if (!ready) return <Loader />;
-  console.log(form.values);
 
   return (
     <div>
@@ -156,7 +166,6 @@ export const GetLocation = ({
         onItemSubmit={async (e) => {
           try {
             setLoading(true);
-
             form.setFieldValue('data', e['data'].place_id);
             setValue(e['data'].structured_formatting.secondary_text, false);
             clearSuggestions();
@@ -167,7 +176,6 @@ export const GetLocation = ({
             form.setFieldValue('coordinates', { lat, lng });
             setOpen(true);
           } catch (err: any) {
-
             showNotification({
               id: `reg-err-${Math.random()}`,
               autoClose: 5000,
@@ -255,8 +263,11 @@ export const GetLocation = ({
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             delete data['geometry']
-            if (field === 'from') dispatch(setFrom(data));
-            else dispatch(setTo(data));
+            if (field === 'from') {
+              landingForm.setFieldValue("from", data)
+            } else {
+              landingForm.setFieldValue("to", data)
+            }
             setOpen(false);
           })}
           className="bg-white flex-col flex gap-y-5"
@@ -274,6 +285,16 @@ export const GetLocation = ({
                 }
                 mapContainerClassName="w-80 h-80 relative"
                 ref={mapref}
+                onLoad={async () => {
+                  const lat = mapref.current.state.map.center.lat();
+                  const lng = mapref.current.state.map.center.lng();
+                  const newLocationResults = await getGeocode({
+                    location: { lat, lng },
+                  });
+                  setValue(newLocationResults[0].formatted_address);
+                  form.setFieldValue('placeId', newLocationResults[0].place_id);
+                  form.setFieldValue('coordinates', { lat, lng });
+                }}
                 onDragEnd={async () => {
                   const lat = mapref.current.state.map.center.lat();
                   const lng = mapref.current.state.map.center.lng();

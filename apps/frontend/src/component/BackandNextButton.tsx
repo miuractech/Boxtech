@@ -2,7 +2,7 @@ import { Button } from '@mantine/core';
 import { IconChevronRight, IconChevronLeft } from '@tabler/icons';
 import { useNavigate } from 'react-router-dom';
 type BackbtnProps = {
-  handelNextBtn: () => void;
+  handelNextBtn?: () => void;
   nextDisabled?:boolean
 };
 
@@ -19,7 +19,7 @@ export default function BackandNextButton(props: BackbtnProps) {
       >
         Back
       </Button>
-      <Button disabled={nextDisabled} rightIcon={<IconChevronRight />} onClick={handelNextBtn}>
+      <Button disabled={nextDisabled} rightIcon={<IconChevronRight />} onClick={handelNextBtn} type='submit'>
         Next
       </Button>
     </div>

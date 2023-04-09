@@ -21,10 +21,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../configs/firebaseconfig';
-
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { setUserInfo } from '../store/OrderReducer';
-// import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
+import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
+import TermsCondition from '../pages/components/terms-n-conditions/TermsCondition';
+import PrivacyPolicy from '../pages/components/privacy-policy/PrivacyPolicy';
+import MyAccount from '../pages/components/myaccount/MyAccount';
+import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
+import Checkout from '../pages/components/checkout/Checkout';
+import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
+import { showNotification } from '@mantine/notifications';
+import { IconX } from '@tabler/icons';
+import { Index } from '../pages';
+import Lottie from "lottie-react";
+import truck from "../assets/json/truck-loading.json"
 
 // import MyAccount from '../pages/components/myaccount/MyAccount';
 // import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
@@ -43,40 +53,20 @@ const HomePage = lazy(() => import('../pages/components/homepage/HomePage'));
 const Policy = lazy(() => import('./privacyPolicy')); 
 const Navbar = lazy(() => import('../pages/components/navbar/Navbar')); 
 export function App() {
+
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: GoogleMapApiKey,
     libraries: ['places'],
   });
-  const { user } = useSelector((state: RootState) => state.User);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { clientId } = useParams();
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        dispatch(setUser(user));
-        const userDoc = await getDoc(doc(db, 'Users', user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data() as userInfoType;
-          dispatch(setUserInfo(data));
-          console.log(data, user);
-        }
-      } else {
-        if (clientId) {
-          navigate(`/${clientId}`);
-        }
-      }
-    });
-    return () => unsub();
-  }, []);
 
   if (!isLoaded)
     return (
-      <div style={{ width: 400, position: 'relative' }}>
-        <LoadingOverlay visible={!isLoaded} />
+      <div className='h-screen flex justify-center items-center'>
+        <Lottie animationData={truck} loop={true} className="h-72" />
       </div>
     );
+
 
   return (
     <Suspense fallback={<LoadingOverlay visible={true} />} >
@@ -90,7 +80,7 @@ export function App() {
       </Helmet>
       <Routes>
         <Route
-          path="/"
+          index
           element={
             <>
               <Navbar />
@@ -98,24 +88,20 @@ export function App() {
             </>
           }
         />
-        <Route
-          path="/terms-conditions"
-          element={<Policy title="Terms and conditions" path={'tac'} />}
-        />
-        <Route
-          path="/privacy-policy"
-          element={<Policy title="Privacy Policy" path={'privacy'} />}
-        />
-        <Route
-          path="/refund"
-          element={<Policy title="Refund Policy" path={'refund'} />}
-        />
-        <Route path="/:clientId" element={<BoxTechWrapper />}>
-          <Route index element={<Landing />} />
-        </Route>
-        <Route path="/quote/:quoteid">
+        {/* <Route path="/pricing-plans" element={<PricingPlans />} /> */}
+        <Route path="/terms-conditions" element={<TermsCondition />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        {/* <Route path="/account" element={<MyAccount />} /> */}
+        {/* <Route path="/subscriptions" element={<MySubscriptions />} /> */}
+        {/* <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
+        {/* <Route element={<BoxTechWrapper />}> */}
+        {/* </Route> */}
+        <Route path="/:orderId" element={<Index />} />
+        <Route path="/:orderId/list" element={<List />} />
+        <Route index element={<Landing />} />
+        {/* <Route path="/quote/:quoteid">
           <Route index element={<Items />} />
-          <Route path="list" element={<List />} />
           <Route path="liftQuery" element={<LiftFacilityPage />} />
           <Route path="userInfo" element={<UserInfo />} />
           <Route path="bookings" element={<Booking />} />
@@ -124,26 +110,10 @@ export function App() {
             path="quotation/:id/:razorpayID/success"
             element={<SuccessPage />}
           />
-        </Route>
+        </Route> */}
       </Routes>
     </Suspense>
   );
 }
 
 export default App;
-
-const BoxTechWrapper = () => {
-  useEffect(() => {
-    const unloadCallback = (event: {
-      preventDefault: () => void;
-      returnValue: string;
-    }) => {
-      event.preventDefault();
-      event.returnValue = '';
-      return '';
-    };
-    window.addEventListener('beforeunload', unloadCallback);
-    return () => window.removeEventListener('beforeunload', unloadCallback);
-  }, []);
-  return <Outlet />;
-};

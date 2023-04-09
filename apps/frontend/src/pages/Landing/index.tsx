@@ -1,43 +1,59 @@
 import { CatergoryType, HouseTypes } from '@boxtech/shared-constants';
 import {
   Button,
-  Center,
   Divider,
   Select,
   TextInput,
   Title,
 } from '@mantine/core';
-import { addDoc, collection, DocumentData, serverTimestamp } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import HeroImg from '../../assets/img/Hero.jpg';
-import { RootState } from '../../store';
 import { costDetailsType, setConfig } from '../../store/OrderReducer';
-import { setPhone } from '../../store/authSlice';
 import { GetLocation } from './getPlace';
 import { db } from '../../configs/firebaseconfig';
-import { useState } from 'react';
+import india from "../../assets/img/india.png"
+import { useForm, yupResolver } from '@mantine/form';
+import * as yup from "yup";
+import { showNotification } from '@mantine/notifications';
+import { IconX } from '@tabler/icons';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
+
+
+const schema = yup.object().shape({
+  from: yup.object().required("Requried"),
+  to: yup.object().required("Requried").typeError("Select a valid address"),
+  config: yup.string().min(1).required("Requried"),
+  phoneNumber: yup
+    .number()
+    .positive()
+    .integer()
+    .min(6000000000, 'Invalid mobile number')
+    .max(9999999999, 'Invalid mobile number')
+    .test('len', 'Must be exactly 10 characters', (val) => {
+      if (val) return val.toString().length === 10;
+      return false;
+    })
+    .required('Mobile number cannot be empty'),
+}).required();
 
 export default function Landing() {
-  const dispatch = useDispatch();
-  const { config } = useSelector((state: RootState) => state.order);
-  const [phone, setNumber] = useState<any>(0);
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const { order } = useSelector((state: RootState) => state);
-  const { phoneNumber } = useSelector((state: RootState) => state.User);
-  const { clientId } = useParams()
-  const {
-    from,
-    to,
-    costDetails,
-    transportationCost,
-    hasLiftFacility,
-    selectedItems,
-    userInfo,
-    floorNumber,
-    insurance
-  } = order;
+  const { orderId } = useParams()
+  const form = useForm<{
+    from: string | GooglePlacesType,
+    to: string | GooglePlacesType,
+    config: string,
+    phoneNumber: string
+  }>({
+    validate: yupResolver(schema),
+    initialValues: {
+      from: "",
+      to: "",
+      config: "",
+      phoneNumber: ""
+    }
+  });
+
   return (
     <div
       style={{
@@ -55,58 +71,73 @@ export default function Landing() {
             <Title order={1} className="text-white text-shadow mb-4">
               Moving Your Valuables!
             </Title>
-            <div className="bg-white rounded-2xl w-11/12 md:w-96 p-8 mx-auto ">
-              <GetLocation placeHolder="Enter Pickup Location" field="from" />
-              {/* <TextInput placeholder="Enter Pickup Location" /> */}
-              <Divider
-                orientation="vertical"
-                color={'dark'}
-                className="h-9 w-1 ml-8 border-l-2"
-              />
-              {/* <TextInput placeholder="Enter Drop Location" /> */}
-              <GetLocation placeHolder="Enter Drop Location" field="to" />
-              <Select
-                className="my-10"
-                placeholder="Select Configuration"
-                value={config}
-                data={HouseTypes.map((config) => ({
-                  value: config,
-                  label: config,
-                }))}
-                onChange={(e) => {
-                  dispatch(setConfig(e ?? ''));
-                }}
-              />
-              <TextInput
-                placeholder='Enter Phone Number'
-                type="number"
-                max={9}
-                onChange={(e) => {
-                  setNumber(e.target.value)
-                }}
-              />
-              <Button
-                className="mt-10"
-                fullWidth
-                onClick={async () => {
-                  if (!clientId) return
-                  const data = await addDoc(collection(db, "Orders"), {
-                    status: 'Created',
-                    timeStamp: serverTimestamp(),
-                    from,
-                    to,
-                    config,
-                    phone,
-                    clientId
-                  })
-                  navigate(`/quote/${data.id}`)
-                  // console.log(pathname.replace("/",''));
-                  // navigate('/'+pathname.replace("/",'') + '/items');
-                }}
-              >
-                Submit
-              </Button>
-            </div>
+            <form>
+              <div className="bg-white rounded-2xl w-11/12 md:w-96 p-8 mx-auto ">
+                <GetLocation placeHolder="Enter Pickup Location" field="from" landingForm={form} />
+                <Divider
+                  orientation="vertical"
+                  color={'dark'}
+                  className="h-9 w-1 ml-8 border-l-2"
+                />
+                <GetLocation placeHolder="Enter Drop Location" field="to" landingForm={form} />
+                <Select
+                  className="my-10"
+                  placeholder="Select Configuration"
+                  data={HouseTypes.map((config) => ({
+                    value: config,
+                    label: config,
+                  }))}
+                  {...form.getInputProps("config")}
+                />
+                <TextInput
+                  placeholder='Enter Phone Number'
+                  type="number"
+                  icon={<img src={india} alt="in" className='w-full px-2' />}
+                  {...form.getInputProps("phoneNumber")}
+                />
+                <Button
+                  className="mt-10"
+                  fullWidth
+                  onClick={async () => {
+                    try {
+                      if (form.validate().hasErrors) {
+                        const keys = Object.keys(form.errors)
+                        if (keys.length === 0) return
+                        showNotification({
+                          id: `reg-err-${Math.random()}`,
+                          autoClose: 5000,
+                          title: "Error",
+                          message: form.errors[keys[0]],
+                          color: "red",
+                          icon: <IconX />,
+                          loading: false,
+                        });
+                      } else {
+                        if (!orderId) return
+                        await updateDoc(doc(db, "Orders", orderId), {
+                          directions: form.values,
+                          status: "geoDetected",
+                          phoneNumber: `+91${form.values.phoneNumber}`
+                        })
+                      }
+                    } catch (error) {
+                      showNotification({
+                        id: `reg-err-${Math.random()}`,
+                        autoClose: 5000,
+                        title: "Error",
+                        message: "Something went wrong try again",
+                        color: "red",
+                        icon: <IconX />,
+                        loading: false,
+                      });
+                    }
+
+                  }}
+                >
+                  Submit
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -121,7 +152,7 @@ export type GooglePlacesType = {
     lng: null | number;
   };
   placeId: null | string;
-  addressLine:string;
+  addressLine: string;
   address1: string;
   address2: string;
   landmark: string;
@@ -131,7 +162,7 @@ export type masterFormType = {
   from: GooglePlacesType;
   to: GooglePlacesType;
   config: string;
-  selectedItems: categoryItemType[];
+  // selectedItems: categoryItemType[];
   hasLiftFacility: boolean;
   floorNumber: number;
   transportationCost: number;

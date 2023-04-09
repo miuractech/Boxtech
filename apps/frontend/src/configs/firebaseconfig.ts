@@ -21,3 +21,7 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app, "asia-south1")
 export const provider = new GoogleAuthProvider();
+
+if (!environment.production) {
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+}

@@ -6,6 +6,7 @@ import {
   signInWithPhoneNumber,
   signOut,
   updateProfile,
+  User,
 } from 'firebase/auth';
 import {
   addDoc,
@@ -29,6 +30,8 @@ import {
 } from '../store/authSlice';
 import { RootState } from '../store';
 import { db } from '../configs/firebaseconfig';
+import { IconCheck, IconX } from '@tabler/icons';
+import { showNotification } from '@mantine/notifications';
 
 type stepType = 'phone' | 'otp';
 
@@ -36,24 +39,14 @@ export default function usePhoneAuth(
   app: FirebaseApp,
   // redirectUrl?: string
 ): {
-  sendOtp: (phone: string) => void;
-  verifyOtp: (otp: string) => void;
+    sendOtp: (phone: string, success: () => void, failure: () => void) => void;
+    verifyOtp: (otp: string, success: (user: User) => void, failure: (error: FirebaseError) => void) => void;
   logout: () => void;
 } {
   const auth = getAuth(app);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { clientId } = useParams();
-  const userInfo = useSelector(
-    (state: RootState) => state.order.userInfo
-  );
-  const { user } = useSelector(
-    (state: RootState) => state.User
-  );
-  const order = useSelector((state: RootState) => state.order);
-  // useEffect(() => {
-  //   localStorage.setItem('user', JSON.stringify(user));
-  // }, [user]);
+
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
@@ -78,10 +71,8 @@ export default function usePhoneAuth(
     // }
   }, []);
 
-  const sendOtp = async (phone: string) => {
+  const sendOtp = async (phone: string, success: () => void, failure: () => void) => {
     try {
-      dispatch(setUserLoading());
-      console.log('otp func', phone, userInfo);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       const appVerifier = window.recaptchaVerifier;
@@ -90,45 +81,46 @@ export default function usePhoneAuth(
         phone,
         appVerifier
       );
-      console.log('runing');
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       window.confirmationResult = confirmationResult;
       dispatch(setStep('otp'));
-      dispatch(setPhone(phone));
-      dispatch(removeUserError());
-      dispatch(removeUserLoading());
+      showNotification({
+        id: `reg-err-${Math.random()}`,
+        autoClose: 5000,
+        title: "Success",
+        message: `OTP successfully sent to ${phone.substring(3)}`,
+        color: "green",
+        icon: <IconCheck />,
+        loading: false,
+      });
+      success()
     } catch (error) {
-      dispatch(setUserError(error));
-      setStep('otp');
+      console.log(error);
+      failure()
+      showNotification({
+        id: `reg-err-${Math.random()}`,
+        autoClose: 5000,
+        title: "Error",
+        message: "Something went wrong try again",
+        color: "red",
+        icon: <IconX />,
+        loading: false,
+      });
     }
   };
-  const verifyOtp = (code: string) => {
-    // dispatch(setUserLoading());
+
+  const verifyOtp = (code: string, success: (user: User) => void, failure: (error: FirebaseError) => void) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     window.confirmationResult
       .confirm(code)
       .then(async (result: any) => {
         const user = result.user;
-        dispatch(setUser(user));
-        const id = user.uid;
-        const { name, email, phone } = userInfo;
-        // localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        // localStorage.setItem('user', JSON.stringify(user));
-        // await setDoc(doc(db, id, 'users'), {
-
-        // });
-        await setDoc(doc(db, 'Users', id), {
-          name: name,
-          email: email,
-          phone,
-          createdAt: serverTimestamp(),
-        });
-        navigate(`/${clientId}/bookings`);
+        success(user)
       })
       .catch((error: FirebaseError) => {
-        dispatch(setUserError(error));
+        failure(error)
       });
   };
 
