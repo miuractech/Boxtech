@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "miurac-pam"
-  }
+  },
+  "targets": {
+    "miurac-pam": {
+      "hosting": {
+        "boxtech": [
+          "boxtech"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

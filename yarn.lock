@@ -2031,12 +2031,12 @@
     react-remove-scroll "^2.5.5"
     react-textarea-autosize "8.3.4"
 
-"@mantine/dates@^5.10.1":
-  version "5.10.5"
-  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-5.10.5.tgz#53b93d6f3f9aca1f3c1391e3b01c8d8342dea8c1"
-  integrity sha512-l7lSgDKEV+phTgUAHIkc/22Qgq+WBg0P7JS2WpeZeERX8eyD4BGlsY3ZWqHigYxhBq/Ycd2tHZFmwl2p+694Zw==
+"@mantine/dates@^6.0.6":
+  version "6.0.6"
+  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-6.0.6.tgz#b07a965c6083eb27346df95902d5d75b33802ad8"
+  integrity sha512-eIBnvugWZp0ComzAaiIy5tjBXq9G53Q5Fht6SPyFBxXU/NZ/ZQhLq49nlFyLBpuZQOJ2Ex71S8cv/FMwLaAS4A==
   dependencies:
-    "@mantine/utils" "5.10.5"
+    "@mantine/utils" "6.0.6"
 
 "@mantine/dropzone@^6.0.6":
   version "6.0.6"
@@ -10541,10 +10541,10 @@ sourcemap-codec@^1.4.8:
   resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
-spacetime@^7.4.1:
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/spacetime/-/spacetime-7.4.1.tgz#2be4064ee26accfaf4ccfe16787a7c45c14f3faf"
-  integrity sha512-khQpvLNMhHFzfFJslMfunqqsjOxdmoDDYX5Wh4qYb8N6f8vBPI6HvbT7Wb2wcMa+oP1Xh1HpEcwfPFrj8UfvHQ==
+spacetime@^7.4.2:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/spacetime/-/spacetime-7.4.2.tgz#92d715efcd449a314effbf388e4477911cf75cf6"
+  integrity sha512-sRdMngsXrurm6RLRXIPBFcMruJt8Sg0V89Ew2zPiv+c3JFDoq4aLPtPBty5hnt96N2aAU2tpERPXnKUvzl9J7g==
 
 spdy-transport@^3.0.0:
   version "3.0.0"
