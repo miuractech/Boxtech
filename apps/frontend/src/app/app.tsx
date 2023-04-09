@@ -1,10 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.css';
-import React from 'react';
+import {Suspense, lazy} from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
-import useNetworkStatus from '../hooks/useNetworkStatus';
 import Landing, { userInfoType } from '../pages/Landing';
 import {
   Route,
@@ -13,37 +11,47 @@ import {
   useParams,
   Outlet,
 } from 'react-router-dom';
-import Items from '../pages/items';
-import List from '../pages/items/list';
-import LiftFacilityPage from '../pages/LiftFacilityPage';
-import UserInfo from '../pages/UserInfo';
-import Booking from '../pages/Booking';
-import Quoatation from '../pages/Quoatation';
+
+// import Items from '../pages/items';
+
+
 import { useEffect } from 'react';
 import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../configs/firebaseconfig';
-import { SuccessPage } from '../pages/SuccessPage';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { setUserInfo } from '../store/OrderReducer';
 import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
-import HomePage from '../pages/components/homepage/HomePage';
 import TermsCondition from '../pages/components/terms-n-conditions/TermsCondition';
 import PrivacyPolicy from '../pages/components/privacy-policy/PrivacyPolicy';
 import MyAccount from '../pages/components/myaccount/MyAccount';
 import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
 import Checkout from '../pages/components/checkout/Checkout';
 import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
-import { Navbar } from '../pages/components/navbar/Navbar';
-import { Helmet } from 'react-helmet';
 import { showNotification } from '@mantine/notifications';
 import { IconX } from '@tabler/icons';
 import { Index } from '../pages';
 import Lottie from "lottie-react";
 import truck from "../assets/json/truck-loading.json"
 
+// import MyAccount from '../pages/components/myaccount/MyAccount';
+// import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
+// import Checkout from '../pages/components/checkout/Checkout';
+// import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
+
+import { Helmet } from 'react-helmet';
+const Items = lazy(() => import('../pages/items')); 
+const List = lazy(() => import('../pages/items/list')); 
+const LiftFacilityPage = lazy(() => import('../pages/LiftFacilityPage')); 
+const UserInfo = lazy(() => import('../pages/UserInfo')); 
+const Booking = lazy(() => import('../pages/Booking')); 
+const Quoatation = lazy(() => import('../pages/Quoatation')); 
+const SuccessPage = lazy(() => import('../pages/SuccessPage')); 
+const HomePage = lazy(() => import('../pages/components/homepage/HomePage')); 
+const Policy = lazy(() => import('./privacyPolicy')); 
+const Navbar = lazy(() => import('../pages/components/navbar/Navbar')); 
 export function App() {
 
   const { isLoaded } = useJsApiLoader({
@@ -61,7 +69,7 @@ export function App() {
 
 
   return (
-    <div>
+    <Suspense fallback={<LoadingOverlay visible={true} />} >
       <Helmet>
         <title>Boxtech</title>
         <meta
@@ -104,7 +112,7 @@ export function App() {
           />
         </Route> */}
       </Routes>
-    </div>
+    </Suspense>
   );
 }
 

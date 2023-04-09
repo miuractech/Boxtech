@@ -24,6 +24,6 @@ export default function DashboardFront() {
   }, []);
 
   if (client === undefined) return <LoadingOverlay visible={true} />;
-  if (!client) return <CompanyDetails />;
+  if (!client || !client?.kyc) return <CompanyDetails />;
   return <Dashboard />;
 }

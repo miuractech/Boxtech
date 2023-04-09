@@ -42,7 +42,8 @@ root.render(
         primaryColor: 'primary',
         fontFamily: 'Manrope',
         defaultRadius: 8,}}
-         withGlobalStyles  >
+         withGlobalStyles  
+         >
           <BrowserRouter>
       <NotificationsProvider>
         <Provider store={store}>

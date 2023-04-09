@@ -214,6 +214,8 @@ export const Navbar = () => {
   )
 }
 
+export default Navbar
+
 function Demo() {
   const navigate = useNavigate()
   return (
