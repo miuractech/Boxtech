@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
 import { showNotification } from '@mantine/notifications'
 import { IconX } from '@tabler/icons'
-import { ClientDataType, priceCalculation } from './priceCalculation'
+import { ClientDataType, UserDetailsType, priceCalculation } from './priceCalculation'
 import Lottie from "lottie-react";
 import truck from "../../assets/json/truck-loading.json"
 
@@ -21,6 +21,7 @@ export default function Quoatation() {
     const [clientData, setClientData] = useState<ClientDataType | null>(null)
     const [clientCostData, setClientCostData] = useState<CostType | null>(null)
     const [calculatePrice, setCalculatePrice] = useState(false)
+    const [userDetails, setUserDetails] = useState<UserDetailsType | null>(null)
 
     useEffect(() => {
         (async () => {
@@ -50,13 +51,15 @@ export default function Quoatation() {
         })()
     }, [orderDetails.clientId, orderId])
 
+    const detsils = (data: UserDetailsType) => {
+        setUserDetails(data)
+    }
+
     useEffect(() => {
         if (calculatePrice && orderDetails && clientData && clientCostData && orderId) {
-            priceCalculation(orderDetails, clientData, clientCostData, orderId)
+            priceCalculation(orderDetails, clientData, clientCostData, orderId, detsils)
         }
     }, [calculatePrice])
-
-
 
     if (orderDetails.quotation) {
         return (
@@ -66,7 +69,7 @@ export default function Quoatation() {
                     <div className='md:w-10/12 m-auto'>
                         <UserDetails />
                         <QuoatTable />
-                        <PriceBreakup />
+                        <PriceBreakup userDetails={userDetails} clientData={clientData} />
                     </div>
                 </div>
             </div>

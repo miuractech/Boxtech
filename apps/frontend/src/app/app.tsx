@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {Suspense, lazy} from 'react';
+import { Suspense, lazy } from 'react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMapApiKey } from '../configs/googleMap';
 import { LoadingOverlay } from '@mantine/core';
@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../configs/firebaseconfig';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { setUserInfo } from '../store/OrderReducer';
 import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
 import TermsCondition from '../pages/components/terms-n-conditions/TermsCondition';
@@ -42,16 +42,16 @@ import truck from "../assets/json/truck-loading.json"
 // import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
 
 import { Helmet } from 'react-helmet';
-const Items = lazy(() => import('../pages/items')); 
-const List = lazy(() => import('../pages/items/list')); 
-const LiftFacilityPage = lazy(() => import('../pages/LiftFacilityPage')); 
-const UserInfo = lazy(() => import('../pages/UserInfo')); 
-const Booking = lazy(() => import('../pages/Booking')); 
-const Quoatation = lazy(() => import('../pages/Quoatation')); 
-const SuccessPage = lazy(() => import('../pages/SuccessPage')); 
-const HomePage = lazy(() => import('../pages/components/homepage/HomePage')); 
-const Policy = lazy(() => import('./privacyPolicy')); 
-const Navbar = lazy(() => import('../pages/components/navbar/Navbar')); 
+const Items = lazy(() => import('../pages/items'));
+const List = lazy(() => import('../pages/items/list'));
+const LiftFacilityPage = lazy(() => import('../pages/LiftFacilityPage'));
+const UserInfo = lazy(() => import('../pages/UserInfo'));
+const Booking = lazy(() => import('../pages/Booking'));
+const Quoatation = lazy(() => import('../pages/Quoatation'));
+const SuccessPage = lazy(() => import('../pages/SuccessPage'));
+const HomePage = lazy(() => import('../pages/components/homepage/HomePage'));
+const Policy = lazy(() => import('./privacyPolicy'));
+const Navbar = lazy(() => import('../pages/components/navbar/Navbar'));
 export function App() {
 
   const { isLoaded } = useJsApiLoader({
@@ -97,9 +97,10 @@ export function App() {
         <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
         {/* <Route element={<BoxTechWrapper />}> */}
         {/* </Route> */}
-        <Route path="/:orderId" element={<Index />} />
-        <Route path="/:orderId/list" element={<List />} />
-        <Route path="/:orderId/quoation" element={<Quoatation />} />
+        <Route path="/:clientId" element={<InitialPage />} />
+        <Route path="/order/:orderId" element={<Index />} />
+        <Route path="/order/:orderId/list" element={<List />} />
+        <Route path="/order/:orderId/quoation" element={<Quoatation />} />
         <Route index element={<Landing />} />
       </Routes>
     </Suspense>
@@ -107,3 +108,41 @@ export function App() {
 }
 
 export default App;
+
+const InitialPage = () => {
+  const { clientId } = useParams()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    (async () => {
+      if (clientId) {
+        const res = await getDoc(doc(db, "clients", clientId))
+        if (res.exists()) {
+          const newOrder = await addDoc(collection(db, "Orders"), {
+            clientId: clientId,
+            status: "created",
+            createdAt: serverTimestamp()
+          })
+          navigate(`/order/${newOrder.id}`)
+        } else {
+          showNotification({
+            id: `reg-err-${Math.random()}`,
+            autoClose: 5000,
+            title: "Error",
+            message: "Invalid Link",
+            color: "red",
+            icon: <IconX />,
+            loading: false,
+          });
+        }
+      }
+    })()
+
+  }, [clientId])
+
+  return (
+    <div className='h-screen flex justify-center items-center'>
+      <Lottie animationData={truck} loop={true} className="h-72" />
+    </div>
+  )
+}

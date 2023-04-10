@@ -1,21 +1,20 @@
 import { Button } from '@mantine/core';
 import { IconChevronRight, IconChevronLeft } from '@tabler/icons';
-import { useNavigate } from 'react-router-dom';
 type BackbtnProps = {
   handelNextBtn?: () => void;
-  nextDisabled?:boolean
+  nextDisabled?: boolean,
+  backButton?: () => void
 };
 
 export default function BackandNextButton(props: BackbtnProps) {
-  const { handelNextBtn, nextDisabled } = props;
-  const navigate = useNavigate();
+  const { handelNextBtn, nextDisabled, backButton } = props;
   return (
     <div className="flex  px-8 gap-6 justify-between">
       <Button
         leftIcon={<IconChevronLeft />}
         variant="outline"
         color="#228BE6"
-        onClick={() => navigate(-1)}
+        onClick={backButton}
       >
         Back
       </Button>

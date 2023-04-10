@@ -43,6 +43,7 @@ export const Index = () => {
 
         return () => unsub()
     }, [])
+    console.log(orderDetails);
 
     if (orderDetails) {
         switch (orderDetails.status) {
