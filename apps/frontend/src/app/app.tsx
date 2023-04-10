@@ -99,18 +99,8 @@ export function App() {
         {/* </Route> */}
         <Route path="/:orderId" element={<Index />} />
         <Route path="/:orderId/list" element={<List />} />
+        <Route path="/:orderId/quoation" element={<Quoatation />} />
         <Route index element={<Landing />} />
-        {/* <Route path="/quote/:quoteid">
-          <Route index element={<Items />} />
-          <Route path="liftQuery" element={<LiftFacilityPage />} />
-          <Route path="userInfo" element={<UserInfo />} />
-          <Route path="bookings" element={<Booking />} />
-          <Route path="quotation/:id" element={<Quoatation />} />
-          <Route
-            path="quotation/:id/:razorpayID/success"
-            element={<SuccessPage />}
-          />
-        </Route> */}
       </Routes>
     </Suspense>
   );
