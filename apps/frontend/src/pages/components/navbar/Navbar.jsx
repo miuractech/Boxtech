@@ -229,12 +229,7 @@ function Demo() {
         <Menu.Item icon={<IconNotes size={14} />}
           onClick={async () => {
             try {
-              const newOrder = await addDoc(collection(db, "Orders"), {
-                clientId: "9jQkN2lpgyMgpVglTGY2ySPxhSv2",
-                status: "created",
-                createdAt: serverTimestamp()
-              })
-              navigate(`/${newOrder.id}`)
+              window.location.href = `https://boxtech.miurac.com/9jQkN2lpgyMgpVglTGY2ySPxhSv2`
             } catch (error) {
               console.log(error)
             }

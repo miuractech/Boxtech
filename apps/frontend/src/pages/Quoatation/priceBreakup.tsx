@@ -1,6 +1,6 @@
 /* eslint-disable no-lone-blocks */
 import { clientInfoType, CostType, orderType } from '@boxtech/shared-constants'
-import { Checkbox, Divider, Text } from '@mantine/core'
+import { Checkbox, Divider, Text, Button } from '@mantine/core'
 import { showNotification } from '@mantine/notifications'
 import { IconX } from '@tabler/icons'
 import { signOut } from 'firebase/auth'
@@ -15,12 +15,17 @@ import { app, auth, db, functions } from '../../configs/firebaseconfig'
 import { environment } from '../../environments/environment'
 import { displayRazorpay, loadScript } from '../../hooks/razorpay'
 import { RootState } from '../../store'
-import { QuotationDataType } from './priceCalculation'
+import { ClientDataType, QuotationDataType, UserDetailsType } from './priceCalculation'
 import { doc, updateDoc } from 'firebase/firestore'
+import spacetime from 'spacetime';
 
-export const PriceBreakup = () => {
+export const PriceBreakup = ({ userDetails, clientData }: {
+    userDetails: UserDetailsType | null
+    clientData: ClientDataType | null
+}) => {
     const { orderId } = useParams()
     const [termsCond, setTermsCond] = useState(false)
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
     // useEffect(() => {
     //     (async () => {
     //         try {
@@ -65,6 +70,24 @@ export const PriceBreakup = () => {
             </div>
             <div className='my-5'>
                 <BackandNextButton
+                    backButton={async () => {
+                        try {
+                            if (!orderId) return
+                            await updateDoc(doc(db, "Orders", orderId), {
+                                status: "userVerified",
+                            })
+                        } catch (error) {
+                            showNotification({
+                                id: `reg-err-${Math.random()}`,
+                                autoClose: 5000,
+                                title: 'Error!',
+                                message: "Something went wrong try again",
+                                color: 'red',
+                                icon: <IconX />,
+                                loading: false,
+                            });
+                        }
+                    }}
                     nextDisabled={!termsCond}
                     handelNextBtn={async () => {
                         try {
@@ -72,13 +95,28 @@ export const PriceBreakup = () => {
                             await updateDoc(doc(db, "Orders", orderId), {
                                 status: "quoationCompleted",
                             })
+                            if (!userDetails || !clientData) return
+                            const sendTemp = httpsCallable(functions, "addMessage")
+                            const data = {
+                                orderId: orderId,
+                                name: userDetails.name,
+                                storeName: clientData.brandName,
+                                date: spacetime(orderDetails.createdAt.seconds).format('nice'),
+                                to: orderDetails.directions.to.address2,
+                                from: orderDetails.directions.from.address2,
+                                quotationLink: `https://localhost:4202/order/${orderId}/quoation`,
+                                phone: "+91" + userDetails.phone
+                            };
+
+                            const response = await sendTemp(data)
+                            console.log(response.data);
                         } catch (error: any) {
                             console.log(error);
                             showNotification({
                                 id: `reg-err-${Math.random()}`,
                                 autoClose: 5000,
                                 title: 'Error!',
-                                message: environment.production ? "Something went wrong try again" : error.message + '666',
+                                message: "Something went wrong try again",
                                 color: 'red',
                                 icon: <IconX />,
                                 loading: false,

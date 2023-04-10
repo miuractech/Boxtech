@@ -3,7 +3,6 @@ import * as functions from "firebase-functions";
 // @ts-ignore
 import fetch from "node-fetch";
 
-
 export const addMessage = functions.region("asia-south1")
     .https.onCall(async (
         {orderId, name, storeName, date, to, from, quotationLink, phone}

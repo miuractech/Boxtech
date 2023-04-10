@@ -1,3 +1,4 @@
+/* eslint-disable import/export */
 import * as admin from "firebase-admin";
 
 admin.initializeApp();

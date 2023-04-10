@@ -19,7 +19,7 @@ export default function Items() {
       <CategoryBar />
       <div className="mt-5">
         <BackandNextButton nextDisabled={selectedItems.length === 0} handelNextBtn={() => {
-          navigate(`/${orderId}/list`);
+          navigate(`/order/${orderId}/list`);
         }} />
       </div>
     </div>

@@ -24,7 +24,8 @@ export const ClientDetails = () => {
                     <div>
                         <Text className='text-sm'>{quotation.header.PAN}</Text>
                         <Text className='text-sm'>{quotation.header.phoneNumber}</Text>
-                        <Text className='text-sm'>{spacetime(quotation.header.date).format('nice')}</Text>
+                        {quotation.header.date &&
+                            <Text className='text-sm'>{spacetime(quotation.header.date.seconds).format('nice')}</Text>}
                     </div>
                 </div>
                 <div className='grid grid-cols-2 md:order-3 w-fit m-auto'>

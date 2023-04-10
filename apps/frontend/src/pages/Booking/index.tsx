@@ -127,7 +127,24 @@ export default function Booking() {
                   leftIcon={<IconChevronLeft />}
                   variant="outline"
                   color="#228BE6"
-                  onClick={() => navigate(-1)}
+                  onClick={async () => {
+                    try {
+                      if (!orderId) return
+                      await updateDoc(doc(db, "Orders", orderId), {
+                        status: "itemsSelected",
+                      })
+                    } catch (error) {
+                      showNotification({
+                        id: `reg-err-${Math.random()}`,
+                        autoClose: 5000,
+                        title: "Error",
+                        message: "Something went wrong try agagin",
+                        color: "red",
+                        icon: <IconX />,
+                        loading: false,
+                      });
+                    }
+                  }}
                 >
                   Back
                 </Button>

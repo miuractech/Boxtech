@@ -11,13 +11,20 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
 
 export default function List() {
-  const { selectedItems } = useSelector((state: RootState) => state.orderDetails)
+  const { selectedItems, orderDetails } = useSelector((state: RootState) => state.orderDetails)
   const { orderId } = useParams()
   const navigate = useNavigate()
 
+  // useEffect(() => {
+  //   if (orderDetails.status === "itemsSelected") {
+  //     // navigate(`/order/${orderId}`)
+  //   }
+  // }, [orderDetails.status])
+
+
   return (
     <div className="p-4 ">
-      <div className="rounded-xl overflow-hidden max-w-3xl mx-auto">
+      <div className="rounded-xl overflow-hidden max-w-3xl mx-auto">  
         <div className="bg-black ">
           <Title
             size={16}
@@ -59,7 +66,7 @@ export default function List() {
                 status: "itemsSelected",
                 selectedItems
               })
-              navigate(`/${orderId}`)
+              navigate(`/order/${orderId}`)
             } catch (error) {
               showNotification({
                 id: `reg-err-${Math.random()}`,

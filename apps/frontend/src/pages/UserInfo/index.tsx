@@ -13,6 +13,7 @@ import { useState } from 'react';
 
 export default function UserInfo() {  
   const { loading, step } = useSelector((state: RootState) => state.User);
+  const { orderDetails } = useSelector((state: RootState) => state.orderDetails);
   const { sendOtp, verifyOtp } = usePhoneAuth(app);
   const [id, setId] = useState<null | string>(null)
 
@@ -20,7 +21,7 @@ export default function UserInfo() {
     initialValues: {
       name: '',
       email: '',
-      phoneNumber: '',
+      phoneNumber: orderDetails.directions.phoneNumber,
     },
     validate: yupResolver(
       yup.object().shape({

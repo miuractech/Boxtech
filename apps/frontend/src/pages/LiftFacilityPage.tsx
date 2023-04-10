@@ -1,6 +1,6 @@
 import { NumberInput, Radio, Text, Checkbox, Collapse } from '@mantine/core';
 import { signOut } from 'firebase/auth';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import BackandNextButton from '../component/BackandNextButton';
@@ -13,7 +13,7 @@ import { showNotification } from '@mantine/notifications';
 
 export default function LiftFacilityPage() {
   const [loading, setLoading] = useState(false)
-  const { user } = useSelector((state: RootState) => state.User);
+  const { orderDetails } = useSelector((state: RootState) => state.orderDetails);
   const navigate = useNavigate();
   const { orderId } = useParams();
 
@@ -25,6 +25,13 @@ export default function LiftFacilityPage() {
       coverAgeAmount: 1000
     }
   });
+
+  useEffect(() => {
+    if (orderDetails.queryDetails) {
+      form.setValues(orderDetails.queryDetails)
+    }
+  }, [orderDetails.queryDetails])
+
 
   return (
     <div className="p-3 max-w-md m-auto pt-10">
@@ -115,6 +122,24 @@ export default function LiftFacilityPage() {
         <div className="my-10 md:w-72 mx-auto w-full">
           <BackandNextButton
             nextDisabled={loading}
+            backButton={async () => {
+              try {
+                if (!orderId) return
+                await updateDoc(doc(db, "Orders", orderId), {
+                  status: "geoDetected",
+                })
+              } catch (error) {
+                showNotification({
+                  id: `reg-err-${Math.random()}`,
+                  autoClose: 5000,
+                  title: "Error",
+                  message: "Something went wrong try agagin",
+                  color: "red",
+                  icon: <IconX />,
+                  loading: false,
+                });
+              }
+            }}
           />
         </div>
       </form>

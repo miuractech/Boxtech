@@ -1,11 +1,9 @@
 import { CostType } from "@boxtech/shared-constants";
 import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../configs/firebaseconfig";
-import { showNotification } from "@mantine/notifications";
-import { IconX } from "@tabler/icons"
 
 
-export const priceCalculation = async (orderDetails: OrderDetailsType, clientData: ClientDataType, clientCostData: CostType, orderId: string) => {
+export const priceCalculation = async (orderDetails: OrderDetailsType, clientData: ClientDataType, clientCostData: CostType, orderId: string, detsils: (userDetails: UserDetailsType) => void) => {
 
     try {
         const UserDetails = await getDoc(doc(db, "Users", orderDetails.userId))
@@ -19,6 +17,7 @@ export const priceCalculation = async (orderDetails: OrderDetailsType, clientDat
         })
         if (UserDetails.exists()) {
             const userDetails = UserDetails.data() as UserDetailsType
+            detsils(userDetails)
             const quotationData = {
                 header: {
                     logo: clientData.logo,
@@ -38,25 +37,25 @@ export const priceCalculation = async (orderDetails: OrderDetailsType, clientDat
                     movementTime: orderDetails.bookingInfo.timeSlot
                 },
                 fromAndTo: {
-                    from: orderDetails.from.address2,
-                    to: orderDetails.to.address2
+                    from: orderDetails.directions.from.address2,
+                    to: orderDetails.directions.to.address2
                 },
                 selectedItems: orderDetails.selectedItems,
                 labourCharges: {
                     lift: orderDetails.queryDetails.lift,
-                    config: orderDetails.config,
+                    config: orderDetails.directions.config,
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    manPower: clientCostData.labourCost[orderDetails.config].labourCount,
+                    manPower: clientCostData.labourCost[orderDetails.directions.config].labourCount,
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    price: clientCostData.labourCost[orderDetails.config].cost,
+                    price: clientCostData.labourCost[orderDetails.directions.config].cost,
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    costPerMen: clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount,
+                    costPerMen: clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount,
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    amount: orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2,
+                    amount: orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2,
                 },
                 packingCharges: {
                     packingCostPerCubeM: clientCostData.packingCostPerCubeM,
@@ -64,13 +63,13 @@ export const priceCalculation = async (orderDetails: OrderDetailsType, clientDat
                     amount: clientCostData.packingCostPerCubeM * totalCC
                 },
                 TransportationCost: {
-                    config: orderDetails.config,
+                    config: orderDetails.directions.config,
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    details: clientCostData.vehicalCost[orderDetails.config],
+                    details: clientCostData.vehicalCost[orderDetails.directions.config],
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    amount: clientCostData.vehicalCost[orderDetails.config].cost
+                    amount: clientCostData.vehicalCost[orderDetails.directions.config].cost
                 },
                 costPerKM: {
                     distance: 100,
@@ -88,44 +87,44 @@ export const priceCalculation = async (orderDetails: OrderDetailsType, clientDat
                 surCharge: {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    totalAmount: (orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2) +
+                    totalAmount: (orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2) +
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0),
+                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.directions.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0),
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    amount: ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2) +
+                    amount: ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2) +
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) * 0.10
+                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.directions.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) * 0.10
                 },
                 subTotal: {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    amount: (orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2) +
+                    amount: (orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2) +
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0),
+                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.directions.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0),
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    GST: ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2) +
+                    GST: (((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2) +
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) * 0.18,
+                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.directions.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) * 0.18).toFixed(2),
                 },
                 grandTotal: {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
-                    amount: ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2) +
+                    amount: ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2) +
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) +
+                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.directions.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) +
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.config].cost : clientCostData.labourCost[orderDetails.config].cost + clientCostData.labourCost[orderDetails.config].cost / clientCostData.labourCost[orderDetails.config].labourCount * 2) +
+                        ((orderDetails.queryDetails.lift ? clientCostData.labourCost[orderDetails.directions.config].cost : clientCostData.labourCost[orderDetails.directions.config].cost + clientCostData.labourCost[orderDetails.directions.config].cost / clientCostData.labourCost[orderDetails.directions.config].labourCount * 2) +
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             //@ts-ignore
-                            clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) * 0.18
+                        clientCostData.packingCostPerCubeM * totalCC + clientCostData.vehicalCost[orderDetails.directions.config].cost + clientCostData.distanceCostPerKM * 100 + (orderDetails.queryDetails.coverAge ? orderDetails.queryDetails.coverAgeAmount * 0.03 : 0)) * 0.18
                 }
 
 
@@ -140,38 +139,21 @@ export const priceCalculation = async (orderDetails: OrderDetailsType, clientDat
 
 }
 
-
-export interface CreatedAt {
+export interface Date {
     seconds: number;
     nanoseconds: number;
 }
 
-export interface UserDetailsType {
-    email: string;
-    name: string;
-    phone: string;
-    createdAt: CreatedAt;
+export interface BookingInfo {
+    timeSlot: string;
+    date: Date;
 }
 
-
-export interface Coordinate {
-    lng: number;
-    lat: number;
-}
-
-export interface To {
-    placeId: string;
-    landmark: string;
-    address2: string;
-    data: string;
-    addressLine: string;
-    coordinates: Coordinate;
-    address1: string;
-}
-
-export interface CreatedAt {
-    seconds: number;
-    nanoseconds: number;
+export interface QueryDetail {
+    lift: boolean;
+    coverAgeAmount: number;
+    floorNumber: number;
+    coverAge: boolean;
 }
 
 export interface UpdatedAt {
@@ -180,19 +162,19 @@ export interface UpdatedAt {
 }
 
 export interface SelectedItem {
-    Height: string;
     updatedAt: UpdatedAt;
     quantity: number;
-    category: string;
     Length: string;
-    name: string;
-    index: number;
-    Breadth: string;
-    clientId: string;
-    total: number;
-    id: string;
     enabled: boolean;
+    index: number;
+    category: string;
+    Height: string;
+    clientId: string;
     price: string;
+    Breadth: string;
+    name: string;
+    id: string;
+    total: number;
 }
 
 export interface Coordinate {
@@ -200,46 +182,53 @@ export interface Coordinate {
     lng: number;
 }
 
-export interface From {
-    data: string;
-    address1: string;
-    coordinates: Coordinate;
+export interface To {
     addressLine: string;
     landmark: string;
+    coordinates: Coordinate;
+    address1: string;
     placeId: string;
+    data: string;
     address2: string;
 }
 
-export interface QueryDetail {
-    lift: boolean;
-    coverAge: boolean;
-    floorNumber: number;
-    coverAgeAmount: number;
+export interface Coordinate {
+    lng: number;
+    lat: number;
 }
 
-export interface Date {
-    [x: string]: any;
+export interface From {
+    address1: string;
+    addressLine: string;
+    landmark: string;
+    coordinates: Coordinate;
+    placeId: string;
+    address2: string;
+    data: string;
+}
+
+export interface Direction {
+    to: To;
+    config: string;
+    phoneNumber: string;
+    from: From;
+}
+
+export interface CreatedAt {
     seconds: number;
     nanoseconds: number;
 }
 
-export interface BookingInfo {
-    date: Date;
-    timeSlot: string;
-}
-
 export interface OrderDetailsType {
-    clientId: string;
-    to: To;
-    createdAt: CreatedAt;
-    userId: string;
-    selectedItems: SelectedItem[];
-    status: string;
-    config: string;
-    phoneNumber: string;
-    from: From;
-    queryDetails: QueryDetail;
     bookingInfo: BookingInfo;
+    queryDetails: QueryDetail;
+    selectedItems: SelectedItem[];
+    directions: Direction;
+    userId: string;
+    status: string;
+    createdAt: CreatedAt;
+    clientId: string;
+    phoneNumber: string;
 }
 
 
@@ -395,5 +384,13 @@ export interface QuotationDataType {
     fov: Fov;
     subTotal: SubTotal;
     statisticalCharges: StatisticalCharge;
+}
+
+export interface UserDetailsType {
+    email: string;
+    name: string,
+    phone: string,
+    createdAt: CreatedAt,
+    verified: boolean
 }
 
