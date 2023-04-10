@@ -1,13 +1,16 @@
 import React,{ReactNode} from 'react'
 import { Nav } from './nav'
 import { Footer } from './footer'
+import { ClientDataType } from '../../pages/Quoatation/priceCalculation'
 
-export const NavandFooter = ({ children }: { children: ReactNode }) => {
+export const NavandFooter = ({ children,clientData }: {
+    children: ReactNode, clientData: ClientDataType | null
+ }) => {
     return (
         <div>
-            <Nav />
+            <Nav clientData={clientData} />
             {children}
-            <Footer />
+            <Footer clientData={clientData} />
         </div>
     )
 }

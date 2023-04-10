@@ -15,7 +15,7 @@ import {
 // import Items from '../pages/items';
 
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -42,6 +42,8 @@ import truck from "../assets/json/truck-loading.json"
 // import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
 
 import { Helmet } from 'react-helmet';
+import { NavandFooter } from '../component/navandfooter';
+import { ClientDataType } from '../pages/Quoatation/priceCalculation';
 const Items = lazy(() => import('../pages/items'));
 const List = lazy(() => import('../pages/items/list'));
 const LiftFacilityPage = lazy(() => import('../pages/LiftFacilityPage'));
@@ -53,6 +55,8 @@ const HomePage = lazy(() => import('../pages/components/homepage/HomePage'));
 const Policy = lazy(() => import('./privacyPolicy'));
 const Navbar = lazy(() => import('../pages/components/navbar/Navbar'));
 export function App() {
+
+  const [clientData, setClientData] = useState<ClientDataType | null>(null)
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -97,11 +101,13 @@ export function App() {
         <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
         {/* <Route element={<BoxTechWrapper />}> */}
         {/* </Route> */}
-        <Route path="/:clientId" element={<InitialPage />} />
-        <Route path="/order/:orderId" element={<Index />} />
-        <Route path="/order/:orderId/list" element={<List />} />
-        <Route path="/order/:orderId/quoation" element={<Quoatation />} />
-        <Route index element={<Landing />} />
+        <Route path="/:clientId" element={<InitialPage setClientData={setClientData} />} />
+        <Route path='/order' element={<NavandFooter clientData={clientData}><Outlet /></NavandFooter>}>
+          <Route index element={<div></div>} />
+          <Route path=":orderId" element={<Index setClientData={setClientData} />} />
+          <Route path=":orderId/list" element={<List />} />
+          <Route path=":orderId/quoation" element={<Quoatation />} />
+        </Route>
       </Routes>
     </Suspense>
   );
@@ -109,7 +115,9 @@ export function App() {
 
 export default App;
 
-const InitialPage = () => {
+const InitialPage = ({ setClientData }: {
+  setClientData: React.Dispatch<React.SetStateAction<ClientDataType | null>>
+}) => {
   const { clientId } = useParams()
   const navigate = useNavigate()
 
@@ -118,6 +126,8 @@ const InitialPage = () => {
       if (clientId) {
         const res = await getDoc(doc(db, "clients", clientId))
         if (res.exists()) {
+          const data = res.data() as ClientDataType
+          setClientData(data)
           const newOrder = await addDoc(collection(db, "Orders"), {
             clientId: clientId,
             status: "created",

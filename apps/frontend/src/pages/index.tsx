@@ -1,4 +1,4 @@
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { db } from '../configs/firebaseconfig'
@@ -16,11 +16,27 @@ import Lottie from "lottie-react";
 import truck from "../assets/json/truck-loading.json"
 import Quoatation from './Quoatation'
 import SuccessPage from './SuccessPage'
+import { ClientDataType } from './Quoatation/priceCalculation'
 
-export const Index = () => {
+export const Index = ({ setClientData }: {
+    setClientData: React.Dispatch<React.SetStateAction<ClientDataType | null>>
+}) => {
     const { orderId } = useParams()
     const dispatch = useDispatch()
     const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+
+    useEffect(() => {
+        (async () => {
+            if (orderDetails) {
+                const res = await getDoc(doc(db, "clients", orderDetails.clientId))
+                if (res.exists()) {
+                    const data = res.data() as ClientDataType
+                    setClientData(data)
+                }
+            }
+        })()
+    }, [orderDetails])
+
 
     useEffect(() => {
         if (!orderId) return
@@ -43,7 +59,6 @@ export const Index = () => {
 
         return () => unsub()
     }, [])
-    console.log(orderDetails);
 
     if (orderDetails) {
         switch (orderDetails.status) {

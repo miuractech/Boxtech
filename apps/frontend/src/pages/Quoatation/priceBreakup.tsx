@@ -16,11 +16,10 @@ import { environment } from '../../environments/environment'
 import { displayRazorpay, loadScript } from '../../hooks/razorpay'
 import { RootState } from '../../store'
 import { ClientDataType, QuotationDataType, UserDetailsType } from './priceCalculation'
-import { doc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import spacetime from 'spacetime';
 
-export const PriceBreakup = ({ userDetails, clientData }: {
-    userDetails: UserDetailsType | null
+export const PriceBreakup = ({ clientData }: {
     clientData: ClientDataType | null
 }) => {
     const { orderId } = useParams()
@@ -95,21 +94,25 @@ export const PriceBreakup = ({ userDetails, clientData }: {
                             await updateDoc(doc(db, "Orders", orderId), {
                                 status: "quoationCompleted",
                             })
-                            if (!userDetails || !clientData) return
+                            if (!clientData) return
                             const sendTemp = httpsCallable(functions, "addMessage")
-                            const data = {
-                                orderId: orderId,
-                                name: userDetails.name,
-                                storeName: clientData.brandName,
-                                date: spacetime(orderDetails.createdAt.seconds).format('nice'),
-                                to: orderDetails.directions.to.address2,
-                                from: orderDetails.directions.from.address2,
-                                quotationLink: `https://localhost:4202/order/${orderId}/quoation`,
-                                phone: "+91" + userDetails.phone
-                            };
-
-                            const response = await sendTemp(data)
-                            console.log(response.data);
+                            const res = await getDoc(doc(db, "Users", orderDetails.userId))
+                            if (res.exists()) {
+                                const data = {
+                                    orderId: orderId,
+                                    name: res.data()['name'],
+                                    storeName: clientData.brandName,
+                                    date: spacetime(orderDetails.createdAt.seconds).format('nice'),
+                                    to: orderDetails.directions.to.address2,
+                                    from: orderDetails.directions.from.address2,
+                                    quotationLink: `https://localhost:4202/order/${orderId}/quoation`,
+                                    phone: "+91" + res.data()['phone']
+                                };
+                                const response = await sendTemp(data)
+                                console.log(response.data);   
+                            } else {
+                                console.log("fhbjs");
+                            }
                         } catch (error: any) {
                             console.log(error);
                             showNotification({

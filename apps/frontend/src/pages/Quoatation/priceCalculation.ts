@@ -3,7 +3,7 @@ import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../configs/firebaseconfig";
 
 
-export const priceCalculation = async (orderDetails: OrderDetailsType, clientData: ClientDataType, clientCostData: CostType, orderId: string, detsils: (userDetails: UserDetailsType) => void) => {
+export const priceCalculation = async (orderDetails: OrderDetailsType, clientData: ClientDataType, clientCostData: CostType, orderId: string) => {
 
     try {
         const UserDetails = await getDoc(doc(db, "Users", orderDetails.userId))
@@ -17,7 +17,6 @@ export const priceCalculation = async (orderDetails: OrderDetailsType, clientDat
         })
         if (UserDetails.exists()) {
             const userDetails = UserDetails.data() as UserDetailsType
-            detsils(userDetails)
             const quotationData = {
                 header: {
                     logo: clientData.logo,
