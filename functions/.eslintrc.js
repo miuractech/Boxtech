@@ -30,5 +30,7 @@ module.exports = {
     "import/no-unresolved": 0,
     "linebreak-style": 0,
     "max-len": ["error", {"code": 80}],
+    "eol-last": 0,
+    "no-multiple-empty-lines": ["error", {"max": 1, "maxEOF": 0}],
   },
 };

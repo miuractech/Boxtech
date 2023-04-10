@@ -1,4 +1,9 @@
-import React, { ChangeEvent, ChangeEventHandler, useState } from 'react';
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Stepper,
   TextInput,
@@ -12,13 +17,11 @@ import {
 } from '@mantine/core';
 import { UseFormReturnType, useForm, yupResolver } from '@mantine/form';
 import { IconUpload, IconX } from '@tabler/icons';
-import {
-  setClient,
-} from '../store/clientSlice';
+import { setClient, updateClient } from '../store/clientSlice';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { clientDbRef, kycDbRef } from '../constants';
 import { app, db } from '../configs/firebaseconfig';
 import { showNotification } from '@mantine/notifications';
@@ -84,11 +87,24 @@ export const KYCForm = () => {
       else return {};
     },
   });
+  useEffect(() => {
+    const setClientFunc = async () => {
+      const clientKycDoc = await getDoc(doc(kycDbRef, user?.uid));
+      if (clientKycDoc.exists()) {
+        dispatch(updateClient(clientKycDoc.data()));
+        form.setValues(clientKycDoc.data());
+      }
 
+    };
+    setClientFunc();
+
+    return () => {
+      form.setValues(initialValues);
+    };
+  }, []);
   const handleChange = (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
     form.setFieldValue(key, e.target.value);
   };
-  console.log(form.errors);
 
   return (
     <form
@@ -106,11 +122,13 @@ export const KYCForm = () => {
             const batchWrite = writeBatch(db);
             batchWrite.set(doc(kycDbRef, user?.uid), target, {
               merge: true,
-            });
+            }); 
             batchWrite.update(doc(clientDbRef, user?.uid), 'kyc', true);
+            batchWrite.update(doc(clientDbRef, user?.uid), 'status', "created");
             await batchWrite.commit();
             dispatch(setClient({ ...client, kyc: true }));
             navigate('/');
+            window.location.reload()
             setLoading(false);
           } catch (err: any) {
             console.log(err);
@@ -215,6 +233,7 @@ export const KYCForm = () => {
                     name="bankAccountNo"
                     required
                     className="w-full"
+                    type="number"
                     value={form.values.bankAccountNo}
                     onChange={handleChange('bankAccountNo')}
                   />

@@ -79,7 +79,14 @@ export interface generalInfo {
   pincode: string;
   officialMail: string;
   phone: string;
+  whatsapp: string;
   kyc: boolean;
+  status:
+    | 'created'
+    | 'kyc error'
+    | 'active'
+    | 'disabled'
+    | 'banned';
 }
 
 export interface orderType {

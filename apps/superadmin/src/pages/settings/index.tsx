@@ -1,4 +1,4 @@
-import { IconNotes, IconPigMoney, IconUser } from '@tabler/icons';
+import { IconNotes, IconPigMoney, IconTableOptions, IconUser } from '@tabler/icons';
 import { Link } from 'react-router-dom';
 
 export default function Settings() {
@@ -32,4 +32,9 @@ const settingsItems = [
     name: 'terms and conditions',
     path: '/settings/tac',
   },
+  {
+    name: 'Custom Templates',
+    path: '/settings/mailtemplates',
+    icon: <IconTableOptions size={96} />,
+  }
 ];
