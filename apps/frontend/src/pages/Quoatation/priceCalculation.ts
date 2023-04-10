@@ -373,7 +373,7 @@ export interface Fov {
 }
 
 export interface SubTotal {
-    gST: number;
+    GST: number;
     amount: number;
 }
 
@@ -389,7 +389,7 @@ export interface QuotationDataType {
     grandTotal: GrandTotal;
     to: To;
     surCharge: SurCharge;
-    transportationCost: TransportationCost;
+    TransportationCost: TransportationCost;
     packingCharges: PackingCharge;
     costPerKM: CostPerKM;
     fov: Fov;

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { db } from '../../configs/firebaseconfig'
 import { ClientDetails } from './clientDetails'
-// import { PriceBreakup } from './priceBreakup'
+import { PriceBreakup } from './priceBreakup'
 import { QuoatTable } from './quoatTable'
 import { UserDetails } from './userDetails'
 import { useSelector } from 'react-redux'
@@ -60,12 +60,14 @@ export default function Quoatation() {
 
     if (orderDetails.quotation) {
         return (
-            <div className='bg-[#EDF2FF]'>
-                <div className='bg-white pb-5 pt-8 px-3 rounded-lg space-y-5 max-w-5xl m-auto'>
+            <div className='bg-[#EDF2FF] pt-8'>
+                <div className='bg-white pb-5 p-3 rounded-lg space-y-5 max-w-5xl m-auto'>
                     <ClientDetails />
-                    <UserDetails />
-                    <QuoatTable />
-                    {/* <PriceBreakup /> */}
+                    <div className='md:w-10/12 m-auto'>
+                        <UserDetails />
+                        <QuoatTable />
+                        <PriceBreakup />
+                    </div>
                 </div>
             </div>
         )

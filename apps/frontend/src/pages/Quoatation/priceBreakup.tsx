@@ -11,18 +11,16 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { callbackify } from 'util'
 import usePhoneAuth from '../../component/auth'
 import BackandNextButton from '../../component/BackandNextButton'
-import { app, auth, functions } from '../../configs/firebaseconfig'
+import { app, auth, db, functions } from '../../configs/firebaseconfig'
 import { environment } from '../../environments/environment'
 import { displayRazorpay, loadScript } from '../../hooks/razorpay'
 import { RootState } from '../../store'
 import { QuotationDataType } from './priceCalculation'
+import { doc, updateDoc } from 'firebase/firestore'
 
 export const PriceBreakup = () => {
     const { orderId } = useParams()
     const [termsCond, setTermsCond] = useState(false)
-    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
-    const quotation = orderDetails.quotation as QuotationDataType
-
     // useEffect(() => {
     //     (async () => {
     //         try {
@@ -38,7 +36,7 @@ export const PriceBreakup = () => {
         <div>
             <LabourCharges />
             <Divider />
-            {/* <PackingCharges />
+            <PackingCharges />
             <Divider />
             <TransportationCharges />
             <Divider />
@@ -46,13 +44,13 @@ export const PriceBreakup = () => {
             <Divider />
             <StatisticalCharges />
             <Divider />
-            <SubTotal />
-            <Divider />
             <FOVcompo />
             <Divider />
             <Surcharge />
+            <Divider />
+            <SubTotal />
             <Divider size="sm" color="black" />
-            <GrandTotal /> */}
+            <GrandTotal /> 
             <Divider size="sm" color="black" />
             <div className='mt-5'>
                 <Text className='font-semibold text-center'>Trems & Conditions</Text>
@@ -68,24 +66,25 @@ export const PriceBreakup = () => {
             <div className='my-5'>
                 <BackandNextButton
                     nextDisabled={!termsCond}
-                // handelNextBtn={async() => {
-                //     try {
-                //         const getDocument = httpsCallable(functions, 'getPaymentLink');                            
-                //         const response = await getDocument({ id });
-                //         console.log(response.data);
-                //       } catch (error:any) {
-                //         console.log(error);
-                //         showNotification({
-                //           id: `reg-err-${Math.random()}`,
-                //           autoClose: 5000,
-                //           title: 'Not Authorised!',
-                //           message: environment.production ? "Something went wrong" : error.message+'666',
-                //           color: 'red',
-                //           icon: <IconX />,
-                //           loading: false,
-                //         });
-                //       }
-                // }}
+                    handelNextBtn={async () => {
+                        try {
+                            if (!orderId) return
+                            await updateDoc(doc(db, "Orders", orderId), {
+                                status: "quoationCompleted",
+                            })
+                        } catch (error: any) {
+                            console.log(error);
+                            showNotification({
+                                id: `reg-err-${Math.random()}`,
+                                autoClose: 5000,
+                                title: 'Error!',
+                                message: environment.production ? "Something went wrong try again" : error.message + '666',
+                                color: 'red',
+                                icon: <IconX />,
+                                loading: false,
+                            });
+                        }
+                    }}
                 />
             </div>
         </div>
@@ -99,358 +98,189 @@ const LabourCharges = () => {
     return (
         <div>
             <div className='p-1 bg-[#EDF2FF] grid grid-cols-5 text-sm font-semibold'>
-                <Text className='col-span-4 justify-self-center'>Particulars</Text>
+                <Text className='col-span-4 justify-self-center mr-5 md:mr-[190px]'>Particulars</Text>
                 <Text>Amount</Text>
             </div>
             <div className='p-1 grid grid-cols-5 text-sm'>
                 <div className='col-span-4 grid grid-cols-3 py-1'>
-                    <div className='col-span-2'>
-                        <Text>Labour Charges</Text>
-                        <Text size={8} className="w-3/4">(inclusive of Loading, Unloading, packing, Unpacking)</Text>
+                    <div className='col-span-2 grid grid-cols-2'>
+                        <div>
+                            <Text>Labour Charges</Text>
+                            <Text className="w-11/12 md:w-3/4 text-gray-400 text-[6px] md:text-[10px]">(inclusive of Loading, Unloading, packing, Unpacking)</Text>
+                        </div>
                         {
                             quotation.labourCharges.lift ? (
                                 <Text className='text-sm'>{quotation.labourCharges.config}</Text>
                             ) : (
-                                    <Text className='text-sm'>{quotation.labourCharges.config} + No lift &nbsp;<span className='text-gray-400 text-[10px]'>({quotation.labourCharges.manPower}+2) Men</span></Text>
+                                    <div>
+                                        <Text className='text-sm'>{quotation.labourCharges.config} + No lift</Text>
+                                        <Text className='text-gray-400 text-[6px] md:text-[10px]'>({quotation.labourCharges.manPower}+2 Men)</Text>
+                                    </div>
                             )
                         }
                     </div >
-                    <div className='pt-2'>
-                        <Text className='text-sm'>₹{quotation.labourCharges.price}</Text>
-                        <Text className='text-[8px]'></Text>
+                    <div className=''>
+                        <Text className='text-sm'>₹{quotation.labourCharges.costPerMen}</Text>
+                        <Text className='text-gray-400 text-[6px] md:text-[10px]'>({quotation.labourCharges.lift ? quotation.labourCharges.manPower : quotation.labourCharges.manPower + 2} Men * ₹{quotation.labourCharges.costPerMen})</Text>
                     </div>
                 </div >
-                <div className='pt-3'>
-                    <Text className='text-sm'>₹{quotation.labourCharges.amount}</Text>
+                <div className='p-1'>
+                    <Text className='text-sm font-medium'>₹{quotation.labourCharges.amount}</Text>
                 </div>
             </div >
         </div >
     )
 }
 
-// const PackingCharges = ({ clientCostData, data, setSubTotal }: {
-//     data: orderType,
-//     clientCostData: CostType
-//     setSubTotal: React.Dispatch<React.SetStateAction<{
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }>>
-// }) => {
+const PackingCharges = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
 
-//     const [volumeOfItems, setVolumeOfItems] = useState(0)
-//     console.log(volumeOfItems);
+    return (
+        <div className='p-1 grid grid-cols-5 text-sm'>
+            <div className='col-span-4 grid grid-cols-3 py-1'>
+                <div className='col-span-2 grid grid-cols-2'>
+                    <div>
+                        <Text>Packing Charges</Text>
+                        <Text size={8} className="w-11/12 md:w-3/4 text-gray-400 text-[6px] md:text-[10px]">(inclusive of packing material used)</Text>
+                    </div>
+                    <Text className='text-sm'>{quotation.packingCharges.totalCubeM} CFT</Text>
+                </div>
+                <div className=''>
+                    <Text className='text-sm'>₹{quotation.packingCharges.packingCostPerCubeM}</Text>
+                    <Text className='text-gray-400 text-[6px] md:text-[10px]'>({quotation.packingCharges.totalCubeM} CFT x ₹{quotation.packingCharges.packingCostPerCubeM})</Text>
+                </div>
+            </div>
+            <div className=''>
+                <Text className='text-sm font-medium'>₹{quotation.packingCharges.totalCubeM * quotation.packingCharges.packingCostPerCubeM}</Text>
+            </div>
+        </div>
+    )
+}
 
-//     useEffect(() => {
-//         for (let i = 0; i < data.selectedItems.length; i++) {
-//             const eachItemVolume = Number(data.selectedItems[i].Length) * Number(data.selectedItems[i].Breadth) * Number(data.selectedItems[i].Height)
-//             setVolumeOfItems(prev => prev + eachItemVolume)
-//         }
-//     }, [])
+const TransportationCharges = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
 
-//     useEffect(() => {
-//         setSubTotal(prev => ({ ...prev, packingCharges: volumeOfItems * clientCostData.packingCostPerCubeM }))
-//     }, [volumeOfItems])
+    return (
+        <div className='p-1 grid grid-cols-5 text-sm'>
+            <div className='col-span-4 grid grid-cols-3 py-1'>
+                <div className='col-span-2 grid grid-cols-3 md:grid-cols-2'>
+                    <div className='col-span-2 md:col-span-1'>
+                        <Text>Transportation</Text>
+                    </div>
+                    <div>
+                        <Text className='text-sm'>{quotation.TransportationCost.config}</Text>
+                        <Text className='text-gray-400 text-[6px] md:text-[10px]'>{quotation.TransportationCost.details.name}</Text>
+                    </div>
+                </div>
+                <div className=''>
+                    <Text className='text-sm'>₹{quotation.TransportationCost.amount}</Text>
+                </div>
+            </div>
+            <div className=''>
+                <Text className='text-sm font-medium'>₹{quotation.TransportationCost.amount}</Text>
+            </div>
+        </div >
+    )
+}
 
+const CostPerKm = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
+    return (
+        <div className='p-1 grid grid-cols-5 text-sm'>
+            <div className='col-span-4 grid grid-cols-3 py-1'>
+                <div className='col-span-2 grid grid-cols-2'>
+                    <Text>Cost per Km</Text>
+                    <Text className=''>{quotation.costPerKM.distance}Km</Text>
+                </div>
+                <div className=''>
+                    <Text className='text-sm'>₹{quotation.costPerKM.perKM}</Text>
+                    <Text className='text-gray-400 text-[6px] md:text-[10px]'>({quotation.costPerKM.distance} km x ₹{quotation.costPerKM.perKM})</Text>
+                </div>
+            </div>
+            <div className=''>
+                <Text className='text-sm font-medium'>₹{quotation.costPerKM.amount}</Text>
+            </div>
+        </div >
+    )
+}
 
-//     return (
-//         <div className='p-1 grid grid-cols-5 text-sm'>
-//             <div className='col-span-4 grid grid-cols-3 py-1'>
-//                 <div className='col-span-2'>
-//                     <Text>Packing Charges</Text>
-//                     <Text size={8} className="w-3/4">(inclusive of packing material used)</Text>
-//                     <Text className='text-sm'>{volumeOfItems} CFT</Text>
-//                 </div>
-//                 <div className='pt-2'>
-//                     <Text className='text-sm'>₹{clientCostData.packingCostPerCubeM}</Text>
-//                     <Text className='text-[8px]'>({volumeOfItems} CFT x ₹{clientCostData.packingCostPerCubeM})</Text>
-//                 </div>
-//             </div>
-//             <div className='pt-3'>
-//                 <Text className='text-sm'>₹{volumeOfItems * clientCostData.packingCostPerCubeM}.00</Text>
-//             </div>
-//         </div>
-//     )
-// }
+const StatisticalCharges = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
+    return (
+        <div className='p-1 grid grid-cols-5 text-sm'>
+            <div className='col-span-4'>
+                <Text>Statistical Charges</Text>
+            </div>
+            <div className=''>
+                <Text className='font-medium'>₹{quotation.statisticalCharges.amount}</Text>
+            </div>
+        </div >
+    )
+}
 
-// const TransportationCharges = ({ clientCostData, data, setSubTotal }: {
-//     data: orderType,
-//     clientCostData: CostType,
-//     setSubTotal: React.Dispatch<React.SetStateAction<{
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }>>
-// }) => {
-//     useEffect(() => {
-//         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
-//         {/* @ts-ignore */ }
-//         setSubTotal(prev => ({ ...prev, TransportationCharges: clientCostData.vehicalCost[data.config].cost }))
-//     }, [])
+const FOVcompo = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
+    return (
+        <div className='p-1 grid grid-cols-5 text-sm'>
+            <div className='py-1 col-span-4'>
+                <Text className='w-10/12 text-xs'>Freight on value (F.O.V) 3.00% of the total goods values of Rs {quotation.fov.totalValueOfGoods}</Text>
+            </div>
+            <div className=''>
+                <Text className='font-medium'>₹{quotation.fov.amount}</Text>
+            </div>
+        </div >
+    )
+}
 
-//     return (
-//         <div className='p-1 grid grid-cols-5 text-sm'>
-//             <div className='col-span-4 grid grid-cols-3 py-1'>
-//                 <div className='col-span-2'>
-//                     <Text>Transportation</Text>
-//                     <Text className='text-sm'>{data.config}</Text>
-//                     {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-//                     {/* @ts-ignore */}
-//                     <Text className='text-[8px]'>{clientCostData.vehicalCost[data.config].name}</Text>
-//                 </div>
-//                 <div className='pt-2'>
-//                     {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-//                     {/* @ts-ignore */}
-//                     <Text className='text-sm'>₹{clientCostData.vehicalCost[data.config].cost}</Text>
-//                 </div>
-//             </div>
-//             <div className='pt-3'>
-//                 {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-//                 {/* @ts-ignore */}
-//                 <Text>₹{clientCostData.vehicalCost[data.config].cost}.00</Text>
-//             </div>
-//         </div >
-//     )
-// }
+const Surcharge = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
+    return (
+        <div className='p-1 grid grid-cols-5 text-sm'>
+            <div className='py-1 col-span-4'>
+                <Text className='w-10/12 text-xs'>Surcharge @ 10.00 % of the above total (Not applicable for Defense Personnel)</Text>
+            </div>
+            <div className=''>
+                <Text className='font-medium'>₹{quotation.surCharge.amount}</Text>
+            </div>
+        </div >
+    )
+}
 
-// const CostPerKm = ({ clientCostData, data, setSubTotal }: {
-//     data: orderType,
-//     clientCostData: CostType
-//     setSubTotal: React.Dispatch<React.SetStateAction<{
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }>>
-// }) => {
+const SubTotal = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
 
-//     useEffect(() => {
-//         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
-//         {/* @ts-ignore */ }
-//         setSubTotal(prev => ({ ...prev, CostPerKm: clientCostData.distanceCostPerKM * 1000 }))
-//     }, [])
+    return (
+        <div className='grid grid-cols-5 text-sm my-1'>
+            <div className='py-1 col-span-4 space-y-2'>
+                <Text className='w-3/4'>Sub Total</Text>
+                <Text className='w-3/4'>Tax( GST ): 18%</Text>
+            </div>
+            <div className='space-y-2'>
+                <Text>₹{quotation.subTotal.amount}</Text>
+                <Text>₹{quotation.subTotal.GST}</Text>
+            </div>
+        </div >
+    )
+}
 
-//     return (
-//         <div className='p-1 grid grid-cols-5 text-sm'>
-//             <div className='col-span-4 grid grid-cols-3 py-1'>
-//                 <div className='col-span-2'>
-//                     <Text>Cost per Km</Text>
-//                     <Text className='text-[12px]'>1000Km</Text>
-//                 </div>
-//                 <div className='pt-2'>
-//                     <Text className='text-sm'>₹{clientCostData.distanceCostPerKM}</Text>
-//                     <Text className='text-[8px]'>(1000Km x ₹{clientCostData.distanceCostPerKM})</Text>
-//                 </div>
-//             </div>
-//             <div className='pt-3'>
-//                 {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-//                 {/* @ts-ignore */}
-//                 <Text>₹{clientCostData.distanceCostPerKM * 1000}.00</Text>
-//             </div>
-//         </div >
-//     )
-// }
-
-// const StatisticalCharges = ({ setSubTotal }: {
-//     setSubTotal: React.Dispatch<React.SetStateAction<{
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }>>
-// }) => {
-
-//     useEffect(() => {
-//         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
-//         {/* @ts-ignore */ }
-//         setSubTotal(prev => ({ ...prev, StatisticalCharges: 220 }))
-//     }, [])
-
-//     return (
-//         <div className='p-1 grid grid-cols-5 text-sm'>
-//             <div className='py-1 col-span-4'>
-//                 <Text>Statistical Charges</Text>
-//             </div>
-//             <div className='pt-3'>
-//                 <Text>₹220.00</Text>
-//             </div>
-//         </div >
-//     )
-// }
-
-// const FOVcompo = ({ setSubTotal,subTotal }: {
-//     setSubTotal: React.Dispatch<React.SetStateAction<{
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }>>,
-//     subTotal: {
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }
-
-// }) => {
-
-//     useEffect(() => {
-//         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
-//         {/* @ts-ignore */ }
-//         setSubTotal(prev => ({ ...prev, FOVcompo: Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)*0.03) }))
-//     }, [])
-
-//     return (
-//         <div className='p-1 grid grid-cols-5 text-sm'>
-//             <div className='py-1 col-span-4'>
-//                 <Text className='text-[10px] w-3/4'>Freight on value (F.O.V) 3.00% of the total goods values of Rs {Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)}</Text>
-//             </div>
-//             <div className='pt-3'>
-//                 <Text>₹{(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.03).toFixed(2)}</Text>
-//             </div>
-//         </div >
-//     )
-// }
-
-// const Surcharge = ({ setSubTotal,subTotal }: {
-//     setSubTotal: React.Dispatch<React.SetStateAction<{
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }>>,
-//     subTotal: {
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }
-// }) => {
-
-//     useEffect(() => {
-//         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */ }
-//         {/* @ts-ignore */ }
-//         setSubTotal(prev => ({ ...prev, Surcharge: Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.10) }))
-//     }, [])
-
-//     return (
-//         <div className='p-1 grid grid-cols-5 text-sm'>
-//             <div className='py-1 col-span-4'>
-//                 <Text className='text-[10px] w-3/4'>Surcharge @ 10.00 % of the above total (Not applicable for Defense Personnel)</Text>
-//             </div>
-//             <div className='pt-3'>
-//                 <Text>₹{Number(Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0) * 0.10).toFixed(2)}</Text>
-//             </div>
-//         </div >
-//     )
-// }
-
-// const SubTotal = ({ subTotal }: {
-//     subTotal: {
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }
-// }) => {
-
-//     const [total, setTotal] = useState({
-//         total: 0,
-//         tax: 0
-//     })
-
-//     useEffect(() => {
-//         setTotal({
-//             tax: percentage(18, Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)),
-//             total: Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)
-//         });
-
-//     }, [subTotal])
-
-//     function percentage(percent: number, total: number) {
-//         return ((percent / 100) * total)
-//     }
-
-//     return (
-//         <div className='grid grid-cols-5 text-sm my-1'>
-//             <div className='py-1 col-span-4 space-y-2'>
-//                 <Text className='w-3/4'>Sub Total</Text>
-//                 <Text className='w-3/4'>Tax( GST ): 18%</Text>
-//             </div>
-//             <div className='space-y-2'>
-//                 <Text>₹{total.total}</Text>
-//                 <Text>₹{(Math.round(total.tax * 100) / 100).toFixed(2)}</Text>
-//             </div>
-//         </div >
-//     )
-// }
-
-// const GrandTotal = ({ subTotal }: {
-//     subTotal: {
-//         labourCharges: number;
-//         packingCharges: number;
-//         TransportationCharges: number;
-//         CostPerKm: number;
-//         StatisticalCharges: number;
-//         FOVcompo: number;
-//         Surcharge: number;
-//     }
-// }) => {
-
-//     const [total, setTotal] = useState({
-//         total: 0,
-//         tax: 0
-//     })
-
-//     useEffect(() => {
-//         setTotal({
-//             tax: percentage(18, Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)),
-//             total: Object.values(subTotal).reduce((partialSum, a) => partialSum + a, 0)
-//         });
-
-//     }, [subTotal])
-
-//     function percentage(percent: number, total: number) {
-//         return ((percent / 100) * total)
-//     }
-
-//     return (
-//         <div className='grid grid-cols-5 text-sm py-1'>
-//             <div className='py-1 col-span-4'>
-//                 <Text className='w-3/4 text-base font-semibold'>Grand Total</Text>
-//             </div>
-//             <div className=''>
-//                 <Text className='text-base font-semibold'>₹{total.total + Number((Math.round(total.tax * 100) / 100).toFixed(2))}</Text>
-//             </div>
-//         </div >
-//     )
-// }
+const GrandTotal = () => {
+    const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+    const quotation = orderDetails.quotation as QuotationDataType
+    return (
+        <div className='grid grid-cols-5 text-sm py-1'>
+            <div className='py-1 col-span-4'>
+                <Text className='w-3/4 text-base font-semibold'>Grand Total</Text>
+            </div>
+            <div className=''>
+                <Text className='text-base font-semibold'>₹{quotation.grandTotal.amount}</Text>
+            </div>
+        </div >
+    )
+}
