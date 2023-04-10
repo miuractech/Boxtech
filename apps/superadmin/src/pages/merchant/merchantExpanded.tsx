@@ -1,16 +1,19 @@
 import { KYCType, generalInfo } from '@boxtech/shared-constants';
 import {
+  ActionIcon,
   Avatar,
   Card,
   Collapse,
+  CopyButton,
   Divider,
   LoadingOverlay,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from '../../configs/firebaseconfig';
-import { IconLink } from '@tabler/icons';
+import { IconCheck, IconCopy, IconLink } from '@tabler/icons';
 
 type Props = {
   data: generalInfo;
@@ -57,6 +60,29 @@ const LeftColumn = ({ data }: Props) => {
               {data.corporateName}
             </h1>
             <p className="text-lg mt-2 text-center">{data.brandName}</p>
+            <div className="flex mt-4 items-center">
+              <p className={fieldClassname}>id</p>
+              <CopyButton value={data.clientId??''}>
+                {({ copied, copy }) => (
+                  <Tooltip
+                    label={copied ? 'Copied' : 'Copy'}
+                    withArrow
+                    position="right"
+                  >
+                    <div className="flex items-center">
+                      <p className={valueClassname}>{data.clientId}</p>
+                    <ActionIcon color={copied ? 'teal' : 'gray'} onClick={copy}>
+                      {copied ? (
+                        <IconCheck size="1rem" />
+                      ) : (
+                        <IconCopy size="1rem" />
+                      )}
+                    </ActionIcon>
+                    </div>
+                  </Tooltip>
+                )}
+              </CopyButton>
+            </div>
             <div className="flex mt-4 items-center">
               <p className={fieldClassname}>Phone</p>
               <p className={valueClassname}>{data.phone}</p>
