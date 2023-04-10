@@ -60,33 +60,28 @@ export const createEvent = functions
       corsHandler(req, res, async () => {
         try {
           // console.log(req.body);
-          const {summary,
-            location,
-            description,
-            startDateTime,
-            endDateTime} = req.body;
-          const event: any = {
-            summary: summary || "My first event!",
-            location: location || "Hyderabad,India",
-            description: description,
-            start: {
-              dateTime: startDateTime,
-              timeZone: "Asia/Kolkata",
-            },
-            end: {
-              dateTime: endDateTime,
-              timeZone: "Asia/Kolkata",
-            },
-            colorId: 1,
-            attendees: [],
-            reminders: {
-              useDefault: false,
-              overrides: [
-                {method: "email", minutes: 24 * 60},
-                {method: "popup", minutes: 10},
-              ],
-            },
-          };
+          //   const event: any = {
+          //     summary: summary || "My first event!",
+          //     location: location || "Hyderabad,India",
+          //     description: description,
+          //     start: {
+          //       dateTime: startDateTime,
+          //       timeZone: "Asia/Kolkata",
+          //     },
+          //     end: {
+          //       dateTime: endDateTime,
+          //       timeZone: "Asia/Kolkata",
+          //     },
+          //     colorId: 1,
+          //     attendees: [],
+          //     reminders: {
+          //       useDefault: false,
+          //       overrides: [
+          //         {method: "email", minutes: 24 * 60},
+          //         {method: "popup", minutes: 10},
+          //       ],
+          //     },
+          //   };
           const auth = new google.auth.GoogleAuth({
             keyFile: "./service.json",
             scopes: "https://www.googleapis.com/auth/calendar",
