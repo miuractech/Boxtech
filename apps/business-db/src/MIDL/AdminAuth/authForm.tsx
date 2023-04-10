@@ -47,7 +47,7 @@ function AuthForm() {
   });
   return (
     <Container size="sm">
-      <div className="flex flex-col items-center justify-center min-h-screen text-pink-600">
+      <div className="flex flex-col items-center justify-center min-h-screen text-black">
         <div className="w-full max-w-md p-8 bg-yellow-400 rounded-xl shadow-lg">
           <Text
             style={{ fontWeight: 700, fontSize: '24px', marginBottom: '16px' }}
@@ -66,7 +66,7 @@ function AuthForm() {
                   className={
                     selectedTab === d
                       ? 'text-yellow-400 font-bold'
-                      : 'text-pink-600 font-bold'
+                      : 'text-black font-bold'
                   }
                 >
                   {d}
@@ -79,7 +79,7 @@ function AuthForm() {
             onChange={(value) => setSelectedTab(value)}
             fullWidth
             className="mb-6 bg-yellow-400"
-            classNames={{ indicator: 'bg-pink-600 text-yellow-400 font-bold' }}
+            classNames={{ indicator: 'bg-black text-yellow-400 font-bold' }}
           />
           <form
             onSubmit={form.onSubmit(async (formValues) => {
@@ -116,7 +116,7 @@ function AuthForm() {
                   title: 'Error!',
                   message: message,
                   color: 'red',
-                  icon: <IconX />,
+                  icon: <IconX />,  
                   loading: false,
                 });
               }
@@ -130,7 +130,7 @@ function AuthForm() {
               name='email'
               value={form.values.email}
               className="mb-4 "
-              classNames={{ label: 'text-pink-600', input: 'text-pink-600' }}
+              classNames={{ label: 'text-black', input: 'text-black' }}
               onChange={(event) =>
                 form.setFieldValue('email', event.currentTarget.value)
               }
@@ -140,7 +140,7 @@ function AuthForm() {
             <PasswordInput
               label="Password"
               name='password'
-              classNames={{ label: 'text-pink-600', input: 'text-pink-600' }}
+              classNames={{ label: 'text-black', input: 'text-black' }}
               placeholder="Enter your password"
               value={form.values.password}
               onChange={(event) =>
@@ -160,7 +160,7 @@ function AuthForm() {
                 type="submit"
                 fullWidth
                 disabled={formStatus === 'signing in...'}
-                className="mb-5 bg-pink-600 hover:bg-pink-700 disabled:bg-pink-700 text-yellow-400 font-bold rounded-xl "
+                className="mb-5 bg-black hover:bg-gray-700 disabled:bg-gray-700 text-yellow-400 font-bold rounded-xl "
               >
                 {formStatus === 'signing in...' ? 'Signing In...' : 'Sign In'}
               </Button>
@@ -169,7 +169,7 @@ function AuthForm() {
                 type="submit"
                 fullWidth
                 disabled={formStatus === 'signing up...'}
-                className="mb-5 bg-pink-600 hover:bg-pink-700 disabled:bg-pink-700 text-yellow-400 font-bold rounded-xl"
+                className="mb-5 bg-black hover:bg-gray-700 disabled:bg-gray-700 text-yellow-400 font-bold rounded-xl"
               >
                 {formStatus === 'signing up...' ? 'Signing Up...' : 'Sign Up'}
               </Button>
@@ -178,7 +178,7 @@ function AuthForm() {
           <Button
             // size="lg"
             // variant='outline'
-            className="bg-pink-600 hover:bg-pink-700 disabled:bg-pink-700 text-yellow-400 font-bold rounded-xl"
+            className="bg-black hover:bg-gray-700 disabled:bg-gray-700 text-yellow-400 font-bold rounded-xl"
             leftIcon={<img src={GOOGLEIMG} alt="google sign in" />}
             onClick={async () => {
               try {

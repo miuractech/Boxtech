@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-
-admin.initializeApp();
-
 const GST = 0.18;
 export const getPaymentLink = functions
     .region("asia-south1")
@@ -88,8 +85,6 @@ export const getPaymentLink = functions
 //   "order_currency": "INR",
 //   "order_id": "sfvxvfgvbsxgbvx"
 // }
-
-
 //         TransportationCharges: number;
 //         CostPerKm: number;
 //         StatisticalCharges: number;

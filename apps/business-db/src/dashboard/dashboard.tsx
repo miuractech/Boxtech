@@ -14,6 +14,7 @@ import { setClient } from '../store/clientSlice';
 import CompanyDetails from './companyDetails';
 import { Booking } from '../MIDL/Bookings';
 import { Container } from '@mantine/core';
+import CopyCodeButton from './setup';
 
 // type Props = {}
 
@@ -52,7 +53,17 @@ export default function Dashboard() {
         <Routes>
           <Route path="/" element={<Booking />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/settings" element={<CompanyDetails />} />
+          <Route
+            path="/settings"
+            element={
+              <>
+                <CompanyDetails inTab={true} />
+                <CopyCodeButton
+                  link={`https://boxtech.miurac.com/${client?.clientId}`}
+                />
+              </>
+            }
+          />
           <Route path="/Logout" element={<Logout />} />
         </Routes>
       </NavBar>

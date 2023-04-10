@@ -11,9 +11,15 @@
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "@mantine/carousel": "^5.10.1",
+<<<<<<< HEAD
+    "@mantine/core": "^6.0.6",
+    "@mantine/dates": "^6.0.6",
+    "@mantine/dropzone": "^6.0.6",
+=======
     "@mantine/core": "^6.0.4",
     "@mantine/dates": "^6.0.6",
     "@mantine/dropzone": "^5.10.1",
+>>>>>>> a5af8a3ad72abef37ffca82d977caa4329fbf7a4
     "@mantine/form": "^5.10.1",
     "@mantine/hooks": "^6.0.6",
     "@mantine/modals": "^5.10.1",
@@ -39,6 +45,7 @@
     "react-data-table-component": "^7.5.3",
     "react-dom": "18.2.0",
     "react-easy-crop": "^4.6.3",
+    "react-email-editor": "^1.7.7",
     "react-helmet": "^6.1.0",
     "react-intersection-observer": "^9.4.3",
     "react-otp-input": "^2.4.0",

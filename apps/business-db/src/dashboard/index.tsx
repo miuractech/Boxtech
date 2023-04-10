@@ -24,6 +24,29 @@ export default function DashboardFront() {
   }, []);
 
   if (client === undefined) return <LoadingOverlay visible={true} />;
-  if (!client || !client?.kyc) return <CompanyDetails />;
-  return <Dashboard />;
+  else if (!client || !client?.kyc) return <CompanyDetails />;
+  else if (client?.status === 'kyc error' && client.kyc)
+    return <CompanyDetails />;
+  else if (client?.status === 'created' && client.kyc)
+    return (
+      <div className="flex items-center h-screen text-center w-full justify-center">
+        KYC verification under progress <br /> You will be verified in 24 hrs{' '}
+      </div>
+    );
+  else if (client?.status === 'active' && client.kyc) return <Dashboard />;
+  else if (client?.status === 'banned' && client.kyc)
+    return (
+      <div className="flex items-center h-screen text-center w-full justify-center bg-red-400">
+        You are banned!
+      </div>
+    );
+  else if (client?.status === 'disabled' && client.kyc)
+    return (
+      <div className="flex items-center h-screen text-center w-full justify-center">
+        You account is disabled! Pay your pending amount and contact us!
+      </div>
+    );
+  return <div className="flex items-center h-screen text-center w-full justify-center">
+  Access Denied
+</div>;
 }

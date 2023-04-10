@@ -1,15 +1,9 @@
 import { clientInfoType } from '@boxtech/shared-constants';
-import { createSlice } from '@reduxjs/toolkit';
-
+import { createSlice, current } from '@reduxjs/toolkit';
 
 export interface clientDetailState {
   client: clientInfoType | null | undefined;
 }
-
-
-
-
-
 
 // export const auth = getAuth(app);
 
@@ -25,11 +19,11 @@ export const ClientSlice = createSlice({
       state.client = action.payload;
     },
     updateClient: (state, action) => {
-      state.client = action.payload;
+      state.client = { ...current(state.client), ...action.payload };
     },
   },
 });
 
-export const { setClient } = ClientSlice.actions;
+export const { setClient, updateClient } = ClientSlice.actions;
 
 export default ClientSlice.reducer;
