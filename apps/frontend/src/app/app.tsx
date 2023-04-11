@@ -15,7 +15,7 @@ import {
 // import Items from '../pages/items';
 
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -42,6 +42,8 @@ import truck from "../assets/json/truck-loading.json"
 // import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
 
 import { Helmet } from 'react-helmet';
+import { NavandFooter } from '../component/navandfooter';
+import { ClientDataType } from '../pages/Quoatation/priceCalculation';
 const Items = lazy(() => import('../pages/items'));
 const List = lazy(() => import('../pages/items/list'));
 const LiftFacilityPage = lazy(() => import('../pages/LiftFacilityPage'));
@@ -53,6 +55,8 @@ const HomePage = lazy(() => import('../pages/components/homepage/HomePage'));
 const Policy = lazy(() => import('./privacyPolicy'));
 const Navbar = lazy(() => import('../pages/components/navbar/Navbar'));
 export function App() {
+
+  const [clientData, setClientData] = useState<ClientDataType | null>(null)
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
