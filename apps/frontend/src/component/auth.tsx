@@ -39,12 +39,11 @@ export default function usePhoneAuth(
   app: FirebaseApp,
   // redirectUrl?: string
 ): {
-    sendOtp: (phone: string, success: () => void, failure: () => void) => void;
+    sendOtp: (phone: string, success: () => void, failure: () => void) => Promise<void>;
     verifyOtp: (otp: string, success: (user: User) => void, failure: (error: FirebaseError) => void) => void;
   logout: () => void;
 } {
   const auth = getAuth(app);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {

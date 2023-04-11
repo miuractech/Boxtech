@@ -21,7 +21,7 @@ export default function UserInfo() {
     initialValues: {
       name: '',
       email: '',
-      phoneNumber: orderDetails.directions.phoneNumber,
+      phoneNumber: orderDetails.phoneNumber.slice(3),
     },
     validate: yupResolver(
       yup.object().shape({
@@ -37,7 +37,7 @@ export default function UserInfo() {
       case 'phone':
         return <FormUserInfo sendOtp={sendOtp} form={form} setId={setId} />;
       case 'otp':
-        return <VerifyOtp verifyOtp={verifyOtp} phone={form.values.phoneNumber} id={id} />;
+        return <VerifyOtp verifyOtp={verifyOtp} data={form.values} id={id} />;
       default:
         return <>unknown error</>;
     }

@@ -3,13 +3,13 @@ import { Button, Title } from '@mantine/core';
 import { TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import india from "../../assets/img/india.png"
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
 import { IconX } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
 
 type propsType = {
-  sendOtp: (phone: string, success: () => void, failure: () => void) => void;
+  sendOtp: (phone: string, success: () => void, failure: () => void) => Promise<void>;
   form: UseFormReturnType<{
     name: string;
     email: string;
@@ -43,16 +43,20 @@ export default function FormUserInfo(props: propsType) {
     <form onSubmit={form.onSubmit(async (data) => {
       try {
         setLoading(true)
-        sendOtp(`+91${data.phoneNumber}`, success, failure)
-        const res = await addDoc(collection(db, "Users"), {
-          ...data,
-          createdAt: serverTimestamp(),
-          verified: false
-        })
-        setId(res.id)
+        await sendOtp(`+91${data.phoneNumber}`, success, failure)
+         // const res = await addDoc(collection(db, "Users"), {
+        //   ...data,
+        //   createdAt: serverTimestamp(),
+        //   verified: false
+        // })
+        // await setDoc(doc(collection(db, "Orders"),orderDetails), {userDetails:{
+        //   ...data,
+        //   createdAt: serverTimestamp(),
+        // }
+        // }, {merge:true})
+       
         setLoading(false)
       } catch (error) {
-        console.log(error);
         showNotification({
           id: `reg-err-${Math.random()}`,
           autoClose: 5000,

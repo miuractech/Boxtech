@@ -23,7 +23,7 @@ export const Booking = () => {
       query(
         collection(db, 'Orders'),
         where('clientId', '==', user?.uid),
-        orderBy('timeStamp', 'desc')
+        orderBy('createdAt', 'desc')
       ),
       (snapshot) => {
         setOrderData(

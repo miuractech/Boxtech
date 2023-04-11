@@ -97,10 +97,10 @@ export function App() {
         <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
         {/* <Route element={<BoxTechWrapper />}> */}
         {/* </Route> */}
-        <Route path="/:clientId" element={<InitialPage />} />
+        <Route path="/:clientId" element={<Landing />} />
         <Route path="/order/:orderId" element={<Index />} />
         <Route path="/order/:orderId/list" element={<List />} />
-        <Route path="/order/:orderId/quoation" element={<Quoatation />} />
+        <Route path="/order/:orderId/quotation" element={<Quoatation readOnly />} />
         <Route index element={<Landing />} />
       </Routes>
     </Suspense>
@@ -109,40 +109,41 @@ export function App() {
 
 export default App;
 
-const InitialPage = () => {
-  const { clientId } = useParams()
-  const navigate = useNavigate()
+// const InitialPage = () => {
+//   const { clientId } = useParams()
+//   const navigate = useNavigate()
 
-  useEffect(() => {
-    (async () => {
-      if (clientId) {
-        const res = await getDoc(doc(db, "clients", clientId))
-        if (res.exists()) {
-          const newOrder = await addDoc(collection(db, "Orders"), {
-            clientId: clientId,
-            status: "created",
-            createdAt: serverTimestamp()
-          })
-          navigate(`/order/${newOrder.id}`)
-        } else {
-          showNotification({
-            id: `reg-err-${Math.random()}`,
-            autoClose: 5000,
-            title: "Error",
-            message: "Invalid Link",
-            color: "red",
-            icon: <IconX />,
-            loading: false,
-          });
-        }
-      }
-    })()
+//   useEffect(() => {
+//     (async () => {
+//       if (clientId) {
+//         const res = await getDoc(doc(db, "clients", clientId))
+//         if (res.exists()) {
+//           const newOrder = await addDoc(collection(db, "Orders"), {
+//             clientId: clientId,
+//             status: "created",
+//             createdAt: serverTimestamp()
+//           })
+//           navigate(`/order/${newOrder.id}`)
+//         } else {
+//           navigate(`/`)
+//           showNotification({
+//             id: `reg-err-${Math.random()}`,
+//             autoClose: 5000,
+//             title: "Error",
+//             message: "Invalid Link",
+//             color: "red",
+//             icon: <IconX />,
+//             loading: false,
+//           });
+//         }
+//       }
+//     })()
 
-  }, [clientId])
+//   }, [clientId])
 
-  return (
-    <div className='h-screen flex justify-center items-center'>
-      <Lottie animationData={truck} loop={true} className="h-72" />
-    </div>
-  )
-}
+//   return (
+//     <div className='h-screen flex justify-center items-center'>
+//       <Lottie animationData={truck} loop={true} className="h-72" />
+//     </div>
+//   )
+// }

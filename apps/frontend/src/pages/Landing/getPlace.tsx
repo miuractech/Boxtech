@@ -106,9 +106,9 @@ export const GetLocation = ({
     debounce: 400,
   });
   const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   useEffect(() => {
-    if (orderDetails.status === "geoDetected") {
+    if (orderDetails?.status && orderDetails.status === "geoDetected") {
       const { from, to } = orderDetails;
       if (!form.values.placeId) {
         console.log(from, to);

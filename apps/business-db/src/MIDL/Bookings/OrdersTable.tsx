@@ -11,6 +11,10 @@ export const OrdersTable = ({ orderData }: {
 
     const columns = [
         {
+            name: 'Created At',
+            selector: (row: any) => spacetime(row.createdAt.seconds * 1000).format('nice'),
+        },
+        {
             name: 'Email',
             selector: (row: any) => row.email,
         },
@@ -19,8 +23,8 @@ export const OrdersTable = ({ orderData }: {
             selector: (row: any) => {
                 switch (row.status) {
                     case "Created":
-                        return <Badge>Created</Badge>
-                    default: return <Badge>Unknown</Badge>
+                        return <Badge>{row.status}</Badge>
+                    default: return <Badge>{row.status}</Badge>
                 }
             },
         },
@@ -28,10 +32,7 @@ export const OrdersTable = ({ orderData }: {
             name: 'Phone',
             selector: (row: any) => row.phone,
         },
-        {
-            name: 'Created At',
-            selector: (row: any) => spacetime(row.timeStamp.seconds * 1000).format('nice'),
-        },
+       
         {
             name: 'Config',
             selector: (row: any) => row.config,
@@ -54,25 +55,22 @@ export const OrdersTable = ({ orderData }: {
                         <Stepper.Step
                             allowStepClick={false}
                             allowStepSelect={false}
-                            icon={<IconCurrentLocation color='red' />}
+                            icon={<IconCurrentLocation color='teal' />}
                             description={<div>
-                                <Text>{data.from.address1}</Text>
-                                <Text>{data.from.address2}</Text>
-                                <Text>{data.from.landmark}</Text>
+                                <Text>{data.directions?.from?.address1}</Text>
+                                <Text>{data.directions?.from?.address2}</Text>
+                                <Text>{data.directions?.from?.landmark}</Text>
                             </div>}
                         />
                         <Stepper.Step
-                            icon={<IconCurrentLocation color='green' />}
+                            icon={<IconCurrentLocation color='teal' />}
                             description={<div>
-                                <Text>{data.to.address1}</Text>
-                                <Text>{data.to.address2}</Text>
-                                <Text>{data.to.landmark}</Text>
+                                <Text>{data.directions?.to?.address1}</Text>
+                                <Text>{data.directions?.to?.address2}</Text>
+                                <Text>{data.directions?.to?.landmark}</Text>
                             </div>}
                         />
                     </Stepper>
-                </div>
-                <div>
-                    kcjlvx
                 </div>
             </div>
         )

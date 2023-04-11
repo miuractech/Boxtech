@@ -7,6 +7,7 @@ import {
   masterFormType,
   userInfoType,
 } from '../pages/Landing';
+import { QuotationDataType } from '../pages/Quoatation/priceCalculation';
 
 const order: masterFormType = localStorage.getItem('order')
   ? JSON.parse(localStorage.getItem('order') || '')
@@ -55,7 +56,8 @@ const initialState: masterFormType = {
     name: '',
     phone: '',
     email: ''
-  }
+  },
+  quotation:null
 };
 
 export const OrderSlice = createSlice({
@@ -88,6 +90,9 @@ export const OrderSlice = createSlice({
     },
     setUserInfo:(state, action: PayloadAction<userInfoType>) => {
       state.userInfo = action.payload;
+    },
+    setQuotation:(state, action: PayloadAction<QuotationDataType>) => {
+      state.quotation = action.payload;
     }
   },
 });
@@ -101,7 +106,8 @@ export const {
   setCostDetails,
   setTranspotationCost,
   setInsurance,
-  setUserInfo
+  setUserInfo,
+  setQuotation
 } = OrderSlice.actions;
 
 export default OrderSlice.reducer;

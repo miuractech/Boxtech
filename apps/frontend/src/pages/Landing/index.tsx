@@ -1,58 +1,85 @@
 import { CatergoryType, HouseTypes } from '@boxtech/shared-constants';
-import {
-  Button,
-  Divider,
-  Select,
-  TextInput,
-  Title,
-} from '@mantine/core';
-import { useDispatch, useSelector } from 'react-redux';
+import { Button, Divider, Select, TextInput, Title } from '@mantine/core';
 import HeroImg from '../../assets/img/Hero.jpg';
-import { costDetailsType, setConfig } from '../../store/OrderReducer';
+import { costDetailsType } from '../../store/OrderReducer';
 import { GetLocation } from './getPlace';
 import { db } from '../../configs/firebaseconfig';
-import india from "../../assets/img/india.png"
+import india from '../../assets/img/india.png';
 import { useForm, yupResolver } from '@mantine/form';
-import * as yup from "yup";
+import * as yup from 'yup';
 import { showNotification } from '@mantine/notifications';
 import { IconX } from '@tabler/icons';
-import { doc, updateDoc } from 'firebase/firestore';
-import { useParams } from 'react-router-dom';
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
-
-const schema = yup.object().shape({
-  from: yup.object().required("Requried"),
-  to: yup.object().required("Requried").typeError("Select a valid address"),
-  config: yup.string().min(1).required("Requried"),
-  phoneNumber: yup
-    .number()
-    .positive()
-    .integer()
-    .min(6000000000, 'Invalid mobile number')
-    .max(9999999999, 'Invalid mobile number')
-    .test('len', 'Must be exactly 10 characters', (val) => {
-      if (val) return val.toString().length === 10;
-      return false;
-    })
-    .required('Mobile number cannot be empty'),
-}).required();
+import { getDoc } from 'firebase/firestore';
+import { useDispatch } from 'react-redux';
+import { QuotationDataType } from '../Quoatation/priceCalculation';
+const schema = yup
+  .object()
+  .shape({
+    from: yup.object().required('Requried'),
+    to: yup.object().required('Requried').typeError('Select a valid address'),
+    config: yup.string().min(1).required('Requried'),
+    phoneNumber: yup
+      .number()
+      .positive()
+      .integer()
+      .min(6000000000, 'Invalid mobile number')
+      .max(9999999999, 'Invalid mobile number')
+      .test('len', 'Must be exactly 10 characters', (val) => {
+        if (val) return val.toString().length === 10;
+        return false;
+      })
+      .required('Mobile number cannot be empty'),
+  })
+  .required();
 
 export default function Landing() {
-  const { orderId } = useParams()
+  const { clientId } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
   const form = useForm<{
-    from: string | GooglePlacesType,
-    to: string | GooglePlacesType,
-    config: string,
-    phoneNumber: string
+    from: string | GooglePlacesType;
+    to: string | GooglePlacesType;
+    config: string;
+    phoneNumber: string;
   }>({
     validate: yupResolver(schema),
     initialValues: {
-      from: "",
-      to: "",
-      config: "",
-      phoneNumber: ""
-    }
+      from: '',
+      to: '',
+      config: '',
+      phoneNumber: '',
+    },
   });
+
+  // useEffect(() => {
+  //   (async () => {
+  //     if (clientId) {
+  //       const res = await getDoc(doc(db, 'clients', clientId));
+  //       dispatch(setclie)
+        
+  //         navigate(`/`);
+  //         showNotification({
+  //           id: `reg-err-${Math.random()}`,
+  //           autoClose: 5000,
+  //           title: 'Error',
+  //           message: 'Invalid Link',
+  //           color: 'red',
+  //           icon: <IconX />,
+  //           loading: false,
+  //         });
+        
+  //     }
+  //   })();
+  // }, [clientId]);
 
   return (
     <div
@@ -73,13 +100,21 @@ export default function Landing() {
             </Title>
             <form>
               <div className="bg-white rounded-2xl w-11/12 md:w-96 p-8 mx-auto ">
-                <GetLocation placeHolder="Enter Pickup Location" field="from" landingForm={form} />
+                <GetLocation
+                  placeHolder="Enter Pickup Location"
+                  field="from"
+                  landingForm={form}
+                />
                 <Divider
                   orientation="vertical"
                   color={'dark'}
                   className="h-9 w-1 ml-8 border-l-2"
                 />
-                <GetLocation placeHolder="Enter Drop Location" field="to" landingForm={form} />
+                <GetLocation
+                  placeHolder="Enter Drop Location"
+                  field="to"
+                  landingForm={form}
+                />
                 <Select
                   className="my-10"
                   placeholder="Select Configuration"
@@ -87,13 +122,13 @@ export default function Landing() {
                     value: config,
                     label: config,
                   }))}
-                  {...form.getInputProps("config")}
+                  {...form.getInputProps('config')}
                 />
                 <TextInput
-                  placeholder='Enter Phone Number'
+                  placeholder="Enter Phone Number"
                   type="number"
-                  icon={<img src={india} alt="in" className='w-full px-2' />}
-                  {...form.getInputProps("phoneNumber")}
+                  icon={<img src={india} alt="in" className="w-full px-2" />}
+                  {...form.getInputProps('phoneNumber')}
                 />
                 <Button
                   className="mt-10"
@@ -101,37 +136,40 @@ export default function Landing() {
                   onClick={async () => {
                     try {
                       if (form.validate().hasErrors) {
-                        const keys = Object.keys(form.errors)
-                        if (keys.length === 0) return
+                        const keys = Object.keys(form.errors);
+                        if (keys.length === 0) return;
                         showNotification({
                           id: `reg-err-${Math.random()}`,
                           autoClose: 5000,
-                          title: "Error",
+                          title: 'Error',
                           message: form.errors[keys[0]],
-                          color: "red",
+                          color: 'red',
                           icon: <IconX />,
                           loading: false,
                         });
                       } else {
-                        if (!orderId) return
-                        await updateDoc(doc(db, "Orders", orderId), {
+                        if (!clientId) return;
+                        await addDoc(collection(db, 'Orders'), {
                           directions: form.values,
-                          status: "geoDetected",
-                          phoneNumber: `+91${form.values.phoneNumber}`
-                        })
+                          status: 'geoDetected',
+                          phoneNumber: `+91${form.values.phoneNumber}`,
+                          clientId: clientId,
+                          createdAt: serverTimestamp(),
+                        }).then((doc) => {
+                          navigate(`/order/${doc.id}`);
+                        });
                       }
                     } catch (error) {
                       showNotification({
                         id: `reg-err-${Math.random()}`,
                         autoClose: 5000,
-                        title: "Error",
-                        message: "Something went wrong try again",
-                        color: "red",
+                        title: 'Error',
+                        message: 'Something went wrong try again',
+                        color: 'red',
                         icon: <IconX />,
                         loading: false,
                       });
                     }
-
                   }}
                 >
                   Submit
@@ -169,6 +207,7 @@ export type masterFormType = {
   costDetails: costDetailsType;
   insurance: number | null;
   userInfo: userInfoType;
+  quotation: QuotationDataType | null
 };
 
 export type userInfoType = {

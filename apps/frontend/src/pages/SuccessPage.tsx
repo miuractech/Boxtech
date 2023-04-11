@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import Lottie from "lottie-react";
 import success from "../assets/json/paymentSuccess.json"
 import { ActionIcon, Button, CopyButton, Text, Title, Tooltip, Textarea, Rating } from '@mantine/core';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { IconCheck, IconCopy } from '@tabler/icons';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../configs/firebaseconfig';
 
 const SuccessPage = () => {
   const { orderId } = useParams()
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
   return (
     <div className='bg-[#EDF2FF]'>
       <div className='p-5 w-fit m-auto bg-white'>
@@ -38,8 +38,8 @@ const SuccessPage = () => {
               <Text className='text-gray-500 text-sm'>Quotation Link :</Text>
             </div>
             <div className='flex gap-5'>
-              <Text className='text-md font-semibold'>localhost:4202/{orderId}/quoation</Text>
-              <CopyButton value={`https://localhost:4202/order/${orderId}/quoation`} timeout={2000}>
+              <Text className='text-md font-semibold'>boxtech.miurac.com/{orderId}/quotation</Text>
+              <CopyButton value={`https://boxtech.miurac.com/order/${orderId}/quotation`} timeout={2000}>
                 {({ copied, copy }) => (
                   <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
                     <ActionIcon color={copied ? 'teal' : 'gray'} onClick={copy}>
@@ -53,14 +53,14 @@ const SuccessPage = () => {
         </div>
         <div className='text-center my-10'>
           <Button
-            loading={loading}
             onClick={async () => {
               if (!orderId) return
-              setLoading(true)
-              await updateDoc(doc(db, "Orders", orderId), {
-                status: "bookingConfirmed",
-              })
-              setLoading(false)
+              navigate(`/order/${orderId}/quotation`)
+              // setLoading(true)
+              // await updateDoc(doc(db, "Orders", orderId), {
+              //   status: "bookingConfirmed",
+              // })
+              // setLoading(false)
             }}>Go Back</Button>
         </div>
         <div className='max-w-2xl m-auto space-y-5'>
@@ -74,6 +74,7 @@ const SuccessPage = () => {
             placeholder='Optional'
           />
         </div>
+        
       </div>
     </div>
   )
