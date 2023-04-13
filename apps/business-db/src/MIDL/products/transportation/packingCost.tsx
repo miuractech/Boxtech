@@ -22,7 +22,7 @@ export default function PackingCost() {
       <Text component={'h1'} align='left' className='px-3' >Packing cost</Text>
 
       <TextInput
-      label="Distance cost per KM"
+      label="Packing cost per cFT"
       className="max-w-md text-left px-3"
       classNames={{ rightSection: 'w-16' }}
       defaultValue={cost?.packingCostPerCubeM}

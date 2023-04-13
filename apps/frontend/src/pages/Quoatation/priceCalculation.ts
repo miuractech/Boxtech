@@ -2,6 +2,7 @@
 import { CostType, KYCType, generalInfo } from '@boxtech/shared-constants';
 import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
+import { GooglePlacesType } from '../Landing';
 
 export const priceCalculation = async (
   orderDetails: OrderDetailsType,
@@ -37,6 +38,7 @@ export const priceCalculation = async (
         const quotationData = {
           header: {
             logo: clientData.logo,
+            companyName: clientData.logo,
             PAN: kycDetails.panNumber,
             phoneNumber: clientData.phone,
             date: serverTimestamp(),
@@ -44,6 +46,7 @@ export const priceCalculation = async (
             gstin: kycDetails.gstNumber,
             email: clientData.officialMail,
             quotationNumber: orderId,
+            brandName:clientData.brandName
           },
           to: {
             name: userDetails.name,
@@ -53,8 +56,8 @@ export const priceCalculation = async (
             movementTime: orderDetails.bookingInfo.timeSlot,
           },
           fromAndTo: {
-            from: orderDetails.directions.from.address2,
-            to: orderDetails.directions.to.address2,
+            from: orderDetails.directions.from,
+            to: orderDetails.directions.to,
           },
           selectedItems: orderDetails.selectedItems,
           labourCharges: {
@@ -401,8 +404,8 @@ export interface ClientDataType {
 }
 
 export interface FromAndTo {
-  to: string;
-  from: string;
+  to: GooglePlacesType;
+  from: GooglePlacesType;
 }
 
 export interface LabourCharge {
@@ -428,6 +431,7 @@ export interface Header {
   logo: string;
   PAN: string;
   phoneNumber: string;
+  brandName:string
 }
 
 export interface UpdatedAt {

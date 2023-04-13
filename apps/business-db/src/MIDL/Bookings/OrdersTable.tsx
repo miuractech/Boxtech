@@ -11,7 +11,7 @@ export const OrdersTable = ({ orderData }: { orderData: any[] }) => {
     {
       name: 'Created At',
       selector: (row: any) =>
-        spacetime(row.createdAt.seconds * 1000,'asia/kolkata').format('nice'),
+        spacetime(row.createdAt.seconds * 1000).format('nice'),
     },
     // {
     //     name: 'Email',
