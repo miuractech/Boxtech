@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import LocationError from './locationError';
 import { RootState } from '../../store';
 import { useEffect } from 'react';
+import { houseConfigNames } from '@boxtech/shared-constants';
 
 interface ItemProps extends SelectItemProps {
   data: {
@@ -42,26 +43,29 @@ interface ItemProps extends SelectItemProps {
 export const GetLocation = ({
   placeHolder,
   field,
-  landingForm
+  landingForm,
 }: {
   placeHolder: string;
   field: 'from' | 'to';
-    landingForm: UseFormReturnType<{
+  landingForm: UseFormReturnType<
+    {
       from: string | GooglePlacesType;
       to: string | GooglePlacesType;
-      config: string;
+      config: houseConfigNames | '';
       phoneNumber: string;
-    }, (values: {
+    },
+    (values: {
       from: string | GooglePlacesType;
       to: string | GooglePlacesType;
-      config: string;
+      config: houseConfigNames | '';
       phoneNumber: string;
     }) => {
       from: string | GooglePlacesType;
       to: string | GooglePlacesType;
-      config: string;
+      config: houseConfigNames | '';
       phoneNumber: string;
-    }>
+    }
+  >;
 }) => {
   // const matches = useMediaQuery('(min-width: 1024px)');
   const mediaQuery = useMediaQuery('(min-width: 768px)');
@@ -105,10 +109,12 @@ export const GetLocation = ({
     requestOptions: { componentRestrictions: { country: 'IN' } },
     debounce: 400,
   });
-  const { orderDetails } = useSelector((state: RootState) => state.orderDetails)
+  const { orderDetails } = useSelector(
+    (state: RootState) => state.orderDetails
+  );
   // const dispatch = useDispatch();
   useEffect(() => {
-    if (orderDetails?.status && orderDetails.status === "geoDetected") {
+    if (orderDetails?.status && orderDetails.status === 'geoDetected') {
       const { from, to } = orderDetails;
       if (!form.values.placeId) {
         console.log(from, to);
@@ -124,11 +130,9 @@ export const GetLocation = ({
     }
   }, [field, form, orderDetails, setValue]);
 
-
   useEffect(() => {
     form.setFieldValue('addressLine', value);
   }, [value]);
-
 
   if (!ready) return <Loader />;
 
@@ -136,6 +140,7 @@ export const GetLocation = ({
     <div>
       <Autocomplete
         required
+        dropdownPosition='bottom'
         autoComplete="new-password"
         name={field}
         autoFocus={field === 'from'}
@@ -192,7 +197,7 @@ export const GetLocation = ({
           }
         }}
         rightSection={
-          <div className="flex items-center -ml-10">
+          <div className="flex items-center ">
             {loading ? (
               <Loader size={12} />
             ) : value ? (
@@ -206,7 +211,7 @@ export const GetLocation = ({
               </ActionIcon>
             ) : (
               <>
-                <div className="w-7 " />
+                <div className="w-7 -ml-7" />
                 <Tooltip label="Detect current location">
                   <ActionIcon
                     onClick={async () => {
@@ -216,11 +221,11 @@ export const GetLocation = ({
                             const lat = pos.coords.latitude;
                             const lng = pos.coords.longitude;
                             const newLocationResults = await getGeocode({
-                              location: { lat, lng }, 
+                              location: { lat, lng },
                             });
                             setValue(newLocationResults[0].formatted_address);
-                            const data = { ...newLocationResults[0] } as any
-                            delete data['geometry']
+                            const data = { ...newLocationResults[0] } as any;
+                            delete data['geometry'];
                             form.setFieldValue('data', data);
                             form.setFieldValue('coordinates', { lat, lng });
                             setOpen(true);
@@ -255,24 +260,24 @@ export const GetLocation = ({
           setValue('');
           setOpen(false);
         }}
-        fullScreen={!mediaQuery}
-        // size={mediaQuery?"400px":"100%"}
+        // fullScreen={!mediaQuery}
+        size={mediaQuery ? '400px' : 'calc(100% - 40px)'}
       >
         <form
           onSubmit={form.onSubmit((data) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            delete data['geometry']
+            delete data['geometry'];
             if (field === 'from') {
-              landingForm.setFieldValue("from", data)
+              landingForm.setFieldValue('from', data);
             } else {
-              landingForm.setFieldValue("to", data)
+              landingForm.setFieldValue('to', data);
             }
             setOpen(false);
           })}
           className="bg-white flex-col flex gap-y-5"
         >
-          <div className="w-80 h-80 mx-auto">
+          <div className="w-72 md:w-80 md:h-80 h-72 mx-auto">
             {
               <GoogleMap
                 zoom={18}
@@ -283,7 +288,7 @@ export const GetLocation = ({
                     ? form.values.coordinates
                     : indiaCenter
                 }
-                mapContainerClassName="w-80 h-80 relative"
+                mapContainerClassName="w-72 h-72  md:w-80 md:h-80 relative"
                 ref={mapref}
                 onLoad={async () => {
                   const lat = mapref.current.state.map.center.lat();
@@ -326,6 +331,7 @@ export const GetLocation = ({
             <TextInput
               placeholder="Door/Apartment no, Address,"
               {...form.getInputProps('address1')}
+              autoFocus={true}
             />
           </div>
           <div>
@@ -341,6 +347,17 @@ export const GetLocation = ({
             />
           </div>
           <div>
+            <Button
+              variant="outline"
+              onClick={() => {
+                form.reset();
+                setValue('');
+                setOpen(false);
+              }}
+            >
+              Cancel
+            </Button>
+            &ensp;
             <Button type="submit">Save Address</Button>
           </div>
         </form>

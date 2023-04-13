@@ -14,7 +14,6 @@ import { showNotification } from '@mantine/notifications';
 export default function LiftFacilityPage() {
   const [loading, setLoading] = useState(false)
   const { orderDetails } = useSelector((state: RootState) => state.orderDetails);
-  const navigate = useNavigate();
   const { orderId } = useParams();
 
   const form = useForm({
@@ -22,7 +21,7 @@ export default function LiftFacilityPage() {
       floorNumber: 0,
       lift: false,
       coverAge: false,
-      coverAgeAmount: 1000
+      coverAgeAmount: 10000
     }
   });
 
@@ -34,7 +33,7 @@ export default function LiftFacilityPage() {
 
 
   return (
-    <div className="p-3 max-w-md m-auto pt-10">
+    <div className="p-3 max-w-md m-auto bg-white pt-10 px-8">
       <form onSubmit={form.onSubmit(async (values) => {
         try {
           if (!orderId) return
@@ -103,14 +102,16 @@ export default function LiftFacilityPage() {
             />
             <div className='space-y-3'>
               <NumberInput
-                min={1000}
+                min={10000}
+                step={1000}
                 disabled={!form.values.coverAge}
-                className="w-48"
+                // className="w-48"
                 withAsterisk
                 {...form.getInputProps("coverAgeAmount")}
               />
-              <Text size={12} className="w-full md:max-w-md">
-                Note: i&#41; Enter the amount which you feel is the value of your
+              <Text size={12} align='justify' className="w-full md:max-w-md">
+                Note: <br />
+                i&#41; Enter the amount which you feel is the value of your
                 items.
                 <br />
                 ii&#41; The transit risk coverage will be 3.00% of the total goods

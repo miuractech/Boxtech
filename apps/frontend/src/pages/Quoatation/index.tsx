@@ -12,13 +12,13 @@ import { RootState } from '../../store';
 import { showNotification } from '@mantine/notifications';
 import { IconX } from '@tabler/icons';
 import {
-  ClientDataType,
   UserDetailsType,
   priceCalculation,
 } from './priceCalculation';
 import Lottie from 'lottie-react';
 import truck from '../../assets/json/truck-loading.json';
 import { setOrderDetails } from '../../store/orderSlice';
+import { Center, LoadingOverlay } from '@mantine/core';
 
 export default function Quoatation({ readOnly }: { readOnly: boolean }) {
   const { orderId } = useParams();
@@ -29,6 +29,7 @@ export default function Quoatation({ readOnly }: { readOnly: boolean }) {
   const [clientCostData, setClientCostData] = useState<CostType | null>(null);
   const [calculatePrice, setCalculatePrice] = useState(false);
   const [userDetails, setUserDetails] = useState<UserDetailsType | null>(null);
+  const [incomplete, setincomplete] = useState<boolean|undefined>(undefined)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function Quoatation({ readOnly }: { readOnly: boolean }) {
             setCalculatePrice(true);
           }
         }
-      } catch (error) {
+      } catch (error) {        
         showNotification({
           id: `reg-err-${Math.random()}`,
           autoClose: 5000,
@@ -87,16 +88,22 @@ export default function Quoatation({ readOnly }: { readOnly: boolean }) {
   useEffect(() => {
     if (!orderDetails) {
       getDoc(doc(collection(db, 'Orders'), orderId)).then((doc) => {
-        if (doc.exists()) {
-          dispatch(setOrderDetails(doc.data() as any));
+          if (doc.exists()) {
+            const data = doc.data() as any
+            if(data.quotation){
+                dispatch(setOrderDetails(doc.data() as any));
+            }else{
+                setincomplete(true)
+            }
         } else {
           navigate('/');
         }
       });
     }
   }, [orderDetails]);
-  console.log('orderDetails,', orderDetails);
-
+if(incomplete) return <Center className='h-screen' >
+    Quotation not generated yet.
+</Center>
   if (orderDetails?.quotation) {
     return (
       <div className="bg-[#EDF2FF] pt-8">

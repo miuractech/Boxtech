@@ -132,12 +132,9 @@ export const PriceBreakup = ({
                     quotationLink: `https://boxtech.miurac.com/order/${orderId}/quotation`,
                     phone: '+91' + userDetails.phoneNumber,
                   };
-                  console.log(data);
                   
                   const response = await sendTemp(data);
-                  console.log(response.data);
                 } catch (error: any) {
-                  console.log(error);
                   showNotification({
                     id: `reg-err-${Math.random()}`,
                     autoClose: 5000,

@@ -5,10 +5,10 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import { IconX } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
-import { User } from 'firebase/auth';
+import { User, signOut, updateEmail, updateProfile } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { collection, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../../configs/firebaseconfig';
+import { auth, db } from '../../configs/firebaseconfig';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setStep } from '../../store/authSlice';
@@ -20,7 +20,11 @@ type Props = {
     failure: (error: FirebaseError) => void
   ) => void;
   id: string | null;
-  data:any
+  data:{
+    name: string;
+    email: string;
+    phoneNumber: string;
+}
 };
 
 export default function VerifyOtp({ verifyOtp, id, data }: Props) {
@@ -48,6 +52,8 @@ export default function VerifyOtp({ verifyOtp, id, data }: Props) {
         verified: true,
         userId: user.uid,
       })
+      await updateProfile(user, { displayName: data.name });
+        await signOut(auth);
       await updateDoc(doc(db, 'Orders', orderId), {
         status: 'userVerified',
         userId: user.uid,
@@ -79,7 +85,7 @@ export default function VerifyOtp({ verifyOtp, id, data }: Props) {
       </Title>
       <Text className="text-sm" color="gray">
         We have sent a verification code to your phone starts with{' '}
-        {data.phone}
+        {data.phoneNumber}
       </Text>
       <form
         onSubmit={form.onSubmit((values) => {

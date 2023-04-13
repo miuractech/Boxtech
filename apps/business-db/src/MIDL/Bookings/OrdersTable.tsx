@@ -1,89 +1,103 @@
 import { Badge, Button, Stepper, Text } from '@mantine/core';
 import { IconCurrentLocation } from '@tabler/icons';
-import React, { useState } from 'react'
-import DataTable, { ExpanderComponentProps } from 'react-data-table-component'
+import React, { useState } from 'react';
+import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
 import spacetime from 'spacetime';
 
-export const OrdersTable = ({ orderData }: {
-    orderData: any[]
-}) => {
+export const OrdersTable = ({ orderData }: { orderData: any[] }) => {
+  console.log(orderData);
 
+  const columns = [
+    {
+      name: 'Created At',
+      selector: (row: any) =>
+        spacetime(row.createdAt.seconds * 1000,'asia/kolkata').format('nice'),
+    },
+    // {
+    //     name: 'Email',
+    //     selector: (row: any) => row.email,
+    // },
+    {
+      name: 'Status',
+      selector: (row: any) => {
+        switch (row.status) {
+          case 'Created':
+            return <Badge>{row.status}</Badge>;
+          default:
+            return <Badge>{row.status}</Badge>;
+        }
+      },
+    },
+    {
+      name: 'Phone',
+      cell: (row: any) => (
+        <a href={`tel:${row.phoneNumber}`}>{row.phoneNumber}</a>
+      ),
+    },
 
-    const columns = [
-        {
-            name: 'Created At',
-            selector: (row: any) => spacetime(row.createdAt.seconds * 1000).format('nice'),
-        },
-        {
-            name: 'Email',
-            selector: (row: any) => row.email,
-        },
-        {
-            name: 'Status',
-            selector: (row: any) => {
-                switch (row.status) {
-                    case "Created":
-                        return <Badge>{row.status}</Badge>
-                    default: return <Badge>{row.status}</Badge>
-                }
-            },
-        },
-        {
-            name: 'Phone',
-            selector: (row: any) => row.phone,
-        },
-       
-        {
-            name: 'Config',
-            selector: (row: any) => row.config,
-        },
-        {
-            name: 'Quotation',
-            selector: (row: any) => <Button size='xs' variant='outline'>View Quotation</Button>,
-        },
-    ];
+    {
+      name: 'Config',
+      selector: (row: any) => row.directions.config,
+    },
+    {
+      name: 'Quotation',
+      selector: (row: any) => (
+        <a href={`https://boxtech.miurac.com/order/${row.id}/quotation`} target='_blank' rel="noreferrer" >
+          <Button size="xs" variant="outline">
+            View Quotation
+          </Button>
+        </a>
+      ),
+    },
+  ];
 
-    const ExpandedComponent: React.FC<ExpanderComponentProps<any>> = ({ data }) => {
-        return (
-            <div className='grid md:grid-cols-2'>
-                <div className='px-5 py-10'>
-                    <Stepper
-                        active={-1}
-                        orientation="vertical"
-                        allowNextStepsSelect={false}
-                    >
-                        <Stepper.Step
-                            allowStepClick={false}
-                            allowStepSelect={false}
-                            icon={<IconCurrentLocation color='teal' />}
-                            description={<div>
-                                <Text>{data.directions?.from?.address1}</Text>
-                                <Text>{data.directions?.from?.address2}</Text>
-                                <Text>{data.directions?.from?.landmark}</Text>
-                            </div>}
-                        />
-                        <Stepper.Step
-                            icon={<IconCurrentLocation color='teal' />}
-                            description={<div>
-                                <Text>{data.directions?.to?.address1}</Text>
-                                <Text>{data.directions?.to?.address2}</Text>
-                                <Text>{data.directions?.to?.landmark}</Text>
-                            </div>}
-                        />
-                    </Stepper>
-                </div>
-            </div>
-        )
-    };
-
+  const ExpandedComponent: React.FC<ExpanderComponentProps<any>> = ({
+    data,
+  }) => {
     return (
-        <div>
-            <DataTable
-                columns={columns}
-                data={orderData}
-                expandableRows
-                expandableRowsComponent={ExpandedComponent}
+      <div className="grid md:grid-cols-2">
+        <div className="px-5 py-10">
+          <Stepper
+            active={-1}
+            orientation="vertical"
+            allowNextStepsSelect={false}
+          >
+            <Stepper.Step
+              allowStepClick={false}
+              allowStepSelect={false}
+              icon={<IconCurrentLocation color="teal" />}
+              description={
+                <div>
+                  <Text>{data.directions?.from?.address1}</Text>
+                  <Text>{data.directions?.from?.address2}</Text>
+                  <Text>{data.directions?.from?.landmark}</Text>
+                </div>
+              }
             />
+            <Stepper.Step
+              icon={<IconCurrentLocation color="teal" />}
+              description={
+                <div>
+                  <Text>{data.directions?.to?.address1}</Text>
+                  <Text>{data.directions?.to?.address2}</Text>
+                  <Text>{data.directions?.to?.landmark}</Text>
+                </div>
+              }
+            />
+          </Stepper>
         </div>
-    )
-}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <DataTable
+        columns={columns}
+        data={orderData}
+        expandableRows
+        expandableRowsComponent={ExpandedComponent}
+      />
+    </div>
+  );
+};

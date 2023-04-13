@@ -65,7 +65,6 @@ const SuccessPage = () => {
         </div>
         <div className='max-w-2xl m-auto space-y-5'>
           <Rating
-            defaultValue={2}
             size="xl"
             className='m-auto'
           />

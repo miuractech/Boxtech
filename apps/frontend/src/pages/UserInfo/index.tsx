@@ -2,7 +2,7 @@ import { Loader, ActionIcon } from '@mantine/core';
 import { useSelector } from 'react-redux';
 import userInfoImg from '../../assets/img/auth.jpg';
 import usePhoneAuth from '../../component/auth';
-import { app } from '../../configs/firebaseconfig';
+import { app, auth } from '../../configs/firebaseconfig';
 import { RootState } from '../../store';
 import FormUserInfo from './FormUserInfo';
 import VerifyOtp from './VerifyOtp';
@@ -16,7 +16,7 @@ export default function UserInfo() {
   const { orderDetails } = useSelector((state: RootState) => state.orderDetails);
   const { sendOtp, verifyOtp } = usePhoneAuth(app);
   const [id, setId] = useState<null | string>(null)
-
+  
   const form = useForm({
     initialValues: {
       name: '',

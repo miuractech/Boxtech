@@ -25,7 +25,7 @@ export const ClientDetails = () => {
                         <Text className='text-sm'>{quotation.header.PAN}</Text>
                         <Text className='text-sm'>{quotation.header.phoneNumber}</Text>
                         {quotation.header.date &&
-                            <Text className='text-sm'>{spacetime(quotation.header.date.seconds).format('nice')}</Text>}
+                            <Text className='text-sm'>{spacetime(quotation.header.date.seconds, 'asia/kolkata').format('nice')}</Text>}
                     </div>
                 </div>
                 <div className='grid grid-cols-2 md:order-3 w-fit m-auto'>

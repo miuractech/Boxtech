@@ -8,16 +8,16 @@ import { IconTrash } from '@tabler/icons';
 import BackandNextButton from '../../component/BackandNextButton';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../store';
-import { addOrRemoveQuntity, removeSelectedCategory } from '../../store/orderSlice';
+import {
+  addOrRemoveQuntity,
+  removeSelectedCategory,
+} from '../../store/orderSlice';
 type ListItemProps = {
   item: DocumentData;
 };
 
 export default function MylListItem(props: ListItemProps) {
   const { item } = props;
-  const { selectedItems } = useSelector((state: RootState) => state.orderDetails)
-  const params = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const handelArrowClick = (val: number) => {
     let quantity = item['quantity'];
@@ -34,11 +34,13 @@ export default function MylListItem(props: ListItemProps) {
   };
   return (
     <div>
-
       <div className="grid grid-cols-4 items-center py-3  px-4  border-b">
         <div className="col-span-2 text-[#ADB5BD] capitalize">
-          {item['Name']} ( {item['Length']} x {item['Breadth']} x {item['Height']}
-          )
+          {item['Name']}
+          {item['Name']}
+          <div className="text-xs">
+            {item['Length']} x {item['Breadth']} x {item['Height']}
+          </div>
         </div>
         <div className="col-span-1 text-[#ADB5BD]">
           <div className="flex  gap-3 items-center  align-middle">
@@ -65,7 +67,6 @@ export default function MylListItem(props: ListItemProps) {
           <IconTrash color="red" stroke={1} />
         </div>
       </div>
-       
     </div>
   );
 }

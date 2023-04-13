@@ -2,6 +2,7 @@ import { Button, Title } from '@mantine/core';
 import {
   addDoc,
   collection,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -23,7 +24,8 @@ export const Booking = () => {
       query(
         collection(db, 'Orders'),
         where('clientId', '==', user?.uid),
-        orderBy('createdAt', 'desc')
+        orderBy('createdAt', 'desc'),
+        limit(10)
       ),
       (snapshot) => {
         setOrderData(

@@ -14,14 +14,20 @@ import {
 
 // import Items from '../pages/items';
 
-
 import { useEffect, useState } from 'react';
 import { setUser } from '../store/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../configs/firebaseconfig';
-import { addDoc, collection, doc, getDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { setUserInfo } from '../store/OrderReducer';
 import PricingPlans from '../pages/components/pricing-plans/PricingPlans';
 import TermsCondition from '../pages/components/terms-n-conditions/TermsCondition';
@@ -33,8 +39,8 @@ import CheckoutPremium from '../pages/components/checkout/CheckoutPremium';
 import { showNotification } from '@mantine/notifications';
 import { IconX } from '@tabler/icons';
 import { Index } from '../pages';
-import Lottie from "lottie-react";
-import truck from "../assets/json/truck-loading.json"
+import Lottie from 'lottie-react';
+import truck from '../assets/json/truck-loading.json';
 
 // import MyAccount from '../pages/components/myaccount/MyAccount';
 // import MySubscriptions from '../pages/components/myaccount/MySubscriptions';
@@ -55,8 +61,7 @@ const HomePage = lazy(() => import('../pages/components/homepage/HomePage'));
 const Policy = lazy(() => import('./privacyPolicy'));
 const Navbar = lazy(() => import('../pages/components/navbar/Navbar'));
 export function App() {
-
-  const [clientData, setClientData] = useState<ClientDataType | null>(null)
+  const [clientData, setClientData] = useState<ClientDataType | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -66,22 +71,13 @@ export function App() {
 
   if (!isLoaded)
     return (
-      <div className='h-screen flex justify-center items-center'>
+      <div className="h-screen flex justify-center items-center">
         <Lottie animationData={truck} loop={true} className="h-72" />
       </div>
     );
 
-
   return (
-    <Suspense fallback={<LoadingOverlay visible={true} />} >
-      <Helmet>
-        <title>Boxtech</title>
-        <meta
-          name="discription"
-          content="Get help for all of your packing and moving related works"
-        />
-        <meta name="keywords" content="packing, moving, shifting" />
-      </Helmet>
+    <Suspense fallback={<LoadingOverlay visible={true} />}>
       <Routes>
         <Route
           index
@@ -101,11 +97,30 @@ export function App() {
         <Route path="/checkout-premium" element={<CheckoutPremium />} /> */}
         {/* <Route element={<BoxTechWrapper />}> */}
         {/* </Route> */}
-        <Route path="/:clientId" element={<Landing />} />
-        <Route path="/order/:orderId" element={<Index />} />
-        <Route path="/order/:orderId/list" element={<List />} />
-        <Route path="/order/:orderId/quotation" element={<Quoatation readOnly />} />
-        <Route index element={<Landing />} />
+        <Route
+          path="/:clientId"
+          element={
+            <NavandFooter setClientData={setClientData} clientData={clientData}>
+              <Landing setClientData={setClientData} />
+            </NavandFooter>
+          }
+        />
+        <Route
+          path="/order"
+          element={
+            <NavandFooter setClientData={setClientData} clientData={clientData}>
+              <Outlet />
+            </NavandFooter>
+          }
+        >
+          <Route path="/order/:orderId" element={<Index />} />
+          <Route path="/order/:orderId/list" element={<List />} />
+          <Route
+            path="/order/:orderId/quotation"
+            element={<Quoatation readOnly />}
+          />
+        </Route>
+        {/* <Route index element={<Landing />} /> */}
       </Routes>
     </Suspense>
   );

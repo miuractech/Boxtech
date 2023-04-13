@@ -9,11 +9,12 @@ import { IconCheck, IconX } from '@tabler/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { doc, Timestamp, updateDoc } from 'firebase/firestore';
-import { db } from '../../configs/firebaseconfig';
+import { auth, db } from '../../configs/firebaseconfig';
 import { useNavigate, useParams } from 'react-router-dom';
 import { uuidv4 } from '@firebase/util';
 import { showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
+import { updateEmail } from 'firebase/auth';
 // const timeSlot = [
 //   { start: '6Am', end: '8Am' },
 //   { start: '11Am', end: '1Pm' },
@@ -25,11 +26,9 @@ export default function Booking() {
   const [status, setStatus] = useState(false);
   const [error, seterror] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
-  const [value, setValue] = useState('11 AM');
   const navigate = useNavigate();
-  const { orderId } = useParams()
-
-  const [timeSlot, setTimeSlot] = useState([
+  const { orderId } = useParams()  
+  const timeSlot = [
     {
       start: '6 AM',
       disabled: false,
@@ -42,7 +41,7 @@ export default function Booking() {
       start: '3 PM',
       disabled: false,
     },
-  ]);
+  ]
 
   const form = useForm({
     initialValues: {

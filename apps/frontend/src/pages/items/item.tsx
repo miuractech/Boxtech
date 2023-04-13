@@ -4,12 +4,19 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { categoryItemType } from '../Landing';
-import { addOrRemoveQuntity, addSelectedCategory, removeSelectedCategory } from '../../store/orderSlice';
+import {
+  addOrRemoveQuntity,
+  addSelectedCategory,
+  removeSelectedCategory,
+} from '../../store/orderSlice';
+import { IconLine, IconMinus, IconPlus } from '@tabler/icons';
 type categoryItemProps = {
   item: categoryItemType;
 };
 export default function CategoryItem(props: categoryItemProps) {
-  const { selectedItems } = useSelector((state: RootState) => state.orderDetails);
+  const { selectedItems } = useSelector(
+    (state: RootState) => state.orderDetails
+  );
   const { item } = props;
   const isChecked =
     selectedItems.filter((it) => it['id'] === item['id']).length > 0;
@@ -59,7 +66,7 @@ export default function CategoryItem(props: categoryItemProps) {
         <div className="w-8">
           <Checkbox checked={isChecked} />
         </div>
-        <div className="grow font-medium ">
+        <div className="grow font-semibold text-sm md:text-base">
           {item['Name']}
           <div className="font-thin text-xs">
             {item['Length']} x {item['Breadth']} x {item['Height']}
@@ -67,31 +74,32 @@ export default function CategoryItem(props: categoryItemProps) {
         </div>
 
         <div
-          className="w-20 flex  gap-3 items-center justify-center align-middle"
+          className="w-24 flex gap-3 items-center justify-center align-middle"
           onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="text-[#F26E6E] font-bold text-xl cursor-pointer"
+          <IconMinus
+          size={14}
+            className="text-[#F26E6E]"
             onClick={(e) => {
               handelArrowClick(-1);
               e.stopPropagation();
             }}
-          >
-            -
-          </div>
+          />
+            {/* -
+          </IconLine> */}
           <div className="text-xl">{quantity} </div>
-          <div
-            className="text-[#099D5F] font-bold text-xl cursor-pointer"
+          <IconPlus
+          size={14}
+            className="text-[#099D5F]"
             onClick={(e) => {
               handelArrowClick(1);
               e.stopPropagation();
             }}
-          >
-            +
-          </div>
+          />
+          
         </div>
       </div>
-        <Divider />
+      <Divider />
     </>
   );
 }

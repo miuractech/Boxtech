@@ -1,5 +1,19 @@
-import { CatergoryType, HouseTypes } from '@boxtech/shared-constants';
-import { Button, Divider, Select, TextInput, Title } from '@mantine/core';
+import {
+  CatergoryType,
+  HouseType,
+  HouseTypes,
+  houseConfigNames,
+} from '@boxtech/shared-constants';
+import {
+  Button,
+  Center,
+  Divider,
+  Image,
+  Select,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import HeroImg from '../../assets/img/Hero.jpg';
 import { costDetailsType } from '../../store/OrderReducer';
 import { GetLocation } from './getPlace';
@@ -9,18 +23,15 @@ import { useForm, yupResolver } from '@mantine/form';
 import * as yup from 'yup';
 import { showNotification } from '@mantine/notifications';
 import { IconX } from '@tabler/icons';
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp } from 'firebase/firestore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-
 import { getDoc } from 'firebase/firestore';
-import { useDispatch } from 'react-redux';
 import { QuotationDataType } from '../Quoatation/priceCalculation';
+import truck1BHK from '../../assets/img/1bhk-truck.png';
+import truck2BHK from '../../assets/img/2bhk-truck.png';
+import truck3BHK from '../../assets/img/3bhk-truck.png';
+import truck4BHK from '../../assets/img/4bhk-truck.png';
 const schema = yup
   .object()
   .shape({
@@ -41,14 +52,13 @@ const schema = yup
   })
   .required();
 
-export default function Landing() {
+export default function Landing({ setClientData }: { setClientData: any }) {
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
   const form = useForm<{
     from: string | GooglePlacesType;
     to: string | GooglePlacesType;
-    config: string;
+    config: houseConfigNames | '';
     phoneNumber: string;
   }>({
     validate: yupResolver(schema),
@@ -60,26 +70,26 @@ export default function Landing() {
     },
   });
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (clientId) {
-  //       const res = await getDoc(doc(db, 'clients', clientId));
-  //       dispatch(setclie)
-        
-  //         navigate(`/`);
-  //         showNotification({
-  //           id: `reg-err-${Math.random()}`,
-  //           autoClose: 5000,
-  //           title: 'Error',
-  //           message: 'Invalid Link',
-  //           color: 'red',
-  //           icon: <IconX />,
-  //           loading: false,
-  //         });
-        
-  //     }
-  //   })();
-  // }, [clientId]);
+  useEffect(() => {
+    (async () => {
+      if (clientId) {
+        const res = await getDoc(doc(db, 'clients', clientId));
+        if (res.exists()) setClientData(res.data());
+        else {
+          navigate(`/`);
+          showNotification({
+            id: `reg-err-${Math.random()}`,
+            autoClose: 5000,
+            title: 'Error',
+            message: 'Invalid Link',
+            color: 'red',
+            icon: <IconX />,
+            loading: false,
+          });
+        }
+      }
+    })();
+  }, [clientId]);
 
   return (
     <div
@@ -88,12 +98,11 @@ export default function Landing() {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
-        height: window.innerHeight,
       }}
-      className="w-full"
+      className="w-full h-[650px] sm:min-h-screen"
     >
       <div className="w-full md:w-1/2 h-full">
-        <div className=" py-10 flex items-end md:items-center justify-center h-full text-center">
+        <div className="pb-10 md:py-10 flex items-end md:items-center justify-center h-full text-center">
           <div className="w-full">
             <Title order={1} className="text-white text-shadow mb-4">
               Moving Your Valuables!
@@ -116,7 +125,7 @@ export default function Landing() {
                   landingForm={form}
                 />
                 <Select
-                  className="my-10"
+                  className={form.values.config ? 'mt-10 mb-5' : 'my-10'}
                   placeholder="Select Configuration"
                   data={HouseTypes.map((config) => ({
                     value: config,
@@ -124,9 +133,38 @@ export default function Landing() {
                   }))}
                   {...form.getInputProps('config')}
                 />
+                <div>
+                  {form.values.config && (
+                    <div className="bg-gray-100 p-4 flex flex-wrap text-center rounded-lg mb-4">
+                      <div>
+                        <Image
+                          width={180}
+                          height={120}
+                          src={vehicleType[form.values.config].truckImg}
+                          alt="With default placeholder"
+                          withPlaceholder
+                        />
+                      </div>
+                      <Center className='flex-grow' >
+                        <div>
+                          <Text size={14} weight={700}>
+                            {form.values.config}
+                          </Text>
+                          <Text size={14}>
+                            {vehicleType[form.values.config].name}
+                          </Text>
+                          <Text size={20}>
+                            {vehicleType[form.values.config].size}
+                          </Text>
+                        </div>
+                      </Center>
+                    </div>
+                  )}
+                </div>
                 <TextInput
                   placeholder="Enter Phone Number"
                   type="number"
+                  name="phone"
                   icon={<img src={india} alt="in" className="w-full px-2" />}
                   {...form.getInputProps('phoneNumber')}
                 />
@@ -207,7 +245,7 @@ export type masterFormType = {
   costDetails: costDetailsType;
   insurance: number | null;
   userInfo: userInfoType;
-  quotation: QuotationDataType | null
+  quotation: QuotationDataType | null;
 };
 
 export type userInfoType = {
@@ -219,3 +257,14 @@ export interface categoryItemType extends CatergoryType {
   quantity: number;
   total: number;
 }
+
+const vehicleType = {
+  '1 BHK': { truckImg: truck1BHK, size: '6ft - 8ft', name: 'Small Tempo' },
+  '2 BHK': { truckImg: truck2BHK, size: '12ft - 16ft', name: 'Medium Carrier' },
+  '3 BHK': { truckImg: truck3BHK, size: '22ft - 24ft', name: 'Truck' },
+  '4 BHK & more': {
+    truckImg: truck4BHK,
+    size: '32ft - 40ft',
+    name: 'Large Truck',
+  },
+};

@@ -271,7 +271,6 @@ export const priceCalculation = async (
                 0.18,
           },
         };
-        console.log("quotationData",quotationData);
         
         await updateDoc(doc(db, 'Orders', orderId), {
           quotation: quotationData,

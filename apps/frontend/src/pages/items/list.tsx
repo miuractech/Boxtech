@@ -1,5 +1,5 @@
-import { Title } from '@mantine/core';
-import {useEffect} from 'react';
+import { Divider, Title } from '@mantine/core';
+import {Fragment, useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import BackandNextButton from '../../component/BackandNextButton';
@@ -11,20 +11,20 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../configs/firebaseconfig';
 
 export default function List() {
-  const { selectedItems, orderDetails } = useSelector((state: RootState) => state.orderDetails)
+  const { selectedItems } = useSelector((state: RootState) => state.orderDetails)
   const { orderId } = useParams()
   const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   if (orderDetails.status === "itemsSelected") {
-  //     // navigate(`/order/${orderId}`)
-  //   }
-  // }, [orderDetails.status])
+  useEffect(() => {
+    if (selectedItems.length === 0) {
+      navigate(`/order/${orderId}`)
+    }
+  }, [selectedItems])
 
 
   return (
     <div className="p-4 ">
-      <div className="rounded-xl overflow-hidden max-w-3xl mx-auto">  
+      <div className="rounded-xl overflow-hidden max-w-3xl mx-auto  min-h-[80vh]">  
         <div className="bg-black ">
           <Title
             size={16}
@@ -35,30 +35,37 @@ export default function List() {
         </div>
         <div className="  bg-[#F8F9FA]">
           <div className="pt-4 px-4 ">
-            <div className="grid grid-cols-4">
-              <div className="col-span-2 text-[#2C2E33]">
-                Name of Item ( Size )
+            <div className="grid grid-cols-4 h-12 items-start px-4 text-[#2C2E33]">
+              <div className="col-span-2 ">
+                Name of Item 
+                <div className="text-xs">
+
+                ( Size )
+                </div>
               </div>
-              <div className="col-span-1 ml-4 text-[#2C2E33] text">
+              <div className="col-span-1 ">
                 Quantity
               </div>
-              <div className="col-span-1  text-[#2C2E33] text-center">
+              <div className="col-span-1   text-center">
                 Remove
               </div>
             </div>
-
-            <div className={`overflow-y-scroll scrollbar mt-4`}>
+            <Divider />
+            <div className={`overflow-y-scroll scrollbar`}>
               {/* list all selected Items*/}
               {selectedItems.map((item) => (
-                <MylListItem item={item} />
+                <Fragment key={item.id}>
+                  <MylListItem item={item} />
+                </Fragment>
               ))}
             </div>
           </div>
         </div>
       </div>
-      <div className="m-5">
+      <div className="m-5 max-w-lg mx-auto">
           <BackandNextButton
             nextDisabled={selectedItems.length === 0}
+            backButton={()=>navigate(-1)}
           handelNextBtn={async () => {
             try {
               if (!orderId) return
@@ -66,7 +73,9 @@ export default function List() {
                 status: "itemsSelected",
                 selectedItems
               })
-              navigate(`/order/${orderId}`)
+              setTimeout(() => {
+                navigate(`/order/${orderId}`)
+              }, 500);
             } catch (error) {
               showNotification({
                 id: `reg-err-${Math.random()}`,

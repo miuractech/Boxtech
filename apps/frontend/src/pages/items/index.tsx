@@ -15,7 +15,7 @@ export default function Items() {
     <Text color={'#222629'} weight={'bolder'} className="text-2xl text-center ">
       Choose Your Items
     </Text>
-    <div className=" w-full mt-1 md:w-3/5 mx-auto">
+    <div className=" w-full min-h-[80vh] mt-1 md:w-3/5 mx-auto">
       <CategoryBar />
       <div className="mt-5">
         <BackandNextButton nextDisabled={selectedItems.length === 0} handelNextBtn={() => {
