@@ -45,6 +45,10 @@ const useStorage = ({ app, updateFirestore }: useStorageProps) => {
           setProgress(prog);
         },
         (err) => {
+<<<<<<< HEAD
+=======
+          console.log(err);
+>>>>>>> 4fa18d9 (business db products and setting completed)
           
           setLoading(false);
           reject(err);

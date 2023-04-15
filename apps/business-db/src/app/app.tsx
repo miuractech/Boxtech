@@ -24,7 +24,6 @@ export function App() {
     });
     return () => Unsubscribe();
   }, []);
-
   if (loading) {
     return <LoadingOverlay visible={loading} overlayBlur={2} />;
   }

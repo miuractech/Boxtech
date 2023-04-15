@@ -24,6 +24,7 @@ export default function DashboardFront() {
   }, []);
 
   if (client === undefined) return <LoadingOverlay visible={true} />;
+<<<<<<< HEAD
   else if (!client || !client?.kyc) return <CompanyDetails />;
   else if (client?.status === 'kyc error' && client.kyc)
     return <CompanyDetails />;
@@ -49,4 +50,8 @@ export default function DashboardFront() {
   return <div className="flex items-center h-screen text-center w-full justify-center">
   Access Denied
 </div>;
+=======
+  if (!client) return <CompanyDetails />;
+  return <Dashboard />;
+>>>>>>> 4fa18d9 (business db products and setting completed)
 }

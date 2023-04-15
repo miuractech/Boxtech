@@ -22,7 +22,11 @@ export default function PackingCost() {
       <Text component={'h1'} align='left' className='px-3' >Packing cost</Text>
 
       <TextInput
+<<<<<<< HEAD
       label="Packing cost per cFT"
+=======
+      label="Distance cost per KM"
+>>>>>>> 4fa18d9 (business db products and setting completed)
       className="max-w-md text-left px-3"
       classNames={{ rightSection: 'w-16' }}
       defaultValue={cost?.packingCostPerCubeM}
@@ -77,7 +81,11 @@ export default function PackingCost() {
       )
     }
     onChange={(e) => {
+<<<<<<< HEAD
       if (e.target.value) setValue(parseFloat(e.target.value));
+=======
+      if (e.target.value) setValue(parseInt(e.target.value));
+>>>>>>> 4fa18d9 (business db products and setting completed)
     }}
     placeholder="0"
     type="number"
